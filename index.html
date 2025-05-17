@@ -9,76 +9,104 @@
     body {
       margin: 0;
       font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(to bottom, #f5f5f5, #ffffff);
-      color: #222;
+      background-color: #2d1e1a;
+      background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+      background-size: cover;
+      background-attachment: fixed;
+      color: #f5f5f5;
     }
     header {
-      background-image: url('https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=1600&q=80');
-      background-size: cover;
-      background-position: center;
-      color: white;
-      text-align: center;
+      background: linear-gradient(to right, rgba(34, 24, 18, 0.9), rgba(48, 33, 27, 0.9)), 
+                  url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
       padding: 100px 20px;
+      text-align: center;
+      color: white;
     }
     header h1 {
-      font-size: 48px;
+      font-size: 60px;
       margin: 0;
+      letter-spacing: 2px;
     }
     header p {
-      font-size: 20px;
+      font-size: 24px;
       margin-top: 10px;
+      color: #ffcc80;
     }
     section {
       padding: 60px 20px;
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
     }
     h2 {
-      font-size: 32px;
+      font-size: 36px;
       margin-bottom: 20px;
+      text-align: center;
+      color: #fbc27b;
+      border-bottom: 2px solid #fbc27b;
+      display: inline-block;
+      padding-bottom: 10px;
+    }
+    p {
+      font-size: 18px;
+      line-height: 1.7;
       text-align: center;
     }
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
     }
     .gallery img {
       width: 100%;
-      border-radius: 8px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      transition: transform 0.3s ease;
+    }
+    .gallery img:hover {
+      transform: scale(1.05);
     }
     .contact {
       text-align: center;
       font-size: 18px;
+      margin-top: 40px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      border-radius: 12px;
+    }
+    .contact a {
+      color: #ffd700;
+      text-decoration: none;
     }
     footer {
+      background: #1a120f;
       text-align: center;
+      color: #bbb;
       padding: 20px;
-      background: #111;
-      color: white;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>GevArtPlay</h1>
-    <p>Портфолио фотографа</p>
+    <p>Фотограф и визуальный рассказчик</p>
   </header>
 
   <section>
     <h2>Обо мне</h2>
     <p>
-      Меня зовут Геворг Назарян, в творчестве известен как GevArtPlay.
-      Я начал с графического дизайна, но нашёл вдохновение в фотографии и видеосъёмке. Работаю с блогерами, артистами, моделями и брендами. Снимаю в разных жанрах, создавая живые, кинематографичные образы с настроением и смыслом.
+      Привет! Я — Геворг Назарян, более известный как GevArtPlay. 
+      Фотография — это моя форма искусства и средство общения. 
+      Я работаю в различных стилях, создавая атмосферные, эмоциональные и эстетически выверенные кадры.
     </p>
   </section>
 
   <section>
     <h2>Галерея</h2>
     <div class="gallery">
-      <img src="https://via.placeholder.com/400x300?text=Фото+1" alt="Фото 1" />
-      <img src="https://via.placeholder.com/400x300?text=Фото+2" alt="Фото 2" />
-      <img src="https://via.placeholder.com/400x300?text=Фото+3" alt="Фото 3" />
+      <img src="https://via.placeholder.com/400x300?text=Фотография+1" alt="Фотография 1" />
+      <img src="https://via.placeholder.com/400x300?text=Фотография+2" alt="Фотография 2" />
+      <img src="https://via.placeholder.com/400x300?text=Фотография+3" alt="Фотография 3" />
     </div>
   </section>
 
