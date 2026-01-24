@@ -50,7 +50,18 @@
 
         /* --- 3D TILT --- */
         .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
-        .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; }
+        .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
+        .tilt-card img { image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; }
+        
+        /* --- ОПТИМИЗАЦИЯ ЛОГОТИПА --- */
+        .tilt-card img[src*="logo.png"] {
+            filter: contrast(1.1) brightness(1.02);
+            transform: translateZ(0);
+            -webkit-font-smoothing: antialiased;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            will-change: transform;
+        }
 
         /* --- HEADER --- */
         header {
@@ -471,6 +482,8 @@
                 
                 const allCards = document.querySelectorAll('.tilt-card');
                 allCards.forEach(card => {
+                    const isLogo = card.querySelector('img[src*="logo.png"]') !== null;
+                    
                     card.addEventListener('mousemove', (e) => {
                         const inner = card.querySelector('.tilt-inner');
                         if(!inner) return;
@@ -480,13 +493,17 @@
                         
                         // Проверяем тип карточки
                         let rotateAmount = 30; // По умолчанию для services и logo
+                        let scaleAmount = 1; // Нет приближения по умолчанию
+                        
                         if (card.classList.contains('portfolio-item')) {
                             rotateAmount = 15; // Уменьшенный наклон для портфолио
+                        } else if (isLogo) {
+                            scaleAmount = 1.7; // Усиленное приближение для логотипа (в 5 раз больше)
                         }
                         
                         const rotateX = ((y - centerY) / centerY) * -rotateAmount;
                         const rotateY = ((x - centerX) / centerX) * rotateAmount;
-                        inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.15, 1.15, 1.15)`;
+                        inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scaleAmount}, ${scaleAmount}, ${scaleAmount})`;
                     });
                     card.addEventListener('mouseleave', () => {
                         const inner = card.querySelector('.tilt-inner');
