@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GevArtPlay | Visual Arts</title>
     
-    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="icon" href="images/ikon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #5b51d8; --bg: #050505; --text: #ffffff; --text-muted: #a3a3a3; }
@@ -420,7 +420,8 @@
                 const images = files.filter(file => 
                     file.name.match(/\.(jpg|jpeg|png|gif)$/i) && 
                     !file.name.includes('logo.png') && 
-                    !file.name.includes('avatar.jpg') 
+                    !file.name.includes('avatar.jpg') &&
+                    !file.name.includes('ikon.png')
                 );
 
                 const getTimestamp = (name) => {
