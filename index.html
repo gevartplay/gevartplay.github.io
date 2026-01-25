@@ -50,7 +50,8 @@
         .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-areas: "head img" "text img"; gap: 50px; align-items: center; }
         .about-header-wrap { grid-area: head; } .about-text-content { grid-area: text; } .about-img-container { grid-area: img; width: 100%; }
         
-        /* === СТИЛЬ ИЗОБРАЖЕНИЙ === */
+        /* === СТИЛЬ ИЗОБРАЖЕНИЙ (БАЗА) === */
+        /* Базовая скорость - 1.5 сек (для телефона и угасания на ПК) */
         img { 
             width: 100%; 
             display: block; 
@@ -61,12 +62,15 @@
         .about-img-container img { border-radius: 5px; filter: grayscale(100%); box-shadow: 20px 20px 0 var(--primary); }
         .portfolio-item img { border-radius: 4px; filter: grayscale(100%); }
 
-        /* КЛАСС ДЛЯ МОБИЛЬНОГО (когда фото на экране) */
+        /* ТЕЛЕФОН: Медленное появление (использует базовые 1.5s) */
         .in-view { filter: grayscale(0%) !important; }
 
-        /* ЭФФЕКТ СВЕЧЕНИЯ ПРИ НАВЕДЕНИИ (ПК) ДЛЯ ПОРТФОЛИО */
+        /* ПК: БЫСТРОЕ появление при наведении (0.4s) */
         .portfolio-item:hover img,
         .about-img-container:hover img {
+            /* Переопределяем скорость только для момента наведения */
+            transition: filter 0.4s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease-out;
+            
             filter: grayscale(0%);
             box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
             transform: translateY(-7px) scale(1.02);
@@ -83,21 +87,14 @@
         .service-card { background: #111; padding: 40px; border-bottom: 2px solid transparent; transition: all 0.3s; height: 100%; position: relative; overflow: hidden; }
         .service-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3; transition: 0.5s; object-fit: cover; }
         
-        /* === СПЕЦИАЛЬНОЕ СВЕЧЕНИЕ ДЛЯ SERVICES И ЛОГОТИПА === */
+        /* Свечение для Services и Лого */
         .services-grid .tilt-card:hover .service-card {
-            box-shadow: 0 0 30px var(--primary), 0 0 60px var(--primary); /* Сильное свечение */
+            box-shadow: 0 0 30px var(--primary), 0 0 60px var(--primary); 
             z-index: 100;
             border-color: var(--primary);
         }
-        .services-grid .tilt-card:hover .service-bg {
-            opacity: 0.8;
-        }
-
-        /* Логотип в подвале */
-        .contact-content .tilt-card:hover img {
-            filter: drop-shadow(0 0 20px var(--primary)) drop-shadow(0 0 40px var(--primary));
-            z-index: 100;
-        }
+        .services-grid .tilt-card:hover .service-bg { opacity: 0.8; }
+        .contact-content .tilt-card:hover img { filter: drop-shadow(0 0 20px var(--primary)) drop-shadow(0 0 40px var(--primary)); z-index: 100; }
 
         .service-content { position: relative; z-index: 1; pointer-events: none; }
         .service-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: white; }
