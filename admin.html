@@ -6,39 +6,36 @@
     <title>ADMIN | GevArtPlay</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <style>
-        body { background: #050505; color: white; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        h1 { font-family: 'Oswald', sans-serif; color: #5b51d8; letter-spacing: 2px; }
+        body { background: #050505; color: white; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        h1 { font-family: 'Oswald', sans-serif; color: #5b51d8; letter-spacing: 2px; margin-top: 40px; }
         
+        .back-btn { position: absolute; top: 20px; left: 20px; text-decoration: none; color: #aaa; font-family: 'Oswald', sans-serif; font-size: 14px; border: 1px solid #333; padding: 10px 20px; border-radius: 30px; transition: 0.3s; background: rgba(255,255,255,0.05); }
+        .back-btn:hover { color: white; border-color: #5b51d8; background: #5b51d8; }
+
         .box { background: #111; padding: 30px; border-radius: 10px; border: 1px solid #333; text-align: center; width: 100%; max-width: 500px; margin-bottom: 20px; }
         input, select { width: 90%; padding: 10px; margin-bottom: 20px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; }
         
-        button { 
-            background: #5b51d8; color: white; border: none; padding: 12px 30px; width: 100%;
-            font-family: 'Oswald', sans-serif; font-size: 1.2rem; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 10px;
-        }
+        button { background: #5b51d8; color: white; border: none; padding: 12px 30px; width: 100%; font-family: 'Oswald', sans-serif; font-size: 1.2rem; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 10px; }
         button:hover { background: #fff; color: #000; }
         
-        .delete-btn { background: #8b0000; }
-        .delete-btn:hover { background: #ff4444; color: white; }
+        /* Лог загрузки */
+        .log-container { text-align: left; margin-top: 15px; max-height: 200px; overflow-y: auto; background: #000; padding: 10px; border-radius: 5px; border: 1px solid #333; }
+        .log-item { font-size: 12px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 2px; }
+        .success { color: #00ff00; }
+        .error { color: #ff4444; }
 
-        .video-list { text-align: left; margin-top: 20px; border-top: 1px solid #333; padding-top: 10px; }
-        .video-item { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; margin-bottom: 5px; border-radius: 5px; }
-        .video-item a { color: #aaa; font-size: 0.9rem; text-decoration: none; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .video-cat { font-size: 0.7rem; color: #5b51d8; text-transform: uppercase; margin-right: 10px; font-weight: bold; }
-        .del-mini { background: #ff4444; color: white; border: none; padding: 5px 10px; font-size: 0.8rem; cursor: pointer; width: auto; }
-
-        #status { margin-top: 15px; font-weight: bold; color: #a3a3a3; white-space: pre-wrap; }
         .hidden { display: none; }
         .logout-link { color: #555; font-size: 12px; cursor: pointer; text-decoration: underline; margin-top: 20px; }
     </style>
 </head>
 <body>
 
+    <a href="index.html" class="back-btn">← НА САЙТ</a>
+
     <h1>ПАНЕЛЬ УПРАВЛЕНИЯ</h1>
 
     <div id="loginSection" class="box">
         <h3>АВТОРИЗАЦИЯ</h3>
-        <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">(Токен из памяти браузера или новый)</p>
         <input type="password" id="tokenInput" placeholder="ghp_...">
         <button onclick="saveTokenAndLogin()">ВОЙТИ</button>
     </div>
@@ -47,34 +44,23 @@
         
         <div class="box">
             <h3>📸 ЗАГРУЗИТЬ ФОТО</h3>
+            <p style="font-size: 12px; color: #aaa;">Совет: загружайте по 3-5 фото за раз.</p>
             <input type="file" id="fileInput" accept="image/*" multiple>
             <button onclick="uploadImages()">ЗАГРУЗИТЬ ФОТО</button>
             
-            <details style="margin-top: 10px; cursor: pointer; color: #777;">
-                <summary>Удалить фото по имени</summary>
-                <input type="text" id="deleteInput" placeholder="Имя файла..." style="margin-top: 10px;">
-                <button class="delete-btn" onclick="findAndDeleteImage()">УДАЛИТЬ ФОТО</button>
-            </details>
+            <div id="uploadLog" class="log-container hidden"></div>
         </div>
 
         <div class="box" style="border-color: #5b51d8;">
             <h3>🎬 УПРАВЛЕНИЕ ВИДЕО</h3>
-            
-            <p style="font-size: 12px; color: #aaa; text-align: left;">1. Вставьте ссылку на YouTube</p>
             <input type="text" id="videoUrl" placeholder="https://youtu.be/...">
-            
-            <p style="font-size: 12px; color: #aaa; text-align: left;">2. Выберите раздел</p>
             <select id="videoCategory">
-                <option value="events">EVENTS (Репортаж)</option>
-                <option value="fashion">FASHION (Мода)</option>
-                <option value="music">MUSIC (Клипы)</option>
+                <option value="events">EVENTS</option>
+                <option value="fashion">FASHION</option>
+                <option value="music">MUSIC</option>
             </select>
-
             <button onclick="addVideo()">ДОБАВИТЬ ВИДЕО</button>
-
-            <div id="videoList" class="video-list">
-                <p style="text-align: center; color: #555;">Загрузка списка...</p>
-            </div>
+            <div id="videoList" class="video-list"></div>
         </div>
 
         <p id="status"></p>
@@ -85,19 +71,15 @@
         const USERNAME = 'gevartplay'; 
         const REPO = 'gevartplay.github.io';
         const PHOTO_FOLDER = 'images';
-        const VIDEO_FILE = 'videos.json'; // Файл базы данных видео
+        const VIDEO_FILE = 'videos.json'; 
 
         let userToken = '';
         let currentVideos = [];
-        let videoFileSha = null; // Нужен для обновления файла на GitHub
+        let videoFileSha = null; 
 
-        // --- ВХОД ---
         document.addEventListener("DOMContentLoaded", () => {
             const savedToken = localStorage.getItem('github_token_gevartplay');
-            if (savedToken) {
-                userToken = savedToken;
-                unlockAdmin();
-            }
+            if (savedToken) { userToken = savedToken; unlockAdmin(); }
         });
 
         function saveTokenAndLogin() {
@@ -112,182 +94,108 @@
         function unlockAdmin() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('mainSection').classList.remove('hidden');
-            loadVideoList(); // Загружаем список видео сразу при входе
+            loadVideoList(); 
         }
 
-        function logout() {
-            localStorage.removeItem('github_token_gevartplay');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('github_token_gevartplay'); location.reload(); }
 
-        // ==========================================
-        // ЛОГИКА ВИДЕО (YOUTUBE)
-        // ==========================================
-        
-        // 1. Загрузить список из videos.json
-        async function loadVideoList() {
-            const listContainer = document.getElementById('videoList');
-            try {
-                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
-                     headers: { 'Authorization': `token ${userToken}`, 'Cache-Control': 'no-cache' }
-                });
-
-                if (response.status === 404) {
-                    // Файла еще нет, создадим пустой список
-                    currentVideos = [];
-                    videoFileSha = null;
-                    renderVideoList();
-                    return;
-                }
-
-                const data = await response.json();
-                videoFileSha = data.sha;
-                // Декодируем Base64 (русские символы требуют decodeURIComponent)
-                const content = decodeURIComponent(escape(atob(data.content))); 
-                currentVideos = JSON.parse(content);
-                renderVideoList();
-
-            } catch (error) {
-                console.error(error);
-                listContainer.innerHTML = "<p style='color:red'>Ошибка загрузки списка видео</p>";
-            }
-        }
-
-        // 2. Отобразить список на экране
-        function renderVideoList() {
-            const container = document.getElementById('videoList');
-            container.innerHTML = "";
-            
-            if (currentVideos.length === 0) {
-                container.innerHTML = "<p style='text-align:center; color:#555;'>Нет добавленных видео</p>";
-                return;
-            }
-
-            currentVideos.forEach((video, index) => {
-                const div = document.createElement('div');
-                div.className = 'video-item';
-                div.innerHTML = `
-                    <div style="display:flex; align-items:center;">
-                        <span class="video-cat">${video.category}</span>
-                        <a href="https://youtu.be/${video.id}" target="_blank">youtu.be/${video.id}</a>
-                    </div>
-                    <button class="del-mini" onclick="deleteVideo(${index})">X</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // 3. Добавить видео
-        async function addVideo() {
-            const url = document.getElementById('videoUrl').value.trim();
-            const category = document.getElementById('videoCategory').value;
-            const status = document.getElementById('status');
-
-            // Извлекаем ID видео из ссылки
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            
-            if (!match || match[2].length !== 11) {
-                return alert("Некорректная ссылка на YouTube!");
-            }
-            const videoId = match[2];
-
-            // Добавляем в массив
-            currentVideos.push({ id: videoId, category: category, date: Date.now() });
-            
-            // Сохраняем на GitHub
-            await saveVideosToGitHub(`Add video ${videoId}`);
-            document.getElementById('videoUrl').value = "";
-        }
-
-        // 4. Удалить видео
-        async function deleteVideo(index) {
-            if(!confirm("Удалить это видео?")) return;
-            currentVideos.splice(index, 1); // Удаляем из массива
-            await saveVideosToGitHub("Delete video");
-        }
-
-        // 5. Функция сохранения JSON на GitHub
-        async function saveVideosToGitHub(message) {
-            const status = document.getElementById('status');
-            status.innerText = "Сохранение базы видео...";
-            
-            // Кодируем в Base64 (с поддержкой UTF-8)
-            const content = btoa(unescape(encodeURIComponent(JSON.stringify(currentVideos))));
-
-            try {
-                const body = {
-                    message: message,
-                    content: content
-                };
-                if (videoFileSha) body.sha = videoFileSha; // Если файл был, указываем SHA для обновления
-
-                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${userToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    videoFileSha = data.content.sha; // Обновляем SHA
-                    status.innerText = "✅ База видео обновлена!";
-                    status.style.color = "#00ff00";
-                    renderVideoList();
-                } else {
-                    status.innerText = "Ошибка сохранения видео!";
-                    status.style.color = "red";
-                }
-            } catch (e) {
-                console.error(e);
-                status.innerText = "Ошибка сети";
-            }
-        }
-
-
-        // ==========================================
-        // ЛОГИКА ФОТО (СТАРАЯ)
-        // ==========================================
+        // --- НОВАЯ ФУНКЦИЯ ЗАГРУЗКИ С ОТЧЕТОМ ---
         async function uploadImages() {
             const fileInput = document.getElementById('fileInput');
             const files = fileInput.files;
-            const status = document.getElementById('status');
-
+            const logDiv = document.getElementById('uploadLog');
+            
             if (files.length === 0) return alert("Выберите файлы!");
+
+            logDiv.classList.remove('hidden');
+            logDiv.innerHTML = "<div>Начинаю загрузку...</div>";
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                status.innerText = `⏳ Загрузка фото ${i + 1}...\n(${file.name})`;
-                
-                try {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = async function() {
-                        const base64 = reader.result.split(',')[1];
-                        const safeName = file.name.replace(/\s+/g, '_');
-                        const uniqueName = 'img_' + Date.now() + '_' + i + '_' + safeName;
+                // Добавляем запись "Загружаю..."
+                const logItem = document.createElement('div');
+                logItem.className = 'log-item';
+                logItem.innerText = `⏳ ${file.name}...`;
+                logDiv.appendChild(logItem);
 
-                        await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${PHOTO_FOLDER}/${uniqueName}`, {
-                            method: 'PUT',
-                            headers: { 'Authorization': `token ${userToken}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: `Upload photo`, content: base64 })
-                        });
-                    };
-                } catch (e) { console.error(e); }
+                try {
+                    const base64 = await readFileAsBase64(file);
+                    // Имя с датой для правильной сортировки
+                    const safeName = file.name.replace(/\s+/g, '_');
+                    const uniqueName = 'img_' + Date.now() + '_' + i + '_' + safeName;
+
+                    const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${PHOTO_FOLDER}/${uniqueName}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${userToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Upload photo`, content: base64 })
+                    });
+
+                    if (res.ok) {
+                        logItem.innerHTML = `✅ ${file.name} - <b>OK</b>`;
+                        logItem.classList.add('success');
+                    } else {
+                        logItem.innerHTML = `❌ ${file.name} - Ошибка GitHub`;
+                        logItem.classList.add('error');
+                    }
+
+                } catch (e) {
+                    console.error(e);
+                    logItem.innerHTML = `❌ ${file.name} - Сбой`;
+                    logItem.classList.add('error');
+                }
             }
-            // Ждем чуть-чуть (так как FileReader асинхронный внутри цикла, это упрощение)
-            setTimeout(() => {
-                status.innerText = "✅ Все задачи отправлены!";
-                status.style.color = "#00ff00";
-                fileInput.value = ""; 
-            }, 2000);
+            
+            const doneMsg = document.createElement('div');
+            doneMsg.style.marginTop = "10px";
+            doneMsg.innerText = "🏁 Готово! Обновите сайт через 2-3 минуты.";
+            doneMsg.style.color = "white";
+            logDiv.appendChild(doneMsg);
+            
+            fileInput.value = ""; 
         }
 
-        async function findAndDeleteImage() {
-            const namePart = document.getElementById('deleteInput').value.trim();
-            if(!namePart) return alert("Введите имя!");
-            // ... (Код удаления фото аналогичен предыдущей версии, сокращен для экономии места)
-            alert("Функция удаления фото доступна в предыдущей версии или через контекстное меню на сайте.");
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // --- ВИДЕО ---
+        async function loadVideoList() {
+            try {
+                const r = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, { headers: { 'Authorization': `token ${userToken}`, 'Cache-Control': 'no-cache' } });
+                if (r.status === 404) { currentVideos = []; videoFileSha = null; return; }
+                const data = await r.json();
+                videoFileSha = data.sha;
+                currentVideos = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                document.getElementById('videoList').innerHTML = `<p style="color:#00ff00">Загружено ${currentVideos.length} видео</p>`;
+            } catch (e) {}
+        }
+
+        async function addVideo() {
+            const url = document.getElementById('videoUrl').value.trim();
+            const category = document.getElementById('videoCategory').value;
+            const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+            if (!match || match[2].length !== 11) return alert("Плохая ссылка!");
+            
+            currentVideos.push({ id: match[2], category: category, date: Date.now() });
+            await saveVideos();
+            document.getElementById('videoUrl').value = "";
+            alert("Видео добавлено!");
+        }
+
+        async function saveVideos() {
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(currentVideos))));
+            const body = { message: "Upd video", content: content };
+            if (videoFileSha) body.sha = videoFileSha;
+            const r = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
+                method: 'PUT', headers: { 'Authorization': `token ${userToken}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const d = await r.json(); videoFileSha = d.content.sha;
         }
     </script>
 </body>
