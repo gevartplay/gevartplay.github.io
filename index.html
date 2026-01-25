@@ -50,32 +50,44 @@
         .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-areas: "head img" "text img"; gap: 50px; align-items: center; }
         .about-header-wrap { grid-area: head; } .about-text-content { grid-area: text; } .about-img-container { grid-area: img; width: 100%; }
         
-        /* === СТИЛЬ ИЗОБРАЖЕНИЙ (БАЗА) === */
-        /* Базовая скорость - 1.5 сек (для телефона и угасания на ПК) */
+        /* === СТИЛЬ ИЗОБРАЖЕНИЙ === */
         img { 
             width: 100%; 
             display: block; 
-            transition: filter 1.5s ease-in-out, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 1.5s ease-in-out;
+            transition: filter 0.8s ease-out, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.8s ease-out, opacity 0.8s ease;
             backface-visibility: hidden; 
         }
         
         .about-img-container img { border-radius: 5px; filter: grayscale(100%); box-shadow: 20px 20px 0 var(--primary); }
         .portfolio-item img { border-radius: 4px; filter: grayscale(100%); }
 
-        /* ТЕЛЕФОН: Медленное появление (использует базовые 1.5s) */
-        .in-view { filter: grayscale(0%) !important; }
+        /* КЛАСС ДЛЯ МОБИЛЬНОГО (когда фото на экране) */
+        .in-view { filter: grayscale(0%) !important; transition: filter 1.5s ease; }
 
-        /* ПК: БЫСТРОЕ появление при наведении (0.4s) */
-        .portfolio-item:hover img,
+        /* === ЭФФЕКТ ФОКУСИРОВКИ (НОВАЯ ЛОГИКА) === */
+        
+        /* 1. Когда мышка внутри сетки портфолио: ВСЕ фото размываются */
+        .portfolio-masonry:hover .portfolio-item img {
+            filter: grayscale(100%) blur(4px) brightness(0.6) !important;
+            transform: scale(0.95);
+            opacity: 0.7;
+        }
+
+        /* 2. Когда мышка на КОНКРЕТНОМ фото: оно становится четким и ярким */
+        .portfolio-masonry .portfolio-item:hover img {
+            filter: grayscale(0%) blur(0px) brightness(1) !important;
+            box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
+            transform: translateY(-7px) scale(1.05) !important;
+            z-index: 100;
+            opacity: 1;
+        }
+
+        /* Для фото "Кто я" (без эффекта размытия соседей, так как оно одно) */
         .about-img-container:hover img {
-            /* Переопределяем скорость только для момента наведения */
-            transition: filter 0.4s ease-out, transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease-out;
-            
             filter: grayscale(0%);
             box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
             transform: translateY(-7px) scale(1.02);
             z-index: 10;
-            position: relative; 
         }
 
         .exp-badge { display: inline-block; margin-top: 30px; padding: 10px 20px; border: 1px solid var(--primary); color: var(--primary); font-family: 'Oswald'; letter-spacing: 1px; }
