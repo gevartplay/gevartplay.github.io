@@ -82,27 +82,15 @@
         .in-view { filter: grayscale(0%) !important; }
         .portfolio-item:hover img { filter: grayscale(0%); }
 
-        /* --- НОВЫЙ ДИЗАЙН МОДАЛЬНОГО ОКНА --- */
+        /* --- МОДАЛКА --- */
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow: auto; backdrop-filter: blur(10px); animation: fadeInModal 0.3s; }
         @keyframes fadeInModal { from {opacity: 0;} to {opacity: 1;} }
         
-        .gallery-content { 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            height: 100%; padding: 20px; position: relative;
-        }
-        .gallery-content img { 
-            max-height: 80vh; max-width: 90vw; width: auto; height: auto; 
-            border-radius: 5px; box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); 
-        }
+        .gallery-content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 20px; position: relative; }
+        .gallery-content img { max-height: 80vh; max-width: 90vw; width: auto; height: auto; border-radius: 5px; box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); }
 
-        /* ПАНЕЛЬ КНОПОК ВНУТРИ ФОТО */
         .modal-controls { margin-top: 20px; display: flex; gap: 20px; z-index: 10002; }
-        .modal-btn {
-            background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 10px 25px; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer;
-            border-radius: 30px; transition: 0.3s; backdrop-filter: blur(5px);
-            display: flex; align-items: center; gap: 10px;
-        }
+        .modal-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 25px; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; border-radius: 30px; transition: 0.3s; backdrop-filter: blur(5px); display: flex; align-items: center; gap: 10px; }
         .modal-btn:hover { background: white; color: black; transform: scale(1.05); }
         .modal-btn.delete { border-color: rgba(255, 68, 68, 0.5); color: #ff4444; display: none; }
         .modal-btn.delete:hover { background: #ff4444; color: white; border-color: #ff4444; }
@@ -127,7 +115,7 @@
         .admin-link { position: absolute; top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; color: rgba(255, 255, 255, 0.2); letter-spacing: 3px; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; z-index: 1000; transition: all 0.4s ease; backdrop-filter: blur(5px); }
         .admin-link:hover { color: #fff; border-color: var(--primary); box-shadow: 0 0 20px rgba(91, 81, 216, 0.6); transform: scale(1.05); background: rgba(91, 81, 216, 0.1); }
 
-        /* КОНТЕКСТНОЕ МЕНЮ (ТОЛЬКО ДЛЯ СМЕНЫ ФОТО) */
+        /* КОНТЕКСТНОЕ МЕНЮ */
         #custom-context-menu { display: none; position: absolute; z-index: 20000; background: rgba(10, 10, 10, 0.95); border: 1px solid var(--primary); border-radius: 8px; padding: 10px; backdrop-filter: blur(10px); min-width: 180px; }
         .ctx-btn { display: block; width: 100%; background: none; border: none; color: white; padding: 10px 15px; text-align: left; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .ctx-btn:hover { background: var(--primary); }
@@ -173,7 +161,7 @@
             <div class="about-header-wrap reveal"><div class="section-header"><span>ABOUT ME</span><h2 id="about-title">КТО Я</h2></div></div>
             <div class="about-img-container tilt-card reveal">
                 <div class="tilt-inner">
-                    <img id="main-photo" src="images/avatar.jpg" alt="Me">
+                    <img id="main-photo" src="images/avatar.jpg" alt="Me" onerror="this.onerror=null; this.src='images/avatar.jpg';">
                 </div>
             </div>
             <div class="about-text-content reveal">
@@ -224,14 +212,9 @@
         
         let allVideos = [];
         let contentSha = null; 
-        
         let currentPhoto = { url: null, sha: null, path: null };
 
-        const editables = [
-            'hero-title', 'hero-subtitle', 'about-title', 'about-text', 'about-badge', 
-            'services-title', 'serv-title-1', 'serv-desc-1', 'serv-title-2', 'serv-desc-2',
-            'serv-title-3', 'serv-desc-3', 'contact-title', 'contact-phone'
-        ];
+        const editables = [ 'hero-title', 'hero-subtitle', 'about-title', 'about-text', 'about-badge', 'services-title', 'serv-title-1', 'serv-desc-1', 'serv-title-2', 'serv-desc-2', 'serv-title-3', 'serv-desc-3', 'contact-title', 'contact-phone' ];
         const imageIds = ['main-photo', 'serv-img-1', 'serv-img-2', 'serv-img-3', 'footer-logo'];
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -240,7 +223,7 @@
             loadContent(); 
         });
 
-        // 1. ЗАГРУЗКА КОНТЕНТА
+        // 1. ЗАГРУЗКА
         async function loadContent() {
             const adminToken = localStorage.getItem('github_token_gevartplay');
             try {
@@ -253,27 +236,25 @@
                 }
             } catch (e) { console.log("Контент еще не создан"); }
 
-            if (adminToken) {
-                document.getElementById('enable-edit-btn').style.display = 'block';
-            }
+            if (adminToken) document.getElementById('enable-edit-btn').style.display = 'block';
         }
 
         function applyContent(data) {
             for (let key in data.texts) { const el = document.getElementById(key); if (el) el.innerHTML = data.texts[key]; }
-            for (let key in data.images) { const el = document.getElementById(key); if (el) el.src = "images/" + data.images[key]; }
+            for (let key in data.images) { 
+                const el = document.getElementById(key); 
+                if (el) el.src = "images/" + data.images[key]; 
+            }
             if (data.heroBg) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${data.heroBg}')`;
         }
 
-        // 2. РЕЖИМ РЕДАКТИРОВАНИЯ
+        // 2. РЕДАКТИРОВАНИЕ
         function startEditing() {
             document.getElementById('enable-edit-btn').style.display = 'none';
             document.getElementById('save-btn').style.display = 'block';
             document.getElementById('edit-bg-btn').style.display = 'block';
             
-            editables.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { el.contentEditable = "true"; el.classList.add('editable-active'); }
-            });
+            editables.forEach(id => { const el = document.getElementById(id); if(el) { el.contentEditable = "true"; el.classList.add('editable-active'); } });
             document.querySelector('.hero-content').style.pointerEvents = 'auto';
 
             imageIds.forEach(id => {
@@ -315,78 +296,15 @@
             } catch(e) { alert("Ошибка: " + e); }
         }
 
-        // =======================================================
-        // НОВЫЕ ФУНКЦИИ ДЛЯ МОДАЛКИ (СКАЧАТЬ / УДАЛИТЬ)
-        // =======================================================
-        
-        function openModal(url, sha, path) {
-            const modal = document.getElementById('single-image-modal');
-            const img = document.getElementById('modal-img');
-            const delBtn = document.getElementById('modal-delete-btn');
-            const adminToken = localStorage.getItem('github_token_gevartplay');
-
-            currentPhoto.url = url;
-            currentPhoto.sha = sha;
-            currentPhoto.path = path;
-
-            img.src = url;
-            
-            if (adminToken) {
-                delBtn.style.display = "flex";
-            } else {
-                delBtn.style.display = "none";
-            }
-
-            modal.style.display = "flex";
-            document.body.style.overflow = "hidden";
-        }
-
-        function downloadCurrent() {
-            if (currentPhoto.url) window.open(currentPhoto.url, '_blank');
-        }
-
-        async function deleteCurrent() {
-            const token = localStorage.getItem('github_token_gevartplay');
-            if (!token) return alert("Вы не админ!");
-            
-            if (confirm("УДАЛИТЬ это фото навсегда?")) {
-                try {
-                    await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(currentPhoto.path)}`, {
-                        method: 'DELETE',
-                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: `Delete from modal`, sha: currentPhoto.sha })
-                    });
-                    alert("Фото удалено! Страница обновится.");
-                    location.reload();
-                } catch (error) { alert("Ошибка: " + error); }
-            }
-        }
-
-        // =======================================================
-        // МЕНЮ СМЕНЫ ФОТО (ДЛЯ АДМИНА)
-        // =======================================================
+        // МЕНЮ
         let selectedElement = null;
         const menu = document.getElementById('custom-context-menu');
-        
-        function showContextMenu(x, y, element) {
-            selectedElement = element;
-            menu.style.display = 'block'; menu.style.left = x + 'px'; menu.style.top = y + 'px';
-        }
-
-        function changeImage() {
-            if (!selectedElement) return;
-            const newName = prompt("Введите имя файла из папки images (например: me.jpg):");
-            if (newName) selectedElement.src = "images/" + newName;
-            menu.style.display = 'none';
-        }
-        
+        function showContextMenu(x, y, element) { selectedElement = element; menu.style.display = 'block'; menu.style.left = x + 'px'; menu.style.top = y + 'px'; }
+        function changeImage() { if (!selectedElement) return; const newName = prompt("Введите имя файла (например: me.jpg):"); if (newName) selectedElement.src = "images/" + newName; menu.style.display = 'none'; }
         document.addEventListener('click', (e) => { if (!e.target.closest('#custom-context-menu')) menu.style.display = 'none'; });
+        function changeHeroBg() { const newName = prompt("Введите имя файла для фона:"); if (newName) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${newName}')`; }
 
-        function changeHeroBg() {
-            const newName = prompt("Введите имя файла для фона:");
-            if (newName) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${newName}')`;
-        }
-
+        // СТАНДАРТНЫЕ ФУНКЦИИ
         async function loadVideos() { try { const r = await fetch(`https://gevartplay.github.io/videos.json?t=${Date.now()}`); if (r.ok) allVideos = await r.json(); } catch (e) {} }
         function openVideoModal(category) {
             const modal = document.getElementById('video-modal');
@@ -405,11 +323,11 @@
                 const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images`);
                 const files = await response.json();
                 
-                // === ФИЛЬТР ===
+                // === ФИЛЬТР (ИСКЛЮЧАЕМ AVATAR.JPG) ===
                 const images = files.filter(file => 
                     file.name.match(/\.(jpg|jpeg|png|gif)$/i) && 
                     !file.name.includes('logo.png') && 
-                    !file.name.includes('avatar.jpg') // Исключаем главное фото (новое имя)
+                    !file.name.includes('avatar.jpg') 
                 );
 
                 if (images.length === 0) { container.innerHTML = "<p>Пусто.</p>"; return; }
@@ -418,15 +336,36 @@
                 images.forEach(file => {
                     const div = document.createElement('div');
                     div.className = 'portfolio-item tilt-card reveal';
-                    
-                    // Передаем данные в функцию openModal
                     div.onclick = function() { openModal(file.download_url, file.sha, file.path); };
-                    
                     div.innerHTML = `<div class="tilt-inner"><img src="${file.download_url}" loading="lazy"></div>`;
                     container.appendChild(div);
                 });
                 setTimeout(() => { reveal(); initTilt(); }, 500);
             } catch (e) {}
+        }
+
+        // МОДАЛКА
+        function openModal(url, sha, path) {
+            const modal = document.getElementById('single-image-modal');
+            const img = document.getElementById('modal-img');
+            const delBtn = document.getElementById('modal-delete-btn');
+            const adminToken = localStorage.getItem('github_token_gevartplay');
+            currentPhoto.url = url; currentPhoto.sha = sha; currentPhoto.path = path;
+            img.src = url;
+            delBtn.style.display = adminToken ? "flex" : "none";
+            modal.style.display = "flex"; document.body.style.overflow = "hidden";
+        }
+        function downloadCurrent() { if (currentPhoto.url) window.open(currentPhoto.url, '_blank'); }
+        async function deleteCurrent() {
+            const token = localStorage.getItem('github_token_gevartplay');
+            if (!token) return alert("Вы не админ!");
+            if (confirm("УДАЛИТЬ это фото навсегда?")) {
+                await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(currentPhoto.path)}`, {
+                    method: 'DELETE', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `Delete from modal`, sha: currentPhoto.sha })
+                });
+                location.reload();
+            }
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; const iframes = document.querySelectorAll('iframe'); iframes.forEach(i => i.src = i.src); }
