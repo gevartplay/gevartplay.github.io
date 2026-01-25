@@ -34,12 +34,6 @@
             padding: 5px 15px; cursor: pointer; z-index: 1000; font-family: sans-serif; font-size: 12px;
         }
 
-        /* --- КОНТЕКСТНОЕ МЕНЮ --- */
-        #custom-context-menu { display: none; position: absolute; z-index: 20000; background: rgba(10, 10, 10, 0.95); border: 1px solid var(--primary); border-radius: 8px; padding: 10px; backdrop-filter: blur(10px); min-width: 180px; }
-        .ctx-btn { display: block; width: 100%; background: none; border: none; color: white; padding: 10px 15px; text-align: left; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.2s; }
-        .ctx-btn:hover { background: var(--primary); }
-        .ctx-btn.delete { color: #ff4444; border-top: 1px solid #333; margin-top: 5px; } .ctx-btn.delete:hover { background: #8b0000; }
-
         /* --- СТАНДАРТНЫЕ СТИЛИ --- */
         h1, h2, h3, .contact-link { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
         .section-header { margin-bottom: 40px; padding-left: 20px; border-left: 4px solid var(--primary); }
@@ -50,13 +44,17 @@
         a { text-decoration: none; color: white; transition: 0.3s; }
         
         .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } .reveal.active { opacity: 1; transform: translateY(0); }
-        .tilt-card { perspective: 1000px; transform-style: preserve-3d; } .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
+        
+        /* TILT (3D) СТИЛИ */
+        .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
+        .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
+        .tilt-card:not(:hover) .tilt-inner { transition: transform 0.5s ease-out; transform: perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1) !important; }
         
         /* HEADER */
         header { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-left: 5vw; background: #050505; }
         #hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/photo_2026-01-21_18-52-52.jpg') center/cover no-repeat; z-index: 0; opacity: 0.6; animation: bgZoom 20s infinite alternate ease-in-out; }
         @keyframes bgZoom { from { transform: scale(1); } to { transform: scale(1.05); } }
-        .hero-content { position: relative; z-index: 1; pointer-events: none; } /* Блокируем клики, пока не админ */
+        .hero-content { position: relative; z-index: 1; pointer-events: none; }
         .hero-content h1 { font-size: 12vw; font-weight: 900; line-height: 0.9; background: linear-gradient(45deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; text-align: left; opacity: 0; transform: translateY(50px) scale(0.95); filter: blur(10px); animation: epicFadeInUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.5s; }
         .hero-subtitle { font-size: 1.5rem; font-weight: 300; letter-spacing: 2px; color: var(--text-muted); opacity: 0; transform: translateY(30px); animation: epicFadeInUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 1.5s; }
         @keyframes epicFadeInUp { to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
@@ -84,12 +82,53 @@
         .in-view { filter: grayscale(0%) !important; }
         .portfolio-item:hover img { filter: grayscale(0%); }
 
+        /* --- НОВЫЙ ДИЗАЙН МОДАЛЬНОГО ОКНА --- */
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow: auto; backdrop-filter: blur(10px); animation: fadeInModal 0.3s; }
         @keyframes fadeInModal { from {opacity: 0;} to {opacity: 1;} }
+        
+        .gallery-content { 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            height: 100%; padding: 20px; position: relative;
+        }
+        .gallery-content img { 
+            max-height: 80vh; max-width: 90vw; width: auto; height: auto; 
+            border-radius: 5px; box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); 
+        }
+
+        /* --- ПАНЕЛЬ КНОПОК ВНУТРИ ФОТО --- */
+        .modal-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            z-index: 10002;
+        }
+
+        .modal-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 25px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .modal-btn:hover { background: white; color: black; transform: scale(1.05); }
+        
+        /* Кнопка удаления (Красная) */
+        .modal-btn.delete {
+            border-color: rgba(255, 68, 68, 0.5);
+            color: #ff4444;
+            display: none; /* Скрыта по умолчанию */
+        }
+        .modal-btn.delete:hover { background: #ff4444; color: white; border-color: #ff4444; }
+
         .close-btn { position: fixed; top: 20px; right: 40px; color: #fff; font-size: 50px; font-weight: bold; cursor: pointer; z-index: 10001; transition: 0.3s; }
         .close-btn:hover { color: var(--primary); transform: rotate(90deg); }
-        .gallery-content { display: flex; justify-content: center; align-items: center; height: 100%; padding: 20px; }
-        .gallery-content img { max-height: 90vh; max-width: 90vw; width: auto; height: auto; border-radius: 5px; box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); }
         
         .video-content { display: flex; flex-direction: column; align-items: center; gap: 50px; padding: 80px 5vw; max-width: 1200px; margin: 0 auto; }
         .video-wrapper { width: 100%; position: relative; padding-bottom: 56.25%; height: 0; border-radius: 10px; overflow: hidden; border: 1px solid #333; box-shadow: 0 0 30px rgba(91, 81, 216, 0.3); }
@@ -105,7 +144,7 @@
         .social-row { display: flex; justify-content: center; gap: 30px; margin-top: 60px; }
         .social-link { font-size: 1.2rem; border-bottom: 1px solid #555; padding-bottom: 5px; transition: 0.3s; }
         .social-link:hover { color: var(--primary); border-bottom-color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-        .admin-link { position: absolute; top: 30px; right: 40px; font-family: 'Oswald', sans-serif; font-size: 0.8rem; color: rgba(255, 255, 255, 0.2); letter-spacing: 3px; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 30px; z-index: 1000; transition: all 0.4s ease; backdrop-filter: blur(5px); }
+        .admin-link { position: absolute; top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; color: rgba(255, 255, 255, 0.2); letter-spacing: 3px; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; z-index: 1000; transition: all 0.4s ease; backdrop-filter: blur(5px); }
         .admin-link:hover { color: #fff; border-color: var(--primary); box-shadow: 0 0 20px rgba(91, 81, 216, 0.6); transform: scale(1.05); background: rgba(91, 81, 216, 0.1); }
 
         @media (max-width: 1024px) { .portfolio-masonry { column-count: 2; } .hero-content h1 { font-size: 15vw; } .tilt-inner { transform: none !important; } }
@@ -114,16 +153,20 @@
 </head>
 <body>
 
-    <div id="custom-context-menu">
-        <button class="ctx-btn" id="ctx-download" onclick="downloadItem()">⬇ СКАЧАТЬ</button>
-        <button class="ctx-btn" id="ctx-change-img" onclick="changeImage()">🖼 СМЕНИТЬ ФОТО</button>
-        <button id="ctx-delete-btn" class="ctx-btn delete" style="display:none;" onclick="deleteItem()">🗑 УДАЛИТЬ</button>
-    </div>
-
     <button id="enable-edit-btn" class="admin-btn" onclick="startEditing()">✏️ РЕДАКТИРОВАТЬ</button>
     <button id="save-btn" class="admin-btn" onclick="saveAllContent()">💾 СОХРАНИТЬ</button>
 
-    <div id="single-image-modal" class="modal" onclick="closeModal('single-image-modal')"><span class="close-btn">&times;</span><div class="gallery-content"><img id="modal-img" src="" alt="View"></div></div>
+    <div id="single-image-modal" class="modal" onclick="closeModal('single-image-modal')">
+        <span class="close-btn">&times;</span>
+        <div class="gallery-content" onclick="event.stopPropagation()"> <img id="modal-img" src="" alt="View">
+            
+            <div class="modal-controls">
+                <button class="modal-btn" onclick="downloadCurrent()">⬇ СКАЧАТЬ</button>
+                <button id="modal-delete-btn" class="modal-btn delete" onclick="deleteCurrent()">🗑 УДАЛИТЬ</button>
+            </div>
+        </div>
+    </div>
+
     <div id="video-modal" class="modal"><span class="close-btn" onclick="closeModal('video-modal')">&times;</span><div class="video-content modal-content" id="video-modal-content"></div></div>
 
     <header>
@@ -193,14 +236,15 @@
         let allVideos = [];
         let contentSha = null; 
         
+        // Переменные текущего открытого фото
+        let currentPhoto = { url: null, sha: null, path: null };
+
         // СПИСОК РЕДАКТИРУЕМЫХ ID
         const editables = [
             'hero-title', 'hero-subtitle', 'about-title', 'about-text', 'about-badge', 
             'services-title', 'serv-title-1', 'serv-desc-1', 'serv-title-2', 'serv-desc-2',
             'serv-title-3', 'serv-desc-3', 'contact-title', 'contact-phone'
         ];
-        
-        // СПИСОК КАРТИНОК (Добавил сюда main-photo)
         const imageIds = ['main-photo', 'serv-img-1', 'serv-img-2', 'serv-img-3', 'footer-logo'];
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -209,10 +253,9 @@
             loadContent(); 
         });
 
-        // 1. ЗАГРУЗКА
+        // 1. ЗАГРУЗКА КОНТЕНТА
         async function loadContent() {
             const adminToken = localStorage.getItem('github_token_gevartplay');
-            
             try {
                 const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${CONTENT_FILE}?t=${Date.now()}`);
                 if (res.ok) {
@@ -223,7 +266,6 @@
                 }
             } catch (e) { console.log("Контент еще не создан"); }
 
-            // Если Админ -> Показать кнопку "РЕДАКТИРОВАТЬ" (но не включать режим)
             if (adminToken) {
                 document.getElementById('enable-edit-btn').style.display = 'block';
             }
@@ -235,48 +277,36 @@
             if (data.heroBg) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${data.heroBg}')`;
         }
 
-        // 2. ВКЛЮЧЕНИЕ РЕЖИМА РЕДАКТИРОВАНИЯ
+        // 2. РЕЖИМ РЕДАКТИРОВАНИЯ
         function startEditing() {
-            // Скрываем кнопку "Редактировать", показываем "Сохранить"
             document.getElementById('enable-edit-btn').style.display = 'none';
             document.getElementById('save-btn').style.display = 'block';
             document.getElementById('edit-bg-btn').style.display = 'block';
             
-            // Разблокируем текст (ContentEditable)
             editables.forEach(id => {
                 const el = document.getElementById(id);
-                if(el) {
-                    el.contentEditable = "true";
-                    el.classList.add('editable-active');
-                }
+                if(el) { el.contentEditable = "true"; el.classList.add('editable-active'); }
             });
-            
-            // Разблокируем клики на заголовке
             document.querySelector('.hero-content').style.pointerEvents = 'auto';
 
-            // Включаем контекстное меню для картинок (Смена фото)
             imageIds.forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
-                    // ПКМ - смена фото
                     el.oncontextmenu = (e) => {
                         e.preventDefault();
-                        showContextMenu(e.pageX, e.pageY, el, 'static'); 
+                        const newName = prompt("Введите имя файла (из папки images):");
+                        if (newName) el.src = "images/" + newName;
                     };
                 }
             });
         }
 
-        // 3. СОХРАНЕНИЕ
         async function saveAllContent() {
             const btn = document.getElementById('save-btn');
             btn.innerText = "СОХРАНЕНИЕ...";
-            
             let data = { texts: {}, images: {}, heroBg: "" };
-            
             editables.forEach(id => { const el = document.getElementById(id); if(el) data.texts[id] = el.innerHTML; });
             imageIds.forEach(id => { const el = document.getElementById(id); if(el) { const src = el.src.split('/').pop(); data.images[id] = src; } });
-
             const bgDiv = document.getElementById('hero-bg');
             const bgStyle = window.getComputedStyle(bgDiv).backgroundImage;
             const match = bgStyle.match(/images\/([^"\)]+)/); 
@@ -288,62 +318,73 @@
             try {
                 const body = { message: "Update site content", content: contentBase64 };
                 if (contentSha) body.sha = contentSha;
-
                 const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${CONTENT_FILE}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 });
-
                 if (res.ok) {
-                    const ans = await res.json();
-                    contentSha = ans.content.sha;
-                    btn.innerText = "✅ СОХРАНЕНО!";
-                    setTimeout(() => {
-                        btn.innerText = "💾 СОХРАНИТЬ";
-                        location.reload(); // Перезагружаем, чтобы выйти из режима ред.
-                    }, 1000);
+                    const ans = await res.json(); contentSha = ans.content.sha;
+                    btn.innerText = "✅ СОХРАНЕНО!"; setTimeout(() => { btn.innerText = "💾 СОХРАНИТЬ"; location.reload(); }, 1000);
                 } else { btn.innerText = "ОШИБКА"; }
             } catch(e) { alert("Ошибка: " + e); }
         }
 
-        // МЕНЮ И УПРАВЛЕНИЕ
-        let selectedElement = null;
-        const menu = document.getElementById('custom-context-menu');
+        // =======================================================
+        // НОВЫЕ ФУНКЦИИ ДЛЯ МОДАЛКИ (СКАЧАТЬ / УДАЛИТЬ)
+        // =======================================================
         
-        function showContextMenu(x, y, element, type = 'portfolio') {
-            selectedElement = element;
+        function openModal(url, sha, path) {
+            const modal = document.getElementById('single-image-modal');
+            const img = document.getElementById('modal-img');
+            const delBtn = document.getElementById('modal-delete-btn');
+            const adminToken = localStorage.getItem('github_token_gevartplay');
+
+            // Сохраняем данные текущего фото
+            currentPhoto.url = url;
+            currentPhoto.sha = sha;
+            currentPhoto.path = path;
+
+            img.src = url;
             
-            if (type === 'static') {
-                // Статичное фото (Лого, Кто я, Услуги)
-                document.getElementById('ctx-delete-btn').style.display = 'none';
-                document.getElementById('ctx-download').style.display = 'none';
-                document.getElementById('ctx-change-img').style.display = 'block';
+            // Если Админ -> показать кнопку "Удалить"
+            if (adminToken) {
+                delBtn.style.display = "flex";
             } else {
-                // Портфолио
-                const adminToken = localStorage.getItem('github_token_gevartplay');
-                document.getElementById('ctx-delete-btn').style.display = adminToken ? 'block' : 'none';
-                document.getElementById('ctx-download').style.display = 'block';
-                document.getElementById('ctx-change-img').style.display = 'none'; 
+                delBtn.style.display = "none";
             }
-            menu.style.display = 'block'; menu.style.left = x + 'px'; menu.style.top = y + 'px';
+
+            modal.style.display = "flex";
+            document.body.style.overflow = "hidden";
         }
 
-        function changeImage() {
-            if (!selectedElement) return;
-            const newName = prompt("Введите имя файла из папки images (например: me.jpg):");
-            if (newName) selectedElement.src = "images/" + newName;
-            menu.style.display = 'none';
+        function downloadCurrent() {
+            if (currentPhoto.url) window.open(currentPhoto.url, '_blank');
         }
+
+        async function deleteCurrent() {
+            const token = localStorage.getItem('github_token_gevartplay');
+            if (!token) return alert("Вы не админ!");
+            
+            if (confirm("УДАЛИТЬ это фото навсегда?")) {
+                try {
+                    await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(currentPhoto.path)}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Delete from modal`, sha: currentPhoto.sha })
+                    });
+                    alert("Фото удалено! Страница обновится.");
+                    location.reload();
+                } catch (error) { alert("Ошибка: " + error); }
+            }
+        }
+
+        // =======================================================
 
         function changeHeroBg() {
             const newName = prompt("Введите имя файла для фона:");
             if (newName) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${newName}')`;
         }
-        
-        document.addEventListener('click', (e) => { if (!e.target.closest('#custom-context-menu')) menu.style.display = 'none'; });
 
-        // СТАНДАРТНЫЕ ФУНКЦИИ
         async function loadVideos() { try { const r = await fetch(`https://gevartplay.github.io/videos.json?t=${Date.now()}`); if (r.ok) allVideos = await r.json(); } catch (e) {} }
         function openVideoModal(category) {
             const modal = document.getElementById('video-modal');
@@ -368,15 +409,10 @@
                 images.forEach(file => {
                     const div = document.createElement('div');
                     div.className = 'portfolio-item tilt-card reveal';
-                    div.onclick = function() { openModal(file.download_url); };
                     
-                    div.dataset.url = file.download_url; div.dataset.sha = file.sha; div.dataset.path = file.path;
+                    // Передаем данные в функцию openModal
+                    div.onclick = function() { openModal(file.download_url, file.sha, file.path); };
                     
-                    div.addEventListener('contextmenu', function(e) { e.preventDefault(); showContextMenu(e.pageX, e.pageY, div, 'portfolio'); });
-                    let pressTimer;
-                    div.addEventListener('touchstart', function(e) { pressTimer = setTimeout(() => { const touch = e.touches[0]; showContextMenu(touch.pageX, touch.pageY, div, 'portfolio'); }, 800); });
-                    div.addEventListener('touchend', () => clearTimeout(pressTimer));
-
                     div.innerHTML = `<div class="tilt-inner"><img src="${file.download_url}" loading="lazy"></div>`;
                     container.appendChild(div);
                 });
@@ -384,22 +420,7 @@
             } catch (e) {}
         }
 
-        function downloadItem() { if (selectedElement && selectedElement.dataset.url) window.open(selectedElement.dataset.url, '_blank'); }
-        async function deleteItem() {
-            const token = localStorage.getItem('github_token_gevartplay');
-            if (!token) return alert("Вы не админ!");
-            if (confirm("Удалить фото?")) {
-                await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(selectedElement.dataset.path)}`, {
-                    method: 'DELETE', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `Del`, sha: selectedElement.dataset.sha })
-                });
-                location.reload();
-            }
-        }
-
-        function openModal(src) { document.getElementById('single-image-modal').style.display = "flex"; document.getElementById('modal-img').src = src; document.body.style.overflow = "hidden"; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; const iframes = document.querySelectorAll('iframe'); iframes.forEach(i => i.src = i.src); }
-        window.onclick = function(event) { if (event.target.classList.contains('modal')) closeModal(event.target.id); }
         function copyEmail(element) { const email = "1993gevorg1993@mail.ru"; navigator.clipboard.writeText(email); alert("Email скопирован!"); }
         function reveal() { document.querySelectorAll(".reveal").forEach(r => { if(r.getBoundingClientRect().top < window.innerHeight - 50) r.classList.add("active"); }); }
         window.addEventListener("scroll", reveal);
