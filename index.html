@@ -55,40 +55,57 @@
             width: 100%; 
             display: block; 
             transition: filter 0.8s ease-out, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.8s ease-out, opacity 0.8s ease;
-            backface-visibility: hidden; /* Улучшает рендеринг */
-            transform-style: preserve-3d;
+            
+            /* === ИСПРАВЛЕНИЕ РЕЗКОСТИ === */
+            backface-visibility: hidden; 
+            transform: translateZ(0); /* Включаем видеокарту для рендера */
+            image-rendering: -webkit-optimize-contrast; /* Для максимальной четкости */
+            image-rendering: high-quality;
         }
         
-        .about-img-container img { border-radius: 5px; filter: grayscale(0%); box-shadow: 20px 20px 0 var(--primary); }
-        .portfolio-item img { border-radius: 4px; filter: grayscale(0%); } /* ИЗНАЧАЛЬНО ЦВЕТНЫЕ */
+        /* ГЛАВНОЕ ФОТО: Максимальная резкость */
+        #main-photo {
+            will-change: transform; /* Готовим браузер к трансформации */
+        }
+
+        /* ПО УМОЛЧАНИЮ - ВСЕ ЦВЕТНЫЕ */
+        .about-img-container img,
+        .portfolio-item img { 
+            border-radius: 5px; 
+            filter: grayscale(0%); 
+        }
+        .about-img-container img { box-shadow: 20px 20px 0 var(--primary); }
 
         /* === ЭФФЕКТ КИНЕМАТОГРАФИЧЕСКОГО ФОКУСА === */
         
-        /* 1. Когда мышка внутри сетки: НЕАКТИВНЫЕ фото уходят в тень */
+        /* 1. НЕАКТИВНЫЕ фото уходят в тень */
         .portfolio-masonry:hover .portfolio-item img {
-            filter: grayscale(100%) blur(3px) brightness(0.5); /* ЧБ + Размытие + Темнота */
+            filter: grayscale(100%) blur(3px) brightness(0.5); 
             transform: scale(0.95);
             opacity: 0.6;
         }
 
-        /* 2. АКТИВНОЕ ФОТО (на которое навели) */
+        /* 2. АКТИВНОЕ ФОТО (ПОРТФОЛИО) */
         .portfolio-masonry .portfolio-item:hover {
-            z-index: 9999 !important; /* Гарантированно сверху */
-            overflow: visible !important; /* Чтобы не обрезалось */
+            z-index: 9999 !important; 
+            overflow: visible !important; 
         }
 
         .portfolio-masonry .portfolio-item:hover img {
-            filter: grayscale(0%) blur(0px) brightness(1.1) !important; /* Яркое и четкое */
-            
-            /* УВЕЛИЧЕННЫЙ ЗУМ (1.35) */
+            filter: grayscale(0%) blur(0px) brightness(1.1) !important;
             transform: scale(1.35) !important; 
-            
-            /* УБРАТЬ ПРОЗРАЧНОСТЬ КРАЕВ */
             opacity: 1 !important;
-            border-radius: 4px; /* Сохраняем скругление */
-            
-            /* Свечение */
+            border-radius: 4px; 
             box-shadow: 0 30px 60px -10px rgba(91, 81, 216, 0.8), 0 0 30px rgba(91, 81, 216, 0.5);
+        }
+
+        /* 3. АКТИВНОЕ ФОТО (ГЛАВНОЕ - КТО Я) */
+        /* Сделал чуть больше приближение (1.1), чтобы было эффектно */
+        .about-img-container:hover img {
+            filter: grayscale(0%);
+            box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
+            transform: translateY(-7px) scale(1.1); 
+            z-index: 10;
         }
 
         .exp-badge { display: inline-block; margin-top: 30px; padding: 10px 20px; border: 1px solid var(--primary); color: var(--primary); font-family: 'Oswald'; letter-spacing: 1px; }
@@ -100,7 +117,7 @@
         .service-card { background: #111; padding: 40px; border-bottom: 2px solid transparent; transition: all 0.3s; height: 100%; position: relative; overflow: hidden; }
         .service-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3; transition: 0.5s; object-fit: cover; }
         
-        /* Свечение для Services */
+        /* Свечение для Services и Лого */
         .services-grid .tilt-card:hover .service-card {
             box-shadow: 0 0 30px var(--primary), 0 0 60px var(--primary); 
             z-index: 100;
@@ -120,7 +137,6 @@
             position: relative; border-radius: 4px; 
             cursor: pointer; break-inside: avoid; 
             margin-bottom: 20px; display: inline-block; width: 100%;
-            /* overflow: hidden; <-- ВАЖНО: Убрано, чтобы фото выходило за рамки */
         }
         .portfolio-item img { width: 100%; height: auto; display: block; }
 
@@ -474,50 +490,7 @@
         function copyEmail(element) { const email = "1993gevorg1993@mail.ru"; navigator.clipboard.writeText(email); alert("Email скопирован!"); }
         function reveal() { document.querySelectorAll(".reveal").forEach(r => { if(r.getBoundingClientRect().top < window.innerHeight - 50) r.classList.add("active"); }); }
         window.addEventListener("scroll", reveal);
-        
-        // --- 3D TILT ---
-        function initTilt() { 
-            if (window.innerWidth > 1024) { 
-                document.querySelectorAll('.tilt-card').forEach(card => { 
-                    const inner = card.querySelector('.tilt-inner');
-                    
-                    // Проверка: это Services или Logo?
-                    const isService = card.closest('.services-grid');
-                    const isLogo = card.closest('.contact-content');
-                    const isSpecial = isService || isLogo;
-
-                    card.addEventListener('mousemove', (e) => { 
-                        if (!inner) return;
-                        const rect = card.getBoundingClientRect(); 
-                        const x = e.clientX - rect.left; 
-                        const y = e.clientY - rect.top; 
-                        const centerX = rect.width / 2; 
-                        const centerY = rect.height / 2; 
-                        
-                        // Параметры
-                        let rotateMult = 15; // Стандарт (Портфолио)
-                        let scaleMult = 1.02;
-
-                        if (isSpecial) {
-                            rotateMult = 45; // 3x Сильнее наклон для Services/Logo
-                            scaleMult = 1.15; // Сильный зум
-                        }
-
-                        const rotateX = ((y - centerY) / centerY) * -rotateMult; 
-                        const rotateY = ((x - centerX) / centerX) * rotateMult; 
-                        
-                        inner.style.transition = 'none';
-                        inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scaleMult}, ${scaleMult}, ${scaleMult})`; 
-                    }); 
-                    
-                    card.addEventListener('mouseleave', () => { 
-                        if (!inner) return;
-                        inner.style.transition = 'transform 0.5s ease';
-                        inner.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`; 
-                    }); 
-                }); 
-            } 
-        }
+        function initTilt() { if(window.innerWidth > 1024) document.querySelectorAll('.tilt-card').forEach(c => c.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); c.querySelector('.tilt-inner').style.transform = `perspective(1000px) rotateX(${((e.clientY - r.top)/r.height - 0.5)*-30}deg) rotateY(${((e.clientX - r.left)/r.width - 0.5)*30}deg)`; })); }
         
         // МОБИЛЬНЫЙ НАБЛЮДАТЕЛЬ (ДЛЯ ЦВЕТА)
         function initMobileObserver() { 
