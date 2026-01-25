@@ -6,70 +6,244 @@
     <title>GevArtPlay | Visual Arts</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <style>
-        /* --- ВЕСЬ ВАШ СТАРЫЙ CSS СТИЛЬ --- */
-        :root { var(--primary: #5b51d8; --bg: #050505; --text: #ffffff; --text-muted: #a3a3a3; }
+        :root {
+            --primary: #5b51d8;
+            --bg: #050505;
+            --text: #ffffff;
+            --text-muted: #a3a3a3;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; overflow-x: hidden; line-height: 1.6; }
-        
-        /* Типографика и Контейнеры */
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+            cursor: default;
+        }
+
+        /* --- ТИПОГРАФИКА --- */
         h1, h2, h3, .contact-link { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
-        .section-header { margin-bottom: 40px; padding-left: 20px; border-left: 4px solid #5b51d8; }
+        
+        .section-header { margin-bottom: 40px; padding-left: 20px; border-left: 4px solid var(--primary); }
         .section-header h2 { font-size: 3rem; line-height: 1; }
-        .section-header span { display: block; font-size: 1rem; color: #a3a3a3; letter-spacing: 4px; margin-bottom: 10px; }
+        .section-header span { display: block; font-size: 1rem; color: var(--text-muted); letter-spacing: 4px; margin-bottom: 10px; }
+
         .container { max-width: 1400px; margin: 0 auto; padding: 100px 5vw; }
         img { width: 100%; display: block; }
         a { text-decoration: none; color: white; transition: 0.3s; }
 
-        /* Header & Hero */
-        header { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-left: 5vw; background: #050505; }
-        .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/photo_2026-01-21_18-52-52.jpg') center/cover no-repeat; z-index: 0; opacity: 0.6; animation: bgZoom 20s infinite alternate ease-in-out; }
-        @keyframes bgZoom { from { transform: scale(1); } to { transform: scale(1.05); } }
-        .hero-content { position: relative; z-index: 1; }
-        .hero-content h1 { font-size: 12vw; font-weight: 900; line-height: 0.9; background: linear-gradient(45deg, #fff, #5b51d8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; opacity: 0; animation: epicFadeInUp 3s forwards 0.5s; }
-        .hero-subtitle { font-size: 1.5rem; font-weight: 300; letter-spacing: 2px; color: #a3a3a3; opacity: 0; animation: epicFadeInUp 3s forwards 1.5s; }
-        @keyframes epicFadeInUp { to { opacity: 1; transform: translateY(0); } }
+        /* --- ИКОНКА "СЛОИ" (Для Services) --- */
+        .layer-icon {
+            position: absolute; top: 15px; right: 15px; width: 20px; height: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21 7.25V18.25C21 19.9069 19.6569 21.25 18 21.25H7C5.34315 21.25 4 19.9069 4 18.25V7.25C4 5.59315 5.34315 4.25 7 4.25H18C19.6569 4.25 21 5.59315 21 7.25Z' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M17 3V1.75C17 1.33579 16.6642 1 16.25 1H4.25C2.45507 1 1 2.45507 1 4.25V16.25C1 16.6642 1.33579 17 1.75 17H3' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-size: contain; background-repeat: no-repeat;
+            opacity: 0.8; z-index: 5; pointer-events: none;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+        }
 
-        /* About & Services */
-        .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 50px; align-items: center; }
-        .about-img-container img { border-radius: 5px; filter: grayscale(100%); box-shadow: 20px 20px 0 #5b51d8; transition: 1.5s; }
-        .exp-badge { display: inline-block; margin-top: 30px; padding: 10px 20px; border: 1px solid #5b51d8; color: #5b51d8; font-family: 'Oswald'; }
-        
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .service-card { background: #111; padding: 40px; position: relative; overflow: hidden; border-bottom: 2px solid transparent; transition: 0.3s; }
-        .service-card:hover { border-bottom-color: #5b51d8; background: #161616; }
-        .service-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3; object-fit: cover; transition: 0.5s; }
-        .service-card:hover .service-bg { opacity: 0.6; transform: scale(1.1); }
-        .service-content { position: relative; z-index: 1; }
-        .service-content h3 { font-size: 1.5rem; margin-bottom: 15px; }
-
-        /* Portfolio */
-        .portfolio-masonry { column-count: 3; column-gap: 20px; }
-        .portfolio-item { break-inside: avoid; margin-bottom: 20px; position: relative; cursor: pointer; }
-        .portfolio-item img { width: 100%; filter: grayscale(100%); transition: filter 1s ease; }
-        .portfolio-item:hover img, .in-view { filter: grayscale(0%) !important; }
-        
-        /* Modal */
-        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow: auto; backdrop-filter: blur(10px); }
-        .close-btn { position: fixed; top: 20px; right: 40px; color: #fff; font-size: 50px; cursor: pointer; z-index: 10001; }
-        .gallery-content { display: flex; justify-content: center; align-items: center; height: 100%; padding: 20px; }
-        .gallery-content img { max-height: 90vh; max-width: 90vw; border-radius: 5px; }
-
-        /* Mobile */
-        @media (max-width: 1024px) { .portfolio-masonry { column-count: 2; } .hero-content h1 { font-size: 15vw; } }
-        @media (max-width: 768px) { .about-wrapper { display: block; } .services-grid { grid-template-columns: 1fr; } }
-        
-        /* Анимации */
-        .reveal { opacity: 0; transform: translateY(40px); transition: 0.8s; }
+        /* --- АНИМАЦИЯ ПОЯВЛЕНИЯ --- */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* --- 3D TILT --- */
         .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
-        .tilt-inner { transition: transform 0.1s; transform-style: preserve-3d; }
+        .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
+        
+        /* --- HEADER --- */
+        header {
+            height: 100vh; display: flex; align-items: center;
+            position: relative; overflow: hidden; padding-left: 5vw; background: #050505;
+        }
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/photo_2026-01-21_18-52-52.jpg') center/cover no-repeat;
+            z-index: 0; opacity: 0.6;
+            animation: bgZoom 20s infinite alternate ease-in-out;
+        }
+        @keyframes bgZoom { from { transform: scale(1); } to { transform: scale(1.05); } }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        /* ЭПИЧНЫЙ ЗАГОЛОВОК */
+        .hero-content h1 {
+            font-size: 12vw; font-weight: 900; line-height: 0.9;
+            background: linear-gradient(45deg, #fff, var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 20px; text-align: left;
+            opacity: 0; transform: translateY(50px) scale(0.95); filter: blur(10px);
+            animation: epicFadeInUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.5s;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem; font-weight: 300; letter-spacing: 2px; color: var(--text-muted);
+            opacity: 0; transform: translateY(30px);
+            animation: epicFadeInUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 1.5s;
+        }
+
+        @keyframes epicFadeInUp {
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        /* --- ABOUT ME --- */
+        .about-wrapper {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr; 
+            grid-template-areas: "head img" "text img";
+            gap: 50px; align-items: center;
+        }
+        .about-header-wrap { grid-area: head; }
+        .about-text-content { grid-area: text; }
+        .about-img-container { grid-area: img; width: 100%; }
+
+        .about-img-container img {
+            border-radius: 5px; filter: grayscale(100%); transition: filter 1.5s ease-in-out;
+            box-shadow: 20px 20px 0 var(--primary); width: 100%; height: auto;
+        }
+        .tilt-card:hover img { filter: grayscale(0%); } 
+        
+        .exp-badge {
+            display: inline-block; margin-top: 30px; padding: 10px 20px;
+            border: 1px solid var(--primary); color: var(--primary);
+            font-family: 'Oswald'; letter-spacing: 1px;
+        }
+
+        /* --- SERVICES --- */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .clickable-service { cursor: pointer; }
+        .service-card {
+            background: #111; padding: 40px; border-bottom: 2px solid transparent; 
+            transition: background 0.3s, border-color 0.3s; height: 100%; position: relative; overflow: hidden;
+        }
+        .service-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0.3; transition: 0.5s; object-fit: cover;
+        }
+        .tilt-card:hover .service-bg { opacity: 0.6; transform: scale(1.1); }
+        .service-content { position: relative; z-index: 1; }
+        .tilt-card:hover .service-card { background: #161616; border-bottom: 2px solid var(--primary); }
+        .service-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: white; }
+        .service-card p { color: #ccc; font-size: 0.95rem; }
+        
+        .clickable-service:hover::after {
+            content: "▶ WATCH VIDEO";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-family: 'Oswald'; color: #fff; background: rgba(0,0,0,0.8);
+            padding: 10px 20px; border: 1px solid var(--primary);
+            z-index: 10; pointer-events: none; animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+        /* --- PORTFOLIO (MASONRY) --- */
+        .portfolio-masonry { column-count: 3; column-gap: 20px; }
+        .portfolio-item { 
+            break-inside: avoid; margin-bottom: 20px; position: relative; border-radius: 4px; overflow: visible; 
+            cursor: pointer;
+        }
+        .portfolio-item img {
+            width: 100%; height: auto; display: block;
+            filter: grayscale(100%); 
+            transition: filter 1.5s ease-in-out; 
+        }
+        .in-view { filter: grayscale(0%) !important; }
+        .portfolio-item:hover img { filter: grayscale(0%); }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none; position: fixed; z-index: 10000; left: 0; top: 0;
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.95);
+            overflow: auto; backdrop-filter: blur(10px); animation: fadeInModal 0.3s;
+        }
+        @keyframes fadeInModal { from {opacity: 0;} to {opacity: 1;} }
+        .close-btn {
+            position: fixed; top: 20px; right: 40px; color: #fff; font-size: 50px; 
+            font-weight: bold; cursor: pointer; z-index: 10001; transition: 0.3s;
+        }
+        .close-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        
+        .gallery-content { display: flex; justify-content: center; align-items: center; height: 100%; padding: 20px; }
+        .gallery-content img { max-height: 90vh; max-width: 90vw; width: auto; height: auto; border-radius: 5px; box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); }
+
+        .video-content {
+            display: flex; flex-direction: column; align-items: center; gap: 50px;
+            padding: 80px 5vw; max-width: 1200px; margin: 0 auto;
+        }
+        .video-wrapper {
+            width: 100%; position: relative; padding-bottom: 56.25%; height: 0;
+            border-radius: 10px; overflow: hidden; border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(91, 81, 216, 0.3);
+        }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .video-title {
+            color: #fff; font-family: 'Oswald'; font-size: 1.5rem; margin-bottom: 15px; 
+            text-align: left; width: 100%; border-left: 3px solid var(--primary); padding-left: 15px;
+        }
+
+        /* --- CONTACTS --- */
+        .contact-section { background: #0a0a0a; text-align: center; padding: 150px 20px; position: relative; }
+        .contact-bg-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 15vw; font-family: 'Oswald'; color: rgba(255,255,255,0.02); pointer-events: none; z-index: 0;
+        }
+        .contact-content { position: relative; z-index: 1; }
+        .contact-title { margin-bottom: 60px; font-size: 3rem; }
+        .contact-link {
+            font-size: 3rem; display: block; margin: 10px 0; color: transparent; 
+            -webkit-text-stroke: 1px rgba(255,255,255,0.7); transition: 0.3s; cursor: pointer;
+        }
+        .contact-link:hover { color: var(--primary); -webkit-text-stroke: 1px var(--primary); transform: scale(1.05); text-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary); }
+        .social-row { display: flex; justify-content: center; gap: 30px; margin-top: 60px; }
+        .social-link { font-size: 1.2rem; border-bottom: 1px solid #555; padding-bottom: 5px; transition: 0.3s; }
+        .social-link:hover { color: var(--primary); border-bottom-color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        @media (max-width: 1024px) {
+            .portfolio-masonry { column-count: 2; }
+            .hero-content h1 { font-size: 15vw; }
+            .tilt-inner { transform: none !important; } 
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 60px 15px; }
+            .section-header h2 { font-size: 2.2rem; }
+            .about-wrapper { display: block; }
+            .about-img-container { float: right; width: 50%; margin-left: 20px; margin-bottom: 15px; }
+            .about-img-container img { box-shadow: 10px 10px 0 var(--primary); }
+            .about-text-content { display: block; text-align: left; }
+            .about-wrapper::after { content: ""; display: table; clear: both; }
+            .contact-link { font-size: 1.8rem; -webkit-text-stroke: 0.5px rgba(255,255,255,0.7); }
+            .contact-title { font-size: 2rem; }
+            .contact-bg-text { display: none; }
+            .close-btn { top: 10px; right: 20px; font-size: 40px; }
+            .services-grid { grid-template-columns: 1fr; }
+            .video-content { padding: 60px 20px; gap: 30px; }
+            .clickable-service:hover::after { content: none; } 
+        }
     </style>
 </head>
 <body>
 
-    <div id="single-image-modal" class="modal" onclick="closeModal()">
+    <div id="single-image-modal" class="modal" onclick="closeModal('single-image-modal')">
         <span class="close-btn">&times;</span>
-        <div class="gallery-content"><img id="modal-img" src="" alt="View"></div>
+        <div class="gallery-content">
+            <img id="modal-img" src="" alt="Full View">
+        </div>
+    </div>
+
+    <div id="music-modal" class="modal">
+        <span class="close-btn" onclick="closeModal('music-modal')">&times;</span>
+        <div class="video-content modal-content">
+            <div style="width:100%"><div class="video-title">Исток - SamGuru</div><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/c5Gx5-NMUyw" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+            <div style="width:100%"><div class="video-title">SamGuru - КОНТРАБАНДА</div><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/bDc9zHIsHmQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+        </div>
+    </div>
+
+    <div id="events-modal" class="modal">
+        <span class="close-btn" onclick="closeModal('events-modal')">&times;</span>
+        <div class="video-content modal-content">
+            <div style="width:100%"><div class="video-title">Barinova dream team - S&D</div><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/3Lzx06gjF3I" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+        </div>
     </div>
 
     <header>
@@ -82,10 +256,12 @@
 
     <div class="container">
         <div class="about-wrapper">
-            <div class="reveal"><div class="section-header"><span>ABOUT ME</span><h2>КТО Я</h2></div></div>
+            <div class="about-header-wrap reveal"><div class="section-header"><span>ABOUT ME</span><h2>КТО Я</h2></div></div>
             <div class="about-img-container tilt-card reveal"><div class="tilt-inner"><img src="images/photo_2026-01-21_18-53-06.jpg" alt="Me"></div></div>
-            <div class="reveal">
-                <p style="color:#ccc; margin-bottom:30px;">Здравствуйте, меня зовут Геворг. Более 5 лет я занимаюсь профессиональной съемкой в Москве.</p>
+            <div class="about-text-content reveal">
+                <div style="color: #ccc; margin-bottom: 50px;">
+                    <p>Здравствуйте, меня зовут Геворг.<br><br>Когда-то всё начиналось с простых съёмок на телефон. Сегодня — это дело жизни. Более 5 лет я занимаюсь фото и видеосъёмкой в Москве.</p>
+                </div>
                 <div class="exp-badge">WORK EXPERIENCE: SINCE 2020</div>
             </div>
         </div>
@@ -94,26 +270,52 @@
     <div class="container" style="background: #080808;">
         <div class="section-header reveal"><span>SERVICES</span><h2>НАПРАВЛЕНИЯ</h2></div>
         <div class="services-grid">
-            <div class="tilt-card reveal service-card">
-                 <img src="images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg" class="service-bg">
-                 <div class="service-content tilt-inner"><h3>Events</h3><p>Репортажная съемка.</p></div>
+            <div class="tilt-card reveal clickable-service" onclick="openModal('events-modal')">
+                <div class="service-card tilt-inner">
+                    <div class="layer-icon"></div>
+                    <img src="images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg" class="service-bg" alt="Event">
+                    <div class="service-content"><h3>Events</h3><p>Репортажная съемка мероприятий. Живые эмоции, отсутствие постановки.</p></div>
+                </div>
             </div>
-            <div class="tilt-card reveal service-card">
-                 <img src="images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" class="service-bg">
-                 <div class="service-content tilt-inner"><h3>Fashion</h3><p>Студийная съемка.</p></div>
+            <div class="tilt-card reveal">
+                <div class="service-card tilt-inner">
+                    <img src="images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" class="service-bg" alt="Fashion">
+                    <div class="service-content"><h3>Fashion & Model</h3><p>Студийная и уличная съемка. Работа с позированием и светом.</p></div>
+                </div>
             </div>
-            <div class="tilt-card reveal service-card">
-                 <img src="images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" class="service-bg">
-                 <div class="service-content tilt-inner"><h3>Music Video</h3><p>Клипы и монтаж.</p></div>
+            <div class="tilt-card reveal clickable-service" onclick="openModal('music-modal')">
+                <div class="service-card tilt-inner">
+                    <div class="layer-icon"></div>
+                    <img src="images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" class="service-bg" alt="Music">
+                    <div class="service-content"><h3>Music Video</h3><p>Создание клипов. Кинематографичный подход и монтаж.</p></div>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="container">
         <div class="section-header reveal"><span>PORTFOLIO</span><h2>ГАЛЕРЕЯ</h2></div>
-        <div class="portfolio-masonry" id="auto-portfolio">
-            </div>
+        
+        <div class="portfolio-masonry" id="auto-portfolio"></div>
     </div>
+
+    <section class="contact-section">
+        <div class="contact-bg-text">CONTACT</div>
+        <div class="contact-content">
+            <h2 class="contact-title reveal">LET'S WORK TOGETHER</h2>
+            <a href="tel:+79398512521" class="contact-link reveal">+7 (939) 851 25 21</a>
+            <a href="#" class="contact-link reveal" onclick="copyEmail(this); return false;">EMAIL ME</a>
+            <div class="social-row reveal">
+                <a href="https://t.me/Gevoplay" class="social-link" style="margin-right: 20px;">Telegram</a>
+                <a href="https://vk.com/gnazaryan1993" class="social-link">Vkontakte</a>
+            </div>
+            <div class="reveal tilt-card" style="margin-top: 15px; display: flex; justify-content: center; width: 200px; margin-left: auto; margin-right: auto;">
+                <div class="tilt-inner" style="width: 100%; display: flex; justify-content: center;">
+                    <img src="images/logo.png" alt="Logo" style="max-width: 200px; width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </section>
 
     <script>
         // === НАСТРОЙКИ GITHUB ===
@@ -139,8 +341,11 @@
                     return;
                 }
 
-                // Перемешиваем (если хотите) или сортируем новые
-                // images.sort((a, b) => b.name.localeCompare(a.name)); // Сортировка по имени
+                // Перемешиваем массив (Shuffle)
+                for (let i = images.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [images[i], images[j]] = [images[j], images[i]];
+                }
 
                 images.forEach(file => {
                     const div = document.createElement('div');
@@ -153,7 +358,7 @@
                     const img = document.createElement('img');
                     img.src = file.download_url; // Прямая ссылка на GitHub файл
                     img.alt = 'Work';
-                    img.loading = "lazy"; // Ленивая загрузка для скорости
+                    img.loading = "lazy"; 
 
                     inner.appendChild(img);
                     div.appendChild(inner);
@@ -161,11 +366,14 @@
                 });
 
                 // Запускаем анимации после загрузки DOM
-                setTimeout(() => { reveal(); initTilt(); }, 500);
+                setTimeout(() => { 
+                    reveal(); 
+                    initTilt(); 
+                    initMobileObserver();
+                }, 500);
 
             } catch (error) {
                 console.error("Ошибка загрузки:", error);
-                // Если API лимит превышен или ошибка - показываем заглушку
             }
         }
 
@@ -175,9 +383,35 @@
             document.getElementById('modal-img').src = src;
             document.body.style.overflow = "hidden";
         }
-        function closeModal() {
-            document.getElementById('single-image-modal').style.display = "none";
-            document.body.style.overflow = "auto";
+        function closeModal(id) {
+            if(!id) id = 'single-image-modal';
+            document.getElementById(id).style.display = 'none'; 
+            document.body.style.overflow = 'auto'; 
+            if(id === 'music-modal' || id === 'events-modal') {
+               const iframes = document.querySelectorAll('#' + id + ' iframe');
+               iframes.forEach(iframe => { const src = iframe.src; iframe.src = src; });
+            }
+        }
+        function openModalID(id) {
+            document.getElementById(id).style.display = 'block'; 
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        // Клик по модальному окну закрывает его
+        window.onclick = function(event) { 
+            if (event.target.classList.contains('modal')) { 
+                closeModal(event.target.id); 
+            } 
+        }
+
+        function copyEmail(element) {
+            const email = "1993gevorg1993@mail.ru";
+            navigator.clipboard.writeText(email).then(() => {
+                const originalText = "EMAIL ME";
+                element.innerText = "СКОПИРОВАНО!";
+                element.style.color = "#5b51d8"; element.style.webkitTextStroke = "0px"; element.style.transform = "scale(1.1)";
+                setTimeout(() => { element.innerText = originalText; element.style.color = ""; element.style.webkitTextStroke = ""; element.style.transform = ""; }, 2000);
+            }).catch(err => { console.error('Ошибка:', err); alert("Email: " + email); });
         }
 
         function reveal() {
@@ -193,21 +427,43 @@
         function initTilt() {
              if (window.innerWidth > 1024) {
                 document.querySelectorAll('.tilt-card').forEach(card => {
+                    const isLogo = card.querySelector('img[src*="logo.png"]') !== null;
+                    
                     card.addEventListener('mousemove', (e) => {
                         const inner = card.querySelector('.tilt-inner');
                         if(!inner) return;
                         const rect = card.getBoundingClientRect();
                         const x = e.clientX - rect.left; const y = e.clientY - rect.top;
                         const centerX = rect.width / 2; const centerY = rect.height / 2;
-                        const rotateX = ((y - centerY) / centerY) * -15;
-                        const rotateY = ((x - centerX) / centerX) * 15;
-                        inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                        
+                        let rotateAmount = card.classList.contains('portfolio-item') ? 15 : 30;
+                        let scaleAmount = isLogo ? 1.7 : 1; 
+
+                        const rotateX = ((y - centerY) / centerY) * -rotateAmount;
+                        const rotateY = ((x - centerX) / centerX) * rotateAmount;
+                        inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scaleAmount}, ${scaleAmount}, ${scaleAmount})`;
                     });
                     card.addEventListener('mouseleave', () => {
                         const inner = card.querySelector('.tilt-inner');
-                        if(inner) inner.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+                        if(inner) inner.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
                     });
                 });
+            }
+        }
+
+        function initMobileObserver() {
+            if (window.innerWidth <= 1024) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) { entry.target.classList.add('in-view'); } 
+                        else { entry.target.classList.remove('in-view'); }
+                    });
+                }, { threshold: 0.15 });
+
+                setTimeout(() => {
+                    const allImages = document.querySelectorAll('.portfolio-item img');
+                    allImages.forEach(img => { observer.observe(img); });
+                }, 1000); 
             }
         }
 
