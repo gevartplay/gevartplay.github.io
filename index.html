@@ -50,59 +50,60 @@
         .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-areas: "head img" "text img"; gap: 50px; align-items: center; }
         .about-header-wrap { grid-area: head; } .about-text-content { grid-area: text; } .about-img-container { grid-area: img; width: 100%; }
         
-        /* === СТИЛЬ ИЗОБРАЖЕНИЙ (ИСПРАВЛЕНА РЕЗКОСТЬ) === */
+        /* === СТИЛЬ ИЗОБРАЖЕНИЙ (МАКСИМАЛЬНАЯ РЕЗКОСТЬ) === */
         img { 
             width: 100%; 
             display: block; 
-            /* Плавность (убрали скачки) */
-            transition: filter 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease-out, opacity 0.5s ease;
+            /* Плавность для фильтров и теней */
+            transition: filter 0.5s ease-out, box-shadow 0.5s ease-out, opacity 0.5s ease;
             
-            /* ВАЖНО ДЛЯ РЕЗКОСТИ: Отключаем хаки, которые мылят картинку */
-            /* backface-visibility: hidden; <-- УБРАНО */
-            /* transform: translateZ(0); <-- УБРАНО */
-            
-            /* Принудительная четкость */
-            image-rendering: -webkit-optimize-contrast;
+            /* ВАЖНО: Анимацию трансформации выносим отдельно для четкости */
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s ease;
+
+            /* Отключаем сглаживание, чтобы сохранить пиксели оригинала */
+            image-rendering: auto; 
+            -webkit-font-smoothing: antialiased;
         }
         
-        /* По умолчанию ВСЕ ЦВЕТНЫЕ */
-        .about-img-container img,
-        .portfolio-item img { 
-            border-radius: 5px; 
-            filter: grayscale(0%); 
-        }
-        .about-img-container img { box-shadow: 20px 20px 0 var(--primary); }
+        .about-img-container img { border-radius: 5px; filter: grayscale(0%); box-shadow: 20px 20px 0 var(--primary); }
+        .portfolio-item img { border-radius: 4px; filter: grayscale(0%); }
 
         /* === ЭФФЕКТ ФОКУСА === */
         
         /* 1. Когда мышь в галерее: НЕАКТИВНЫЕ размываются */
         .portfolio-masonry:hover .portfolio-item img {
             filter: grayscale(100%) blur(3px) brightness(0.5); 
-            transform: scale(0.95);
+            transform: scale(0.95); /* Чуть уменьшаем неактивные */
             opacity: 0.6;
+            transition: all 0.5s ease;
         }
 
-        /* 2. АКТИВНОЕ ФОТО (ПОРТФОЛИО) */
+        /* 2. АКТИВНОЕ ФОТО (ПОРТФОЛИО) - БРИТВЕННАЯ РЕЗКОСТЬ */
         .portfolio-masonry .portfolio-item:hover {
-            z-index: 10000 !important; /* На самом верху */
-            position: relative; /* Обязательно для z-index */
+            z-index: 10000 !important; 
+            position: relative; 
         }
 
         .portfolio-masonry .portfolio-item:hover img {
-            /* Возвращаем цвет, убираем блюр */
-            filter: grayscale(0%) blur(0px) brightness(1.1) !important;
+            /* Мгновенно убираем размытие, чтобы глаз видел четкость сразу */
+            filter: none !important;
             
-            /* Зум 1.35 */
+            /* Увеличиваем до 1.35x */
             transform: scale(1.35) !important; 
             
             opacity: 1 !important;
             border-radius: 4px; 
-            box-shadow: 0 30px 60px -10px rgba(91, 81, 216, 0.8), 0 0 30px rgba(91, 81, 216, 0.5);
+            
+            /* Тень для объема */
+            box-shadow: 0 30px 60px -10px rgba(91, 81, 216, 0.9), 0 0 40px rgba(91, 81, 216, 0.6);
+            
+            /* Хак для четкости в Chrome: заставляет перерисовать текстуру */
+            will-change: transform; 
         }
 
         /* 3. АКТИВНОЕ ФОТО (КТО Я) */
         .about-img-container:hover img {
-            filter: grayscale(0%);
+            filter: none;
             box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
             transform: translateY(-7px) scale(1.1); 
             z-index: 10;
