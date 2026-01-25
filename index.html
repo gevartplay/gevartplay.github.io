@@ -50,43 +50,48 @@
         .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-areas: "head img" "text img"; gap: 50px; align-items: center; }
         .about-header-wrap { grid-area: head; } .about-text-content { grid-area: text; } .about-img-container { grid-area: img; width: 100%; }
         
-        /* === СТИЛЬ ИЗОБРАЖЕНИЙ === */
+        /* === СТИЛЬ ИЗОБРАЖЕНИЙ (НОВАЯ ЛОГИКА) === */
         img { 
             width: 100%; 
             display: block; 
+            /* Плавность: Фильтр медленнее (0.8s), движение быстрее (0.6s) */
             transition: filter 0.8s ease-out, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.8s ease-out, opacity 0.8s ease;
             backface-visibility: hidden; 
         }
         
-        .about-img-container img { border-radius: 5px; filter: grayscale(100%); box-shadow: 20px 20px 0 var(--primary); }
-        .portfolio-item img { border-radius: 4px; filter: grayscale(100%); }
+        /* ПО УМОЛЧАНИЮ - ВСЕ ЦВЕТНЫЕ! */
+        .about-img-container img,
+        .portfolio-item img { 
+            border-radius: 5px; 
+            filter: grayscale(0%); /* ЦВЕТ */
+        }
+        .about-img-container img { box-shadow: 20px 20px 0 var(--primary); }
 
-        /* КЛАСС ДЛЯ МОБИЛЬНОГО (когда фото на экране) */
-        .in-view { filter: grayscale(0%) !important; transition: filter 1.5s ease; }
-
-        /* === ЭФФЕКТ ФОКУСИРОВКИ (НОВАЯ ЛОГИКА) === */
+        /* === ЭФФЕКТ КИНЕМАТОГРАФИЧЕСКОГО ФОКУСА === */
         
-        /* 1. Когда мышка внутри сетки портфолио: ВСЕ фото размываются */
+        /* 1. Когда мышка заходит в ГАЛЕРЕЮ: ВСЕ фото становятся ЧБ, размытыми и темными */
         .portfolio-masonry:hover .portfolio-item img {
-            filter: grayscale(100%) blur(4px) brightness(0.6) !important;
-            transform: scale(0.95);
+            filter: grayscale(100%) blur(4px) brightness(0.5); /* Затемняем */
+            transform: scale(0.95); /* Чуть уменьшаем фон */
             opacity: 0.7;
         }
 
-        /* 2. Когда мышка на КОНКРЕТНОМ фото: оно становится четким и ярким */
+        /* 2. Когда мышка на КОНКРЕТНОМ фото: Оно "просыпается", становится цветным и БЛИЖЕ */
         .portfolio-masonry .portfolio-item:hover img {
             filter: grayscale(0%) blur(0px) brightness(1) !important;
-            box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
-            transform: translateY(-7px) scale(1.05) !important;
+            /* Дорогое свечение */
+            box-shadow: 0 20px 50px -10px rgba(91, 81, 216, 0.7), 0 0 25px rgba(91, 81, 216, 0.4);
+            /* Сильное приближение (Scale 1.15) */
+            transform: translateY(-10px) scale(1.15) !important; 
             z-index: 100;
             opacity: 1;
         }
 
-        /* Для фото "Кто я" (без эффекта размытия соседей, так как оно одно) */
+        /* Фото "Кто я" (без эффекта размытия соседей) */
         .about-img-container:hover img {
             filter: grayscale(0%);
             box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
-            transform: translateY(-7px) scale(1.02);
+            transform: translateY(-7px) scale(1.05);
             z-index: 10;
         }
 
@@ -439,7 +444,7 @@
                 setTimeout(() => { 
                     reveal(); 
                     initTilt(); 
-                    initMobileObserver(); 
+                    // initMobileObserver(); // ОТКЛЮЧЕНО, так как теперь фото всегда цветные
                 }, 500);
             } catch (e) {}
         }
@@ -514,21 +519,6 @@
                         inner.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`; 
                     }); 
                 }); 
-            } 
-        }
-        
-        // МОБИЛЬНЫЙ НАБЛЮДАТЕЛЬ (ДЛЯ ЦВЕТА)
-        function initMobileObserver() { 
-            if (window.innerWidth <= 1024) { 
-                const observer = new IntersectionObserver((entries) => { 
-                    entries.forEach(entry => { 
-                        if (entry.isIntersecting) { entry.target.classList.add('in-view'); } 
-                        else { entry.target.classList.remove('in-view'); } 
-                    }); 
-                }, { threshold: 0.15 }); 
-                
-                const allImages = document.querySelectorAll('.portfolio-item img'); 
-                allImages.forEach(img => { observer.observe(img); }); 
             } 
         }
     </script>
