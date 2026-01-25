@@ -88,12 +88,11 @@
             animation: epicFadeInUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.5s;
         }
         
-        /* СТИЛЬ ДЛЯ ЛОГОТИПА В ЗАГОЛОВКЕ */
         .header-logo {
             display: inline-block;
             height: 0.91em;
             width: auto;
-            margin-left: -0.1em; /* Было 2vw, теперь -0.1em - сдвинули влево */
+            margin-left: -0.1em;
             vertical-align: baseline;
             -webkit-text-fill-color: initial;
             transform: translateY(1vw);
@@ -167,7 +166,7 @@
         .portfolio-item img {
             width: 100%; height: auto; display: block;
             filter: grayscale(100%); 
-            transition: filter 1.5s ease-in-out; /* Плавный переход для мобильных */
+            transition: filter 1.5s ease-in-out; 
         }
         .in-view { filter: grayscale(0%) !important; }
         
@@ -222,7 +221,7 @@
         @media (max-width: 1024px) {
             .portfolio-masonry { column-count: 2; }
             .hero-content h1 { font-size: 15vw; }
-            .header-logo { height: 15vw; margin-left: 10px; } /* Адаптив для лого */
+            .header-logo { height: 15vw; margin-left: 10px; } 
             .tilt-inner { transform: none !important; } 
         }
 
@@ -317,10 +316,9 @@
 
     <div class="container">
         <div class="section-header reveal"><span>PORTFOLIO</span><h2>ИЗБРАННОЕ</h2></div>
-        
         <div class="portfolio-masonry" id="auto-portfolio"></div>
-        
     </div>
+
     <section class="contact-section">
         <div class="contact-bg-text">CONTACT</div>
         <div class="contact-content">
@@ -339,111 +337,70 @@
         </div>
     </section>
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
     <script>
-        // ==========================================
-        // ПОЛНЫЙ СПИСОК ВСЕХ ФОТО (Старые + Сложные + Новые)
-        // ==========================================
-        const portfolioImages = [
-           // Старые "избранные"
-           "imgi_7_3729c03826cc3e8beffca61c43659af5.jpg",
-           "imgi_4_ca3afbc1c1c12d645274c418f22b9b85.jpg",
-           "imgi_2_29ba1201c654e2df592083fd6ab2f762.jpg",
-           "imgi_5_32be297b3efa18f32adddb063be0faf8.jpg",
-           "imgi_8_4efd52e4cd1d8bed5ac177a6a4756a58.jpg",
-           "imgi_9_2cc6283cffc8d11988b03a24ac33a002.jpg",
-           "imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg",
-           
-           // Сложные названия
-           "4RntlM_cidkZQciXxXi71GiFmM6r8DJ4-IVglyfN_W4HNlaerU-zfCoebTJgCU7jzzyXkzMeu3-HuBaQuYE2DRiJ.jpg",
-           "445141621_450302351289610_3208879835129838740_n.jpg",
-           "445750897_809367657449554_1474745327344947536_n.jpg",
-           "445815503_474611241794469_500236843466589532_n.jpg",
-           "445894305_448059691206280_2831697519461739814_n.jpg",
-           "445929494_1506775086488580_3187734096315409710_n.jpg",
-           "445965266_405221935311056_7298983297461072974_n.jpg",
-           "445976583_1087104075717167_2642594636896136521_n.jpg",
-           "445979125_965914761673462_9108484062632534207_n.jpg",
-           "446033277_1462172167722092_3226920823898053321_n.jpg",
-           "446061349_1188582318969168_358086410191211673_n.jpg",
-           "BzOh6QowDBlDQ1uKYxWuRnRZmusfB6a0yrrXylHVNCPtvn4cg-Pi0mRNLmhNUlen1DMRJ2t1SvEnafijPaY5XtEf.jpg",
-           "Gr3_REoGsMYEk84wMmlBGmczvfyu52vA24DWLa8eeopgsfpVlFiWBvD0A_omnzNotTzhX5f_VDVMZ0KhPPMR_TuS.jpg",
-           "mmtEEx_GZru4h_umuR-pOHSRQMEhY05_ElB2CewgcoHjnUSp7wwMrnhgtIk6_LP0ISV4fDw6ruVF_1s8PQoXEeBR.jpg",
-           "nWPztXVRbnlHLXd8b6HeTFGkqwYGt7QIIgc9LCIYyMoCmi2b9v5SDVPH9J-PHMv3MkCBYGvOuYR_FxglvRUoYCQF.jpg",
-           "s44BTDUA3hMTwbi6O2-DxAnr8QI94mln9NQIbnwGLUTTn51qAPHkJq3ivecDKdNDdhLfIKom0tiQ9ZO-mz-K2-r7.jpg",
-           "SrCQC4ot9h2CPoRTYRRhscv2euFDkU0q2GZAXUFG8m_QUHwyUgGzncHs7qtnPPRjErz3IWKFT59S-1Ys7LCuMlir.jpg",
-           "vPCghKg35lxE_fPpgiZsXV8HBtxkZTDh5kL1VO_nkadh3FVaEG5qcGHTfObcJsWLOsY7eXWOPgZo3mH1yVhnA-I3.jpg",
-           "VW1zIucKoXF4m_1Zhl2fDUcMp9J74Mr0lQ_qmQjxsYShO2bPhUbfJe26bzU7WMk4QXGiPh5U-3fKEaTqrRNq5ut0.jpg",
-           "WVaIn2R2USepKGwPwVbx42jD5IKnqRvCAp2nNiux_1Lje8JTXCypLDWcEbAXFnlDT7xTxQLwXnYhFfQ-qfmbOE84.jpg",
-           "Y4lI6MUk_aitVlqcKTDt_lh-_pTpgGEFO0v97yEfM-4HJjwLi8CrhJL-n7yDjp4ILrztUQUMnoswEg8GL_FyY8E_.jpg",
+        // ТВОИ КЛЮЧИ
+        const firebaseConfig = {
+          apiKey: "AIzaSyAFg-nSFAW-pUw8qgpwoL4FP8wfkGBjuEs",
+          authDomain: "gevartplay.firebaseapp.com",
+          projectId: "gevartplay",
+          storageBucket: "gevartplay.firebasestorage.app",
+          messagingSenderId: "986601798069",
+          appId: "1:986601798069:web:fcfb03b8b8d67d252c01fc",
+          measurementId: "G-6W8EERNJXZ"
+        };
 
-           // Новые фото
-           "gev1.jpg", "gev2.jpg", "gev3.jpg", "gev4.jpg", "gev5.jpg", 
-           "gev6.jpg", "gev7.jpg", "gev8.jpg", "gev9.jpg", "gev10.jpg", "gev11.jpg"
-        ];
-        // ==========================================
-
-        // Функция перемешивания (Fisher-Yates Shuffle)
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
+        // Инициализация
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
         document.addEventListener("DOMContentLoaded", () => {
             const container = document.getElementById('auto-portfolio');
             
-            // 1. Перемешиваем массив фото
-            shuffleArray(portfolioImages);
+            // Запрашиваем фото из базы, сортируем по дате (новые первыми)
+            db.collection('portfolio').orderBy('date', 'desc').get().then(snapshot => {
+                
+                if (snapshot.empty) {
+                    console.log("Портфолио пустое. Загрузите фото через admin.html");
+                }
 
-            // 2. Создаем элементы галереи
-            portfolioImages.forEach(fileName => {
-                const div = document.createElement('div');
-                div.className = 'portfolio-item tilt-card reveal';
-                div.onclick = function() { openImageModal(`images/${fileName}`); };
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    
+                    // Создаем карточку
+                    const div = document.createElement('div');
+                    div.className = 'portfolio-item tilt-card reveal';
+                    div.onclick = function() { openImageModal(data.url); };
 
-                const inner = document.createElement('div');
-                inner.className = 'tilt-inner';
+                    const inner = document.createElement('div');
+                    inner.className = 'tilt-inner';
 
-                const img = document.createElement('img');
-                img.src = `images/${fileName}`; 
-                img.alt = 'Portfolio Work';
-                img.onerror = function() { console.log('Не найдено:', fileName); this.style.display = 'none'; };
+                    const img = document.createElement('img');
+                    img.src = data.url; 
+                    img.alt = 'Portfolio Work';
+                    img.onerror = function() { this.style.display = 'none'; };
 
-                inner.appendChild(img);
-                div.appendChild(inner);
-                container.appendChild(div);
+                    inner.appendChild(img);
+                    div.appendChild(inner);
+                    container.appendChild(div);
+                });
+
+                // Запускаем эффекты только ПОСЛЕ того, как фото загрузились
+                setTimeout(() => {
+                    reveal(); 
+                    initTilt(); 
+                    initMobileObserver(); 
+                }, 500);
+                
+            }).catch(error => {
+                console.error("Ошибка:", error);
             });
-            
-            // 3. Запускаем анимации и Tilt
-            setTimeout(reveal, 500);
-            initTilt();
-
-            // 4. ЗАПУСКАЕМ НАБЛЮДЕНИЕ ДЛЯ МОБИЛЬНЫХ (Цвет при скролле)
-            initMobileObserver();
         });
 
-        // Функция наблюдения для мобильных (цветное фото в центре экрана)
-        function initMobileObserver() {
-            if (window.innerWidth <= 1024) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('in-view');
-                        } else {
-                            entry.target.classList.remove('in-view');
-                        }
-                    });
-                }, { threshold: 0.15 });
+        // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
 
-                const allImages = document.querySelectorAll('.portfolio-item img');
-                allImages.forEach(img => {
-                    observer.observe(img);
-                });
-            }
-        }
-
-        // Функция открытия одиночного фото
         function openImageModal(src) {
             const modal = document.getElementById('single-image-modal');
             const modalImg = document.getElementById('modal-img');
@@ -474,16 +431,10 @@
 
         function initTilt() {
              if (window.innerWidth > 1024) {
-                const tiltCards = document.querySelectorAll('.tilt-card');
-                tiltCards.forEach(card => {
-                    const newCard = card.cloneNode(true);
-                    card.parentNode.replaceChild(newCard, card);
-                });
-                
+                // Очистка не нужна, так как мы создаем элементы динамически
                 const allCards = document.querySelectorAll('.tilt-card');
                 allCards.forEach(card => {
                     const isLogo = card.querySelector('img[src*="logo.png"]') !== null;
-                    
                     card.addEventListener('mousemove', (e) => {
                         const inner = card.querySelector('.tilt-inner');
                         if(!inner) return;
@@ -491,15 +442,8 @@
                         const x = e.clientX - rect.left; const y = e.clientY - rect.top;
                         const centerX = rect.width / 2; const centerY = rect.height / 2;
                         
-                        // Проверяем тип карточки
-                        let rotateAmount = 30; // По умолчанию для services и logo
-                        let scaleAmount = 1; // Нет приближения по умолчанию
-                        
-                        if (card.classList.contains('portfolio-item')) {
-                            rotateAmount = 15; // Уменьшенный наклон для портфолио
-                        } else if (isLogo) {
-                            scaleAmount = 1.7; // Усиленное приближение для логотипа (в 5 раз больше)
-                        }
+                        let rotateAmount = card.classList.contains('portfolio-item') ? 15 : 30; 
+                        let scaleAmount = isLogo ? 1.7 : 1; 
                         
                         const rotateX = ((y - centerY) / centerY) * -rotateAmount;
                         const rotateY = ((x - centerX) / centerX) * rotateAmount;
@@ -513,6 +457,20 @@
             }
         }
 
+        function initMobileObserver() {
+            if (window.innerWidth <= 1024) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) { entry.target.classList.add('in-view'); } 
+                        else { entry.target.classList.remove('in-view'); }
+                    });
+                }, { threshold: 0.15 });
+
+                const allImages = document.querySelectorAll('.portfolio-item img');
+                allImages.forEach(img => { observer.observe(img); });
+            }
+        }
+
         function closeModal(id) {
             document.getElementById(id).style.display = 'none'; document.body.style.overflow = 'auto'; 
             if(id === 'music-modal' || id === 'events-modal') {
@@ -521,7 +479,6 @@
             }
         }
         function openModal(id) { document.getElementById(id).style.display = 'block'; document.body.style.overflow = 'hidden'; }
-
         window.onclick = function(event) { if (event.target.classList.contains('modal')) { closeModal(event.target.id); } }
     </script>
 </body>
