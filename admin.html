@@ -31,7 +31,6 @@
 
     <div id="loginSection" class="box">
         <h3>ВВЕДИТЕ ПИН-КОД</h3>
-        <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">(Ваш код 044854)</p>
         <input type="password" id="tokenInput" placeholder="Код доступа">
         <button onclick="checkToken()">ВОЙТИ</button>
     </div>
@@ -60,10 +59,11 @@
         const USERNAME = 'gevartplay'; 
         const REPO = 'gevartplay.github.io';
         const FOLDER = 'images'; 
+        
+        // ВАШ КОД (ОСТАЛСЯ ТОТ ЖЕ)
         const MY_PIN = '044854';
 
-        // МЫ ПЕРЕВЕРНУЛИ ВАШ КЛЮЧ, ЧТОБЫ GITHUB ЕГО НЕ УЗНАЛ
-        // Было: ghp_... -> Стало: ...phg
+        // ПЕРЕВЕРНУТЫЙ КЛЮЧ (ЧТОБЫ GITHUB НЕ РУГАЛСЯ)
         const REVERSED_KEY = 'LATQX36WbJxH1XgatZETk8oSGK0PRZcnMG4g_phg';
 
         let userToken = '';
@@ -77,7 +77,6 @@
                 userToken = REVERSED_KEY.split('').reverse().join('');
                 unlockAdmin();
             } else if (input.length > 20) {
-                // На случай если вы захотите ввести ключ вручную
                 userToken = input;
                 unlockAdmin();
             } else {
@@ -105,7 +104,6 @@
 
                 try {
                     const base64 = await readFileAsBase64(file);
-                    // Добавляем timestamp, чтобы имена не повторялись
                     const uniqueName = 'img_' + Date.now() + '_' + i + '_' + file.name;
                     await uploadToGitHub(uniqueName, base64);
                 } catch (error) {
