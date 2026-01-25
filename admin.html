@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN | GevArtPlay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #050505; color: white; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        h1 { font-family: 'Oswald', sans-serif; color: #5b51d8; letter-spacing: 2px; }
+        
+        .login-box, .upload-box { background: #111; padding: 30px; border-radius: 10px; border: 1px solid #333; text-align: center; width: 100%; max-width: 400px; margin-bottom: 20px; }
+        input { width: 90%; padding: 10px; margin-bottom: 20px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; }
+        
+        button { 
+            background: #5b51d8; color: white; border: none; padding: 12px 30px; width: 100%;
+            font-family: 'Oswald', sans-serif; font-size: 1.2rem; cursor: pointer; transition: 0.3s; border-radius: 5px;
+        }
+        button:hover { background: #fff; color: #000; }
+        button:disabled { background: #333; color: #777; cursor: not-allowed; }
+        
+        #status { margin-top: 15px; font-weight: bold; color: #a3a3a3; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>ПАНЕЛЬ УПРАВЛЕНИЯ</h1>
+
+    <div id="loginSection" class="login-box">
+        <h3>ВВЕДИТЕ ВАШ GITHUB ТОКЕН</h3>
+        <p style="font-size: 12px; color: #777; margin-bottom: 15px;">(Начинается на ghp_...)</p>
+        <input type="password" id="tokenInput" placeholder="Вставьте токен сюда">
+        <button onclick="checkToken()">ВОЙТИ В СИСТЕМУ</button>
+    </div>
+
+    <div id="uploadSection" class="upload-box hidden">
+        <h3>ЗАГРУЗИТЬ ФОТО</h3>
+        <input type="file" id="fileInput" accept="image/*">
+        <button onclick="uploadImage()">ОТПРАВИТЬ НА САЙТ</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        // ВАШИ ДАННЫЕ
+        const USERNAME = 'gevartplay'; 
+        const REPO = 'gevartplay.github.io';
+        const FOLDER = 'images'; // Папка куда грузим
+
+        let userToken = '';
+
+        function checkToken() {
+            const input = document.getElementById('tokenInput').value.trim();
+            if (input.startsWith('ghp_')) {
+                userToken = input;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('uploadSection').classList.remove('hidden');
+            } else {
+                alert('Неверный формат токена! Он должен начинаться на ghp_');
+            }
+        }
+
+        function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) return alert("Выберите файл!");
+
+            const status = document.getElementById('status');
+            status.innerText = "Кодирование...";
+            
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function() {
+                const base64Content = reader.result.split(',')[1]; // Убираем заголовок data:image...
+                
+                status.innerText = "Отправка на GitHub...";
+                
+                // Уникальное имя файла, чтобы не заменить старое
+                const uniqueName = 'img_' + Date.now() + '_' + file.name;
+
+                fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${FOLDER}/${uniqueName}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${userToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `New photo: ${uniqueName}`,
+                        content: base64Content
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        status.innerText = "УСПЕШНО ЗАГРУЖЕНО!";
+                        status.style.color = "#00ff00";
+                        fileInput.value = "";
+                        setTimeout(() => status.innerText = "", 3000);
+                    } else {
+                        response.json().then(data => {
+                            status.innerText = "Ошибка: " + (data.message || "Unknown error");
+                            status.style.color = "red";
+                        });
+                    }
+                })
+                .catch(err => {
+                    status.innerText = "Ошибка сети!";
+                    console.error(err);
+                });
+            };
+        }
+    </script>
+</body>
+</html>

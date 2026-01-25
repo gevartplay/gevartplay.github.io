@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GevArtPlay | Visual Arts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* --- ВЕСЬ ВАШ СТАРЫЙ CSS СТИЛЬ --- */
+        :root { var(--primary: #5b51d8; --bg: #050505; --text: #ffffff; --text-muted: #a3a3a3; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #050505; color: white; font-family: 'Montserrat', sans-serif; overflow-x: hidden; line-height: 1.6; }
+        
+        /* Типографика и Контейнеры */
+        h1, h2, h3, .contact-link { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
+        .section-header { margin-bottom: 40px; padding-left: 20px; border-left: 4px solid #5b51d8; }
+        .section-header h2 { font-size: 3rem; line-height: 1; }
+        .section-header span { display: block; font-size: 1rem; color: #a3a3a3; letter-spacing: 4px; margin-bottom: 10px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 100px 5vw; }
+        img { width: 100%; display: block; }
+        a { text-decoration: none; color: white; transition: 0.3s; }
+
+        /* Header & Hero */
+        header { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-left: 5vw; background: #050505; }
+        .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/photo_2026-01-21_18-52-52.jpg') center/cover no-repeat; z-index: 0; opacity: 0.6; animation: bgZoom 20s infinite alternate ease-in-out; }
+        @keyframes bgZoom { from { transform: scale(1); } to { transform: scale(1.05); } }
+        .hero-content { position: relative; z-index: 1; }
+        .hero-content h1 { font-size: 12vw; font-weight: 900; line-height: 0.9; background: linear-gradient(45deg, #fff, #5b51d8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; opacity: 0; animation: epicFadeInUp 3s forwards 0.5s; }
+        .hero-subtitle { font-size: 1.5rem; font-weight: 300; letter-spacing: 2px; color: #a3a3a3; opacity: 0; animation: epicFadeInUp 3s forwards 1.5s; }
+        @keyframes epicFadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* About & Services */
+        .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 50px; align-items: center; }
+        .about-img-container img { border-radius: 5px; filter: grayscale(100%); box-shadow: 20px 20px 0 #5b51d8; transition: 1.5s; }
+        .exp-badge { display: inline-block; margin-top: 30px; padding: 10px 20px; border: 1px solid #5b51d8; color: #5b51d8; font-family: 'Oswald'; }
+        
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .service-card { background: #111; padding: 40px; position: relative; overflow: hidden; border-bottom: 2px solid transparent; transition: 0.3s; }
+        .service-card:hover { border-bottom-color: #5b51d8; background: #161616; }
+        .service-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.3; object-fit: cover; transition: 0.5s; }
+        .service-card:hover .service-bg { opacity: 0.6; transform: scale(1.1); }
+        .service-content { position: relative; z-index: 1; }
+        .service-content h3 { font-size: 1.5rem; margin-bottom: 15px; }
+
+        /* Portfolio */
+        .portfolio-masonry { column-count: 3; column-gap: 20px; }
+        .portfolio-item { break-inside: avoid; margin-bottom: 20px; position: relative; cursor: pointer; }
+        .portfolio-item img { width: 100%; filter: grayscale(100%); transition: filter 1s ease; }
+        .portfolio-item:hover img, .in-view { filter: grayscale(0%) !important; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow: auto; backdrop-filter: blur(10px); }
+        .close-btn { position: fixed; top: 20px; right: 40px; color: #fff; font-size: 50px; cursor: pointer; z-index: 10001; }
+        .gallery-content { display: flex; justify-content: center; align-items: center; height: 100%; padding: 20px; }
+        .gallery-content img { max-height: 90vh; max-width: 90vw; border-radius: 5px; }
+
+        /* Mobile */
+        @media (max-width: 1024px) { .portfolio-masonry { column-count: 2; } .hero-content h1 { font-size: 15vw; } }
+        @media (max-width: 768px) { .about-wrapper { display: block; } .services-grid { grid-template-columns: 1fr; } }
+        
+        /* Анимации */
+        .reveal { opacity: 0; transform: translateY(40px); transition: 0.8s; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
+        .tilt-inner { transition: transform 0.1s; transform-style: preserve-3d; }
+    </style>
+</head>
+<body>
+
+    <div id="single-image-modal" class="modal" onclick="closeModal()">
+        <span class="close-btn">&times;</span>
+        <div class="gallery-content"><img id="modal-img" src="" alt="View"></div>
+    </div>
+
+    <header>
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1>GEVART<br>PLAY</h1>
+            <p class="hero-subtitle">ГЕВОРГ НАЗАРЯН | ФОТО & ВИДЕО ИСКУССТВО</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="about-wrapper">
+            <div class="reveal"><div class="section-header"><span>ABOUT ME</span><h2>КТО Я</h2></div></div>
+            <div class="about-img-container tilt-card reveal"><div class="tilt-inner"><img src="images/photo_2026-01-21_18-53-06.jpg" alt="Me"></div></div>
+            <div class="reveal">
+                <p style="color:#ccc; margin-bottom:30px;">Здравствуйте, меня зовут Геворг. Более 5 лет я занимаюсь профессиональной съемкой в Москве.</p>
+                <div class="exp-badge">WORK EXPERIENCE: SINCE 2020</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="background: #080808;">
+        <div class="section-header reveal"><span>SERVICES</span><h2>НАПРАВЛЕНИЯ</h2></div>
+        <div class="services-grid">
+            <div class="tilt-card reveal service-card">
+                 <img src="images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg" class="service-bg">
+                 <div class="service-content tilt-inner"><h3>Events</h3><p>Репортажная съемка.</p></div>
+            </div>
+            <div class="tilt-card reveal service-card">
+                 <img src="images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" class="service-bg">
+                 <div class="service-content tilt-inner"><h3>Fashion</h3><p>Студийная съемка.</p></div>
+            </div>
+            <div class="tilt-card reveal service-card">
+                 <img src="images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" class="service-bg">
+                 <div class="service-content tilt-inner"><h3>Music Video</h3><p>Клипы и монтаж.</p></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section-header reveal"><span>PORTFOLIO</span><h2>ГАЛЕРЕЯ</h2></div>
+        <div class="portfolio-masonry" id="auto-portfolio">
+            </div>
+    </div>
+
+    <script>
+        // === НАСТРОЙКИ GITHUB ===
+        const USERNAME = 'gevartplay';
+        const REPO = 'gevartplay.github.io';
+        const FOLDER = 'images';
+
+        // 1. ЗАГРУЗКА СПИСКА ФАЙЛОВ ИЗ GITHUB
+        async function loadPortfolio() {
+            const container = document.getElementById('auto-portfolio');
+            try {
+                // Запрашиваем содержимое папки images
+                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${FOLDER}`);
+                const files = await response.json();
+
+                // Фильтруем (берем только картинки .jpg, .png)
+                const images = files.filter(file => 
+                    file.name.match(/\.(jpg|jpeg|png|gif)$/i)
+                );
+
+                if (images.length === 0) {
+                    container.innerHTML = "<p>Портфолио пусто.</p>";
+                    return;
+                }
+
+                // Перемешиваем (если хотите) или сортируем новые
+                // images.sort((a, b) => b.name.localeCompare(a.name)); // Сортировка по имени
+
+                images.forEach(file => {
+                    const div = document.createElement('div');
+                    div.className = 'portfolio-item tilt-card reveal';
+                    div.onclick = function() { openModal(file.download_url); };
+
+                    const inner = document.createElement('div');
+                    inner.className = 'tilt-inner';
+
+                    const img = document.createElement('img');
+                    img.src = file.download_url; // Прямая ссылка на GitHub файл
+                    img.alt = 'Work';
+                    img.loading = "lazy"; // Ленивая загрузка для скорости
+
+                    inner.appendChild(img);
+                    div.appendChild(inner);
+                    container.appendChild(div);
+                });
+
+                // Запускаем анимации после загрузки DOM
+                setTimeout(() => { reveal(); initTilt(); }, 500);
+
+            } catch (error) {
+                console.error("Ошибка загрузки:", error);
+                // Если API лимит превышен или ошибка - показываем заглушку
+            }
+        }
+
+        // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
+        function openModal(src) {
+            document.getElementById('single-image-modal').style.display = "flex";
+            document.getElementById('modal-img').src = src;
+            document.body.style.overflow = "hidden";
+        }
+        function closeModal() {
+            document.getElementById('single-image-modal').style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                if (elementTop < windowHeight - 50) reveals[i].classList.add("active");
+            }
+        }
+        window.addEventListener("scroll", reveal);
+
+        function initTilt() {
+             if (window.innerWidth > 1024) {
+                document.querySelectorAll('.tilt-card').forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const inner = card.querySelector('.tilt-inner');
+                        if(!inner) return;
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                        const centerX = rect.width / 2; const centerY = rect.height / 2;
+                        const rotateX = ((y - centerY) / centerY) * -15;
+                        const rotateY = ((x - centerX) / centerX) * 15;
+                        inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        const inner = card.querySelector('.tilt-inner');
+                        if(inner) inner.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+                    });
+                });
+            }
+        }
+
+        // Запуск
+        document.addEventListener("DOMContentLoaded", loadPortfolio);
+    </script>
+</body>
+</html>
