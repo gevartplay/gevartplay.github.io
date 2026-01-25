@@ -10,56 +10,17 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; overflow-x: hidden; line-height: 1.6; cursor: default; }
 
-        /* --- СЕКРЕТНОЕ МЕНЮ (CONTEXT MENU) --- */
-        #custom-context-menu {
-            display: none;
-            position: absolute;
-            z-index: 20000;
-            background: rgba(10, 10, 10, 0.95);
-            border: 1px solid var(--primary);
-            border-radius: 8px;
-            padding: 10px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(91, 81, 216, 0.3);
-            min-width: 150px;
-        }
+        /* СЕКРЕТНОЕ МЕНЮ */
+        #custom-context-menu { display: none; position: absolute; z-index: 20000; background: rgba(10, 10, 10, 0.95); border: 1px solid var(--primary); border-radius: 8px; padding: 10px; backdrop-filter: blur(10px); min-width: 150px; }
+        .ctx-btn { display: block; width: 100%; background: none; border: none; color: white; padding: 10px 15px; text-align: left; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .ctx-btn:hover { background: var(--primary); }
+        .ctx-btn.delete { color: #ff4444; border-top: 1px solid #333; margin-top: 5px; } .ctx-btn.delete:hover { background: #8b0000; }
 
-        .ctx-btn {
-            display: block;
-            width: 100%;
-            background: none;
-            border: none;
-            color: white;
-            padding: 10px 15px;
-            text-align: left;
-            font-family: 'Oswald', sans-serif;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-            border-radius: 4px;
-        }
+        /* КНОПКА ADMIN */
+        .admin-link { position: absolute; top: 30px; right: 40px; font-family: 'Oswald', sans-serif; font-size: 0.8rem; color: rgba(255, 255, 255, 0.2); letter-spacing: 3px; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px 20px; border-radius: 30px; z-index: 1000; transition: all 0.4s ease; backdrop-filter: blur(5px); }
+        .admin-link:hover { color: #fff; border-color: var(--primary); box-shadow: 0 0 20px rgba(91, 81, 216, 0.6); transform: scale(1.05); background: rgba(91, 81, 216, 0.1); }
 
-        .ctx-btn:hover { background: var(--primary); color: white; }
-        .ctx-btn.delete { color: #ff4444; border-top: 1px solid #333; margin-top: 5px; }
-        .ctx-btn.delete:hover { background: #8b0000; color: white; }
-
-        /* --- КНОПКА ADMIN --- */
-        .admin-link {
-            position: absolute; top: 30px; right: 40px;
-            font-family: 'Oswald', sans-serif; font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.2);
-            letter-spacing: 3px; text-decoration: none;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 20px; border-radius: 30px;
-            z-index: 1000; transition: all 0.4s ease; backdrop-filter: blur(5px);
-        }
-        .admin-link:hover {
-            color: #fff; border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(91, 81, 216, 0.6);
-            transform: scale(1.05); background: rgba(91, 81, 216, 0.1);
-        }
-
-        /* --- ОБЫЧНЫЕ СТИЛИ --- */
+        /* ОБЩИЕ СТИЛИ */
         h1, h2, h3, .contact-link { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
         .section-header { margin-bottom: 40px; padding-left: 20px; border-left: 4px solid var(--primary); }
         .section-header h2 { font-size: 3rem; line-height: 1; }
@@ -67,10 +28,8 @@
         .container { max-width: 1400px; margin: 0 auto; padding: 100px 5vw; }
         img { width: 100%; display: block; }
         a { text-decoration: none; color: white; transition: 0.3s; }
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-        .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
-        .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } .reveal.active { opacity: 1; transform: translateY(0); }
+        .tilt-card { perspective: 1000px; transform-style: preserve-3d; } .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
         
         /* HEADER */
         header { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-left: 5vw; background: #050505; }
@@ -96,6 +55,9 @@
         .service-content { position: relative; z-index: 1; }
         .service-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: white; }
         .service-card p { color: #ccc; font-size: 0.95rem; }
+        /* Иконка слоев для Services */
+        .layer-icon { position: absolute; top: 15px; right: 15px; width: 20px; height: 20px; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21 7.25V18.25C21 19.9069 19.6569 21.25 18 21.25H7C5.34315 21.25 4 19.9069 4 18.25V7.25C4 5.59315 5.34315 4.25 7 4.25H18C19.6569 4.25 21 5.59315 21 7.25Z' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M17 3V1.75C17 1.33579 16.6642 1 16.25 1H4.25C2.45507 1 1 2.45507 1 4.25V16.25C1 16.6642 1.33579 17 1.75 17H3' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; opacity: 0.8; z-index: 5; pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+
 
         .portfolio-masonry { column-count: 3; column-gap: 20px; }
         .portfolio-item { break-inside: avoid; margin-bottom: 20px; position: relative; border-radius: 4px; overflow: visible; cursor: pointer; }
@@ -103,6 +65,7 @@
         .in-view { filter: grayscale(0%) !important; }
         .portfolio-item:hover img { filter: grayscale(0%); }
 
+        /* MODALS */
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow: auto; backdrop-filter: blur(10px); animation: fadeInModal 0.3s; }
         @keyframes fadeInModal { from {opacity: 0;} to {opacity: 1;} }
         .close-btn { position: fixed; top: 20px; right: 40px; color: #fff; font-size: 50px; font-weight: bold; cursor: pointer; z-index: 10001; transition: 0.3s; }
@@ -141,19 +104,10 @@
         <div class="gallery-content"><img id="modal-img" src="" alt="View"></div>
     </div>
 
-    <div id="music-modal" class="modal">
-        <span class="close-btn" onclick="closeModal('music-modal')">&times;</span>
-        <div class="video-content modal-content">
-            <div style="width:100%"><div class="video-title">Исток - SamGuru</div><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/c5Gx5-NMUyw" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
-            <div style="width:100%"><div class="video-title">SamGuru - КОНТРАБАНДА</div><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/bDc9zHIsHmQ" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
-        </div>
-    </div>
-
-    <div id="events-modal" class="modal">
-        <span class="close-btn" onclick="closeModal('events-modal')">&times;</span>
-        <div class="video-content modal-content">
-            <div style="width:100%"><div class="video-title">Barinova dream team - S&D</div><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/3Lzx06gjF3I" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
-        </div>
+    <div id="video-modal" class="modal">
+        <span class="close-btn" onclick="closeModal('video-modal')">&times;</span>
+        <div class="video-content modal-content" id="video-modal-content">
+            </div>
     </div>
 
     <header>
@@ -179,9 +133,27 @@
     <div class="container" style="background: #080808;">
         <div class="section-header reveal"><span>SERVICES</span><h2>НАПРАВЛЕНИЯ</h2></div>
         <div class="services-grid">
-            <div class="tilt-card reveal clickable-service" onclick="openModal('events-modal')"><div class="service-card tilt-inner"><img src="images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg" class="service-bg" alt="Event"><div class="service-content"><h3>Events</h3><p>Репортажная съемка мероприятий.</p></div></div></div>
-            <div class="tilt-card reveal"><div class="service-card tilt-inner"><img src="images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" class="service-bg" alt="Fashion"><div class="service-content"><h3>Fashion & Model</h3><p>Студийная и уличная съемка.</p></div></div></div>
-            <div class="tilt-card reveal clickable-service" onclick="openModal('music-modal')"><div class="service-card tilt-inner"><img src="images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" class="service-bg" alt="Music"><div class="service-content"><h3>Music Video</h3><p>Создание клипов.</p></div></div></div>
+            <div class="tilt-card reveal clickable-service" onclick="openVideoModal('events')">
+                <div class="service-card tilt-inner">
+                    <div class="layer-icon"></div>
+                    <img src="images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg" class="service-bg" alt="Event">
+                    <div class="service-content"><h3>Events</h3><p>Репортажная съемка мероприятий. Живые эмоции, отсутствие постановки.</p></div>
+                </div>
+            </div>
+            <div class="tilt-card reveal clickable-service" onclick="openVideoModal('fashion')">
+                <div class="service-card tilt-inner">
+                    <div class="layer-icon"></div>
+                    <img src="images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" class="service-bg" alt="Fashion">
+                    <div class="service-content"><h3>Fashion & Model</h3><p>Студийная и уличная съемка. Работа с позированием и светом.</p></div>
+                </div>
+            </div>
+            <div class="tilt-card reveal clickable-service" onclick="openVideoModal('music')">
+                <div class="service-card tilt-inner">
+                    <div class="layer-icon"></div>
+                    <img src="images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" class="service-bg" alt="Music">
+                    <div class="service-content"><h3>Music Video</h3><p>Создание клипов. Кинематографичный подход и монтаж.</p></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -209,175 +181,139 @@
     </section>
 
     <script>
-        // === КОНФИГУРАЦИЯ ===
         const USERNAME = 'gevartplay';
         const REPO = 'gevartplay.github.io';
-        const FOLDER = 'images';
-        
-        // Переменные для контекстного меню
-        let selectedImage = null; // Какую картинку выбрали
-        let selectedSHA = null;   // Её код для удаления
-        let selectedPath = null;  // Её путь на GitHub
+        const PHOTO_FOLDER = 'images';
+        const VIDEO_FILE = 'videos.json';
 
-        // 1. ЗАГРУЗКА ПОРТФОЛИО
-        async function loadPortfolio() {
-            const container = document.getElementById('auto-portfolio');
+        // Переменные для контекстного меню фото
+        let selectedImage = null; let selectedSHA = null; let selectedPath = null;
+        let allVideos = []; // Хранилище всех видео
+
+        // 1. СТАРТ
+        document.addEventListener("DOMContentLoaded", () => {
+            loadPortfolio();
+            loadVideos(); // Загружаем базу видео
+        });
+
+        // 2. ЗАГРУЗКА БАЗЫ ВИДЕО (С ЗАЩИТОЙ ОТ КЭША)
+        async function loadVideos() {
+            try {
+                // Добавляем ?t=... чтобы браузер скачивал СВЕЖИЙ файл, а не старый из памяти
+                const response = await fetch(`https://gevartplay.github.io/videos.json?t=${Date.now()}`);
+                if (response.ok) {
+                    allVideos = await response.json();
+                    console.log("Видео загружены:", allVideos);
+                }
+            } catch (e) { console.log("Видео пока нет"); }
+        }
+
+        // 3. ОТКРЫТИЕ МОДАЛКИ С ВИДЕО (ДИНАМИЧЕСКИ)
+        function openVideoModal(category) {
+            const modal = document.getElementById('video-modal');
+            const contentDiv = document.getElementById('video-modal-content');
+            contentDiv.innerHTML = ""; // Очистить старое
+
+            // Фильтруем видео по категории
+            const filtered = allVideos.filter(v => v.category === category);
             
-            // Проверяем, админ ли мы (есть ли токен в памяти браузера)
-            const adminToken = localStorage.getItem('github_token_gevartplay');
-            if (adminToken) {
-                // Если админ - показываем кнопку удаления в скрытом меню
-                document.getElementById('ctx-delete-btn').style.display = 'block';
+            // Сортируем: новые (по дате добавления) сверху
+            filtered.sort((a, b) => (b.date || 0) - (a.date || 0));
+
+            if (filtered.length === 0) {
+                contentDiv.innerHTML = "<h2 style='color:white'>Видео в этом разделе скоро появятся...</h2>";
+            } else {
+                filtered.forEach(video => {
+                    const wrap = document.createElement('div');
+                    wrap.style.width = "100%";
+                    wrap.innerHTML = `
+                        <div class="video-wrapper">
+                            <iframe src="https://www.youtube.com/embed/${video.id}" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    `;
+                    contentDiv.appendChild(wrap);
+                });
             }
 
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+
+        // 4. ЗАГРУЗКА ПОРТФОЛИО (ФОТО)
+        async function loadPortfolio() {
+            const container = document.getElementById('auto-portfolio');
+            const adminToken = localStorage.getItem('github_token_gevartplay');
+            if (adminToken) document.getElementById('ctx-delete-btn').style.display = 'block';
+
             try {
-                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${FOLDER}`);
+                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${PHOTO_FOLDER}`);
                 const files = await response.json();
                 const images = files.filter(file => file.name.match(/\.(jpg|jpeg|png|gif)$/i) && !file.name.includes('logo.png'));
 
                 if (images.length === 0) { container.innerHTML = "<p>Портфолио пусто.</p>"; return; }
-
-                // Перемешиваем
-                for (let i = images.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [images[i], images[j]] = [images[j], images[i]];
-                }
+                for (let i = images.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [images[i], images[j]] = [images[j], images[i]]; }
 
                 images.forEach(file => {
                     const div = document.createElement('div');
                     div.className = 'portfolio-item tilt-card reveal';
-                    
-                    // Левый клик -> открыть модалку
                     div.onclick = function() { openModal(file.download_url); };
                     
-                    // Правый клик / Долгое нажатие -> Спец меню
-                    // Сохраняем данные файла в атрибуты div-а, чтобы потом достать их
+                    // Данные для контекстного меню
                     div.dataset.url = file.download_url;
                     div.dataset.sha = file.sha;
                     div.dataset.path = file.path;
-                    div.dataset.name = file.name;
 
-                    // Событие правого клика
-                    div.addEventListener('contextmenu', function(e) {
-                        e.preventDefault(); // Запретить стандартное меню
-                        showContextMenu(e.pageX, e.pageY, div);
-                    });
-
-                    // Событие долгого нажатия (для телефонов)
+                    // ПКМ
+                    div.addEventListener('contextmenu', function(e) { e.preventDefault(); showContextMenu(e.pageX, e.pageY, div); });
+                    // Долгое нажатие
                     let pressTimer;
-                    div.addEventListener('touchstart', function(e) {
-                        pressTimer = setTimeout(() => {
-                            // Если держали палец 800мс
-                             const touch = e.touches[0];
-                             showContextMenu(touch.pageX, touch.pageY, div);
-                        }, 800);
-                    });
-                    div.addEventListener('touchend', () => clearTimeout(pressTimer));
-                    div.addEventListener('touchmove', () => clearTimeout(pressTimer));
+                    div.addEventListener('touchstart', function(e) { pressTimer = setTimeout(() => { const touch = e.touches[0]; showContextMenu(touch.pageX, touch.pageY, div); }, 800); });
+                    div.addEventListener('touchend', () => clearTimeout(pressTimer)); div.addEventListener('touchmove', () => clearTimeout(pressTimer));
 
                     const inner = document.createElement('div');
                     inner.className = 'tilt-inner';
-
                     const img = document.createElement('img');
-                    img.src = file.download_url;
-                    img.alt = 'Work';
-                    img.loading = "lazy"; 
-
-                    inner.appendChild(img);
-                    div.appendChild(inner);
-                    container.appendChild(div);
+                    img.src = file.download_url; img.alt = 'Work'; img.loading = "lazy"; 
+                    inner.appendChild(img); div.appendChild(inner); container.appendChild(div);
                 });
-
                 setTimeout(() => { reveal(); initTilt(); initMobileObserver(); }, 500);
-
-            } catch (error) { console.error("Ошибка загрузки:", error); }
+            } catch (error) { console.error("Ошибка:", error); }
         }
 
-        // 2. УПРАВЛЕНИЕ МЕНЮ
+        // КОНТЕКСТНОЕ МЕНЮ
         const menu = document.getElementById('custom-context-menu');
-
         function showContextMenu(x, y, element) {
-            // Запоминаем данные выбранного элемента
-            selectedImage = element.dataset.url;
-            selectedSHA = element.dataset.sha;
-            selectedPath = element.dataset.path;
-            
-            // Показываем меню
-            menu.style.display = 'block';
-            menu.style.left = x + 'px';
-            menu.style.top = y + 'px';
+            selectedImage = element.dataset.url; selectedSHA = element.dataset.sha; selectedPath = element.dataset.path;
+            menu.style.display = 'block'; menu.style.left = x + 'px'; menu.style.top = y + 'px';
         }
+        document.addEventListener('click', function(e) { if (e.target.closest('#custom-context-menu')) return; menu.style.display = 'none'; });
+        function downloadItem() { if (selectedImage) window.open(selectedImage, '_blank'); }
 
-        // Скрыть меню при клике в любом другом месте
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('#custom-context-menu')) return;
-            menu.style.display = 'none';
-        });
-
-        // 3. ФУНКЦИЯ СКАЧИВАНИЯ
-        function downloadItem() {
-            if (selectedImage) {
-                window.open(selectedImage, '_blank');
-            }
-        }
-
-        // 4. ФУНКЦИЯ УДАЛЕНИЯ (ТОЛЬКО ДЛЯ АДМИНА)
         async function deleteItem() {
             const adminToken = localStorage.getItem('github_token_gevartplay');
-            
-            if (!adminToken) {
-                alert("Ошибка: Вы не вошли как администратор. Зайдите на страницу ADMIN.");
-                return;
-            }
-
-            if (confirm("Вы точно хотите УДАЛИТЬ это фото с сайта навсегда?")) {
+            if (!adminToken) { alert("Вы не админ!"); return; }
+            if (confirm("УДАЛИТЬ это фото навсегда?")) {
                 try {
-                    // Кодируем путь для запроса
-                    const deleteUrl = `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(selectedPath)}`;
-                    
-                    const response = await fetch(deleteUrl, {
+                    await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(selectedPath)}`, {
                         method: 'DELETE',
-                        headers: { 
-                            'Authorization': `token ${adminToken}`, 
-                            'Content-Type': 'application/json' 
-                        },
-                        body: JSON.stringify({ 
-                            message: `Delete photo from context menu`, 
-                            sha: selectedSHA 
-                        })
+                        headers: { 'Authorization': `token ${adminToken}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: `Delete photo`, sha: selectedSHA })
                     });
-
-                    if (response.ok) {
-                        alert("Фото удалено! Обновите страницу.");
-                        location.reload(); // Перезагрузить страницу
-                    } else {
-                        const err = await response.json();
-                        alert("Ошибка: " + err.message);
-                    }
-                } catch (error) {
-                    alert("Ошибка сети: " + error);
-                }
+                    location.reload();
+                } catch (error) { alert("Ошибка: " + error); }
             }
         }
 
-        // --- ОСТАЛЬНЫЕ ФУНКЦИИ (МОДАЛКИ, ЭФФЕКТЫ) ---
-        function openModal(src) {
-            document.getElementById('single-image-modal').style.display = "flex";
-            document.getElementById('modal-img').src = src;
-            document.body.style.overflow = "hidden";
-        }
+        // ВСПОМОГАТЕЛЬНЫЕ
+        function openModal(src) { document.getElementById('single-image-modal').style.display = "flex"; document.getElementById('modal-img').src = src; document.body.style.overflow = "hidden"; }
         function closeModal(id) {
             if(!id) id = 'single-image-modal';
             document.getElementById(id).style.display = 'none'; 
             document.body.style.overflow = 'auto'; 
-            if(id === 'music-modal' || id === 'events-modal') {
-               const iframes = document.querySelectorAll('#' + id + ' iframe');
-               iframes.forEach(iframe => { const src = iframe.src; iframe.src = src; });
-            }
-        }
-        function openModalID(id) {
-            document.getElementById(id).style.display = 'block'; 
-            document.body.style.overflow = 'hidden'; 
+            // Остановить видео при закрытии
+            const iframes = document.querySelectorAll('#' + id + ' iframe');
+            iframes.forEach(iframe => { const src = iframe.src; iframe.src = src; });
         }
         window.onclick = function(event) { if (event.target.classList.contains('modal')) { closeModal(event.target.id); } }
         function copyEmail(element) { const email = "1993gevorg1993@mail.ru"; navigator.clipboard.writeText(email).then(() => { const originalText = "EMAIL ME"; element.innerText = "СКОПИРОВАНО!"; element.style.color = "#5b51d8"; element.style.webkitTextStroke = "0px"; element.style.transform = "scale(1.1)"; setTimeout(() => { element.innerText = originalText; element.style.color = ""; element.style.webkitTextStroke = ""; element.style.transform = ""; }, 2000); }).catch(err => { console.error('Ошибка:', err); alert("Email: " + email); }); }
@@ -385,8 +321,6 @@
         window.addEventListener("scroll", reveal);
         function initTilt() { if (window.innerWidth > 1024) { document.querySelectorAll('.tilt-card').forEach(card => { const isLogo = card.querySelector('img[src*="logo.png"]') !== null; card.addEventListener('mousemove', (e) => { const inner = card.querySelector('.tilt-inner'); if(!inner) return; const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; const centerX = rect.width / 2; const centerY = rect.height / 2; let rotateAmount = card.classList.contains('portfolio-item') ? 15 : 30; let scaleAmount = isLogo ? 1.7 : 1; const rotateX = ((y - centerY) / centerY) * -rotateAmount; const rotateY = ((x - centerX) / centerX) * rotateAmount; inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scaleAmount}, ${scaleAmount}, ${scaleAmount})`; }); card.addEventListener('mouseleave', () => { const inner = card.querySelector('.tilt-inner'); if(inner) inner.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`; }); }); } }
         function initMobileObserver() { if (window.innerWidth <= 1024) { const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in-view'); } else { entry.target.classList.remove('in-view'); } }); }, { threshold: 0.15 }); setTimeout(() => { const allImages = document.querySelectorAll('.portfolio-item img'); allImages.forEach(img => { observer.observe(img); }); }, 1000); } }
-
-        document.addEventListener("DOMContentLoaded", loadPortfolio);
     </script>
 </body>
 </html>
