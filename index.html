@@ -27,7 +27,15 @@
         .section-header { margin-bottom: 40px; padding-left: 20px; border-left: 4px solid var(--primary); }
         .section-header h2 { font-size: 3rem; line-height: 1; }
         .section-header span { display: block; font-size: 1rem; color: var(--text-muted); letter-spacing: 4px; margin-bottom: 10px; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 100px 5vw; }
+        
+        /* === КОНТЕЙНЕР (СВОБОДНОЕ МЕСТО СЛЕВА И СПРАВА) === */
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            /* Было 5vw, стало 10vw -> больше воздуха по бокам */
+            padding: 100px 10vw; 
+        }
+        
         a { text-decoration: none; color: white; transition: 0.3s; }
         
         .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } .reveal.active { opacity: 1; transform: translateY(0); }
@@ -66,13 +74,14 @@
         }
         .about-img-container img { box-shadow: 20px 20px 0 var(--primary); }
 
-        /* === ЭФФЕКТ КИНЕМАТОГРАФИЧЕСКОГО ФОКУСА === */
+        /* === ЭФФЕКТ ФОКУСА === */
         
-        /* 1. НЕАКТИВНЫЕ фото (размытие) */
+        /* 1. Когда мышь в галерее: НЕАКТИВНЫЕ размываются (СЛАБОЕ РАЗМЫТИЕ) */
         .portfolio-masonry:hover .portfolio-item img {
-            filter: grayscale(100%) blur(3px) brightness(0.5); 
+            /* blur(1.5px) вместо 3px - размытие в 2 раза меньше */
+            filter: grayscale(100%) blur(1.5px) brightness(0.6); 
             transform: scale(0.95);
-            opacity: 0.6;
+            opacity: 0.7;
         }
 
         /* 2. АКТИВНОЕ ФОТО (ПОРТФОЛИО) */
@@ -83,10 +92,7 @@
 
         .portfolio-masonry .portfolio-item:hover img {
             filter: grayscale(0%) blur(0px) brightness(1.1) !important;
-            
-            /* === ИЗМЕНЕНО: УМЕНЬШЕН ЗУМ === */
-            transform: scale(1.15) !important; 
-            
+            transform: scale(1.15) !important; /* Умеренный зум */
             opacity: 1 !important;
             border-radius: 4px; 
             box-shadow: 0 30px 60px -10px rgba(91, 81, 216, 0.8), 0 0 30px rgba(91, 81, 216, 0.5);
@@ -96,7 +102,7 @@
         .about-img-container:hover img {
             filter: grayscale(0%);
             box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
-            transform: translateY(-7px) scale(1.05); /* Тоже чуть меньше */
+            transform: translateY(-7px) scale(1.05); 
             z-index: 10;
         }
 
@@ -125,7 +131,7 @@
 
         /* === ГАЛЕРЕЯ PINTEREST (4 КОЛОНКИ) === */
         .portfolio-masonry { 
-            column-count: 4; /* <-- ИЗМЕНЕНО НА 4 */
+            column-count: 4; 
             column-gap: 20px; 
         }
         .portfolio-item { 
@@ -176,11 +182,13 @@
         .ctx-btn:hover { background: var(--primary); }
 
         @media (max-width: 1024px) { 
-            .portfolio-masonry { column-count: 2; } /* 2 колонки на планшете */
+            .portfolio-masonry { column-count: 2; } 
             .hero-content h1 { font-size: 15vw; } .tilt-inner { transform: none !important; } 
         }
         @media (max-width: 768px) { 
-            .container { padding: 60px 15px; } .section-header h2 { font-size: 2.2rem; } .about-wrapper { display: block; } .about-img-container { float: right; width: 50%; margin-left: 20px; margin-bottom: 15px; } .about-text-content { display: block; text-align: left; } .about-wrapper::after { content: ""; display: table; clear: both; } .contact-link { font-size: 1.8rem; -webkit-text-stroke: 0.5px rgba(255,255,255,0.7); } .contact-title { font-size: 2rem; } .contact-bg-text { display: none; } .close-btn { top: 10px; right: 20px; font-size: 40px; } .services-grid { grid-template-columns: 1fr; } .video-content { padding: 60px 20px; gap: 30px; } .clickable-service:hover::after { content: none; } .admin-link { top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; } 
+            /* Возвращаем стандартные отступы на мобильных, чтобы фото не были слишком мелкими */
+            .container { padding: 60px 15px; } 
+            .section-header h2 { font-size: 2.2rem; } .about-wrapper { display: block; } .about-img-container { float: right; width: 50%; margin-left: 20px; margin-bottom: 15px; } .about-text-content { display: block; text-align: left; } .about-wrapper::after { content: ""; display: table; clear: both; } .contact-link { font-size: 1.8rem; -webkit-text-stroke: 0.5px rgba(255,255,255,0.7); } .contact-title { font-size: 2rem; } .contact-bg-text { display: none; } .close-btn { top: 10px; right: 20px; font-size: 40px; } .services-grid { grid-template-columns: 1fr; } .video-content { padding: 60px 20px; gap: 30px; } .clickable-service:hover::after { content: none; } .admin-link { top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; } 
         }
     </style>
 </head>
