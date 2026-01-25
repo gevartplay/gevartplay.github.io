@@ -84,8 +84,24 @@
         .service-card p { color: #ccc; font-size: 0.95rem; }
         .layer-icon { position: absolute; top: 15px; right: 15px; width: 20px; height: 20px; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21 7.25V18.25C21 19.9069 19.6569 21.25 18 21.25H7C5.34315 21.25 4 19.9069 4 18.25V7.25C4 5.59315 5.34315 4.25 7 4.25H18C19.6569 4.25 21 5.59315 21 7.25Z' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M17 3V1.75C17 1.33579 16.6642 1 16.25 1H4.25C2.45507 1 1 2.45507 1 4.25V16.25C1 16.6642 1.33579 17 1.75 17H3' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; opacity: 0.8; z-index: 5; pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
 
-        .portfolio-masonry { column-count: 3; column-gap: 20px; }
-        .portfolio-item { break-inside: avoid; margin-bottom: 20px; position: relative; border-radius: 4px; overflow: visible; cursor: pointer; }
+        /* === ИЗМЕНЕННЫЙ СТИЛЬ ГАЛЕРЕИ (Горизонтальные ряды) === */
+        .portfolio-masonry {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 колонки */
+            gap: 20px;
+        }
+        .portfolio-item { 
+            position: relative; 
+            border-radius: 4px; 
+            overflow: hidden; /* Важно для обрезки */
+            cursor: pointer;
+            aspect-ratio: 2 / 3; /* Вертикальный формат фото */
+        }
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Заполняет контейнер, обрезая лишнее */
+        }
 
         /* --- МОДАЛКА --- */
         .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); overflow: auto; backdrop-filter: blur(10px); animation: fadeInModal 0.3s; }
@@ -127,8 +143,13 @@
         .ctx-btn { display: block; width: 100%; background: none; border: none; color: white; padding: 10px 15px; text-align: left; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .ctx-btn:hover { background: var(--primary); }
 
-        @media (max-width: 1024px) { .portfolio-masonry { column-count: 2; } .hero-content h1 { font-size: 15vw; } .tilt-inner { transform: none !important; } }
-        @media (max-width: 768px) { .container { padding: 60px 15px; } .section-header h2 { font-size: 2.2rem; } .about-wrapper { display: block; } .about-img-container { float: right; width: 50%; margin-left: 20px; margin-bottom: 15px; } .about-text-content { display: block; text-align: left; } .about-wrapper::after { content: ""; display: table; clear: both; } .contact-link { font-size: 1.8rem; -webkit-text-stroke: 0.5px rgba(255,255,255,0.7); } .contact-title { font-size: 2rem; } .contact-bg-text { display: none; } .close-btn { top: 10px; right: 20px; font-size: 40px; } .services-grid { grid-template-columns: 1fr; } .video-content { padding: 60px 20px; gap: 30px; } .clickable-service:hover::after { content: none; } .admin-link { top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; } }
+        @media (max-width: 1024px) { 
+            .portfolio-masonry { grid-template-columns: repeat(2, 1fr); } /* 2 колонки на планшете */
+            .hero-content h1 { font-size: 15vw; } .tilt-inner { transform: none !important; } 
+        }
+        @media (max-width: 768px) { 
+            .container { padding: 60px 15px; } .section-header h2 { font-size: 2.2rem; } .about-wrapper { display: block; } .about-img-container { float: right; width: 50%; margin-left: 20px; margin-bottom: 15px; } .about-text-content { display: block; text-align: left; } .about-wrapper::after { content: ""; display: table; clear: both; } .contact-link { font-size: 1.8rem; -webkit-text-stroke: 0.5px rgba(255,255,255,0.7); } .contact-title { font-size: 2rem; } .contact-bg-text { display: none; } .close-btn { top: 10px; right: 20px; font-size: 40px; } .services-grid { grid-template-columns: 1fr; } .video-content { padding: 60px 20px; gap: 30px; } .clickable-service:hover::after { content: none; } .admin-link { top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; } 
+        }
     </style>
 </head>
 <body>
@@ -389,8 +410,6 @@
 
                 if (images.length === 0) { container.innerHTML = "<p>Пусто.</p>"; return; }
                 
-                // (Убран старый цикл shuffle)
-
                 images.forEach(file => {
                     const div = document.createElement('div');
                     div.className = 'portfolio-item tilt-card reveal';
