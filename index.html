@@ -51,13 +51,27 @@
         .about-header-wrap { grid-area: head; } .about-text-content { grid-area: text; } .about-img-container { grid-area: img; width: 100%; }
         
         /* === СТИЛЬ ИЗОБРАЖЕНИЙ (СВЕЧЕНИЕ + ЧБ МОБИЛЬНЫЙ) === */
-        img { width: 100%; display: block; transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         
-        .about-img-container img { border-radius: 5px; filter: grayscale(100%); box-shadow: 20px 20px 0 var(--primary); }
-        .portfolio-item img { border-radius: 4px; filter: grayscale(100%); }
+        /* ГЛАВНОЕ ИЗМЕНЕНИЕ: transition увеличено до 1.5s для фильтра */
+        img { 
+            width: 100%; 
+            display: block; 
+            transition: filter 1.5s ease-in-out, transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 1.5s ease-in-out;
+        }
+        
+        /* Исходное состояние - ЧЕРНО-БЕЛОЕ */
+        .about-img-container img,
+        .portfolio-item img { 
+            border-radius: 5px; 
+            filter: grayscale(100%); 
+        }
+        
+        .about-img-container img { box-shadow: 20px 20px 0 var(--primary); }
 
-        /* Класс, который JS добавляет, когда фото видно на экране (для мобильных) */
-        .in-view { filter: grayscale(0%) !important; }
+        /* КЛАСС ДЛЯ МОБИЛЬНОГО (когда фото на экране) - ЦВЕТНОЕ */
+        .in-view { 
+            filter: grayscale(0%) !important; 
+        }
 
         /* ЭФФЕКТ СВЕЧЕНИЯ ПРИ НАВЕДЕНИИ (ПК) */
         .portfolio-item:hover img,
