@@ -50,62 +50,53 @@
         .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-areas: "head img" "text img"; gap: 50px; align-items: center; }
         .about-header-wrap { grid-area: head; } .about-text-content { grid-area: text; } .about-img-container { grid-area: img; width: 100%; }
         
-        /* === СТИЛЬ ИЗОБРАЖЕНИЙ (МАКСИМАЛЬНАЯ РЕЗКОСТЬ) === */
+        /* === СТИЛЬ ИЗОБРАЖЕНИЙ === */
         img { 
             width: 100%; 
             display: block; 
-            /* Плавность для фильтров и теней */
-            transition: filter 0.5s ease-out, box-shadow 0.5s ease-out, opacity 0.5s ease;
-            
-            /* ВАЖНО: Анимацию трансформации выносим отдельно для четкости */
-            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s ease;
-
-            /* Отключаем сглаживание, чтобы сохранить пиксели оригинала */
-            image-rendering: auto; 
-            -webkit-font-smoothing: antialiased;
+            transition: filter 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease-out, opacity 0.5s ease;
+            image-rendering: -webkit-optimize-contrast;
         }
         
-        .about-img-container img { border-radius: 5px; filter: grayscale(0%); box-shadow: 20px 20px 0 var(--primary); }
-        .portfolio-item img { border-radius: 4px; filter: grayscale(0%); }
+        /* ПО УМОЛЧАНИЮ - ВСЕ ЦВЕТНЫЕ */
+        .about-img-container img,
+        .portfolio-item img { 
+            border-radius: 5px; 
+            filter: grayscale(0%); 
+        }
+        .about-img-container img { box-shadow: 20px 20px 0 var(--primary); }
 
-        /* === ЭФФЕКТ ФОКУСА === */
+        /* === ЭФФЕКТ КИНЕМАТОГРАФИЧЕСКОГО ФОКУСА === */
         
-        /* 1. Когда мышь в галерее: НЕАКТИВНЫЕ размываются */
+        /* 1. НЕАКТИВНЫЕ фото (размытие) */
         .portfolio-masonry:hover .portfolio-item img {
             filter: grayscale(100%) blur(3px) brightness(0.5); 
-            transform: scale(0.95); /* Чуть уменьшаем неактивные */
+            transform: scale(0.95);
             opacity: 0.6;
-            transition: all 0.5s ease;
         }
 
-        /* 2. АКТИВНОЕ ФОТО (ПОРТФОЛИО) - БРИТВЕННАЯ РЕЗКОСТЬ */
+        /* 2. АКТИВНОЕ ФОТО (ПОРТФОЛИО) */
         .portfolio-masonry .portfolio-item:hover {
             z-index: 10000 !important; 
             position: relative; 
         }
 
         .portfolio-masonry .portfolio-item:hover img {
-            /* Мгновенно убираем размытие, чтобы глаз видел четкость сразу */
-            filter: none !important;
+            filter: grayscale(0%) blur(0px) brightness(1.1) !important;
             
-            /* Увеличиваем до 1.35x */
-            transform: scale(1.35) !important; 
+            /* === ИЗМЕНЕНО: УМЕНЬШЕН ЗУМ === */
+            transform: scale(1.15) !important; 
             
             opacity: 1 !important;
             border-radius: 4px; 
-            
-            /* Тень для объема */
-            box-shadow: 0 30px 60px -10px rgba(91, 81, 216, 0.9), 0 0 40px rgba(91, 81, 216, 0.6);
-            
-            /* Хак для четкости в Chrome: заставляет перерисовать текстуру */
-            will-change: transform; 
+            box-shadow: 0 30px 60px -10px rgba(91, 81, 216, 0.8), 0 0 30px rgba(91, 81, 216, 0.5);
         }
 
         /* 3. АКТИВНОЕ ФОТО (КТО Я) */
         .about-img-container:hover img {
-            filter: none;
+            filter: grayscale(0%);
             box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6), 0 0 20px rgba(91, 81, 216, 0.3);
-            transform: translateY(-7px) scale(1.1); 
+            transform: translateY(-7px) scale(1.05); /* Тоже чуть меньше */
             z-index: 10;
         }
 
@@ -132,8 +123,11 @@
         .service-card p { color: #ccc; font-size: 0.95rem; }
         .layer-icon { position: absolute; top: 15px; right: 15px; width: 20px; height: 20px; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21 7.25V18.25C21 19.9069 19.6569 21.25 18 21.25H7C5.34315 21.25 4 19.9069 4 18.25V7.25C4 5.59315 5.34315 4.25 7 4.25H18C19.6569 4.25 21 5.59315 21 7.25Z' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M17 3V1.75C17 1.33579 16.6642 1 16.25 1H4.25C2.45507 1 1 2.45507 1 4.25V16.25C1 16.6642 1.33579 17 1.75 17H3' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; opacity: 0.8; z-index: 5; pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
 
-        /* === ГАЛЕРЕЯ PINTEREST === */
-        .portfolio-masonry { column-count: 3; column-gap: 20px; }
+        /* === ГАЛЕРЕЯ PINTEREST (4 КОЛОНКИ) === */
+        .portfolio-masonry { 
+            column-count: 4; /* <-- ИЗМЕНЕНО НА 4 */
+            column-gap: 20px; 
+        }
         .portfolio-item { 
             position: relative; border-radius: 4px; 
             cursor: pointer; break-inside: avoid; 
@@ -182,7 +176,7 @@
         .ctx-btn:hover { background: var(--primary); }
 
         @media (max-width: 1024px) { 
-            .portfolio-masonry { column-count: 2; } 
+            .portfolio-masonry { column-count: 2; } /* 2 колонки на планшете */
             .hero-content h1 { font-size: 15vw; } .tilt-inner { transform: none !important; } 
         }
         @media (max-width: 768px) { 
