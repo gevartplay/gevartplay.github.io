@@ -33,7 +33,10 @@
         
         img { width: 100%; display: block; image-rendering: -webkit-optimize-contrast; }
         a { text-decoration: none; color: white; transition: 0.3s; }
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        /* Reveal анимация только для статических блоков */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } 
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
         /* TILT (Только для ПК) */
         .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
@@ -111,9 +114,9 @@
         }
         #modal-img:active { cursor: grabbing; }
 
-        /* === НОВЫЕ АНИМАЦИИ ПЕРЕХОДА (SLIDE FROM EDGE) === */
+        /* === АНИМАЦИИ ПЕРЕХОДА (SLIDE FROM EDGE) === */
         
-        /* 1. Уход старого фото (Просто исчезает и чуть уменьшается) */
+        /* 1. Уход старого фото */
         .photo-exit {
             animation: simpleFadeOut 0.2s ease-out forwards;
         }
@@ -446,18 +449,16 @@
                 const diffY = touchStartY - endY; 
                 const diffX = touchStartX - endX;
                 if (Math.abs(diffY) > 50 && Math.abs(diffY) > Math.abs(diffX)) {
-                    // Свайп вверх/вниз - игнорируем или закрываем (по желанию)
+                    // Свайп вверх/вниз
                 } else if (Math.abs(diffX) > 50) {
-                    // Свайп влево/вправо
-                    if (diffX > 0) nextImage(); // Свайп влево -> следующее фото
-                    else prevImage(); // Свайп вправо -> предыдущее фото
+                    if (diffX > 0) nextImage(); 
+                    else prevImage(); 
                 }
             }
         }
 
         function updateTransform() {
             const img = document.getElementById('modal-img');
-            // Применяем transform только если нет анимации перехода
             if (!img.classList.contains('photo-exit') && !img.classList.contains('photo-enter-next') && !img.classList.contains('photo-enter-prev')) {
                 img.style.transform = `translate(${translateX}px, px) scale()`;
             }
@@ -465,12 +466,11 @@
 
         function resetZoom() {
             scale = 1; translateX = 0; translateY = 0; 
-            // Сброс через стиль
             const img = document.getElementById('modal-img');
             img.style.transform = 'translate(0px, 0px) scale(1)';
         }
 
-        // НАВИГАЦИЯ С АНИМАЦИЕЙ (ОБНОВЛЕННАЯ)
+        // НАВИГАЦИЯ С АНИМАЦИЕЙ
         function nextImage() {
             if (portfolioImages.length === 0) return;
             currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
@@ -486,11 +486,9 @@
         function animateTransition(index, direction) {
             const img = document.getElementById('modal-img');
             
-            // 1. Старое фото исчезает
-            img.className = ''; // Сброс классов
+            img.className = ''; 
             img.classList.add('photo-exit');
 
-            // Ждем окончания анимации исчезновения (200ms)
             setTimeout(() => {
                 resetZoom();
                 
@@ -499,19 +497,15 @@
                 currentPhoto.sha = file.sha;
                 currentPhoto.path = file.path;
                 
-                // Меняем источник
                 img.src = file.download_url;
-
-                // 2. Новое фото появляется с нужной стороны
-                img.className = ''; // Сброс
+                img.className = ''; 
                 
                 if (direction === 'next') {
-                    img.classList.add('photo-enter-next'); // Вылет справа
+                    img.classList.add('photo-enter-next');
                 } else {
-                    img.classList.add('photo-enter-prev'); // Вылет слева
+                    img.classList.add('photo-enter-prev');
                 }
 
-                // Убираем класс анимации после завершения, чтобы работал зум
                 setTimeout(() => {
                     img.className = '';
                 }, 400);
@@ -659,6 +653,11 @@
             const container = document.getElementById('auto-portfolio');
             try {
                 const response = await fetch(`https://api.github.com/repos///contents/images`);
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API Error: ${response.status}`);
+                }
+
                 const files = await response.json();
                 const images = files.filter(file => 
                     file.name.match(/\.(jpg|jpeg|png|gif)$/i) && 
@@ -672,16 +671,29 @@
                 };
                 images.sort((a, b) => getTimestamp(b.name) - getTimestamp(a.name));
                 portfolioImages = images;
-                if (images.length === 0) { container.innerHTML = "<p>Пусто.</p>"; return; }
+                
+                if (images.length === 0) { 
+                    container.innerHTML = "<p>Нет фото в папке images.</p>"; 
+                    return; 
+                }
+                
+                container.innerHTML = ""; // Очистка перед добавлением
                 images.forEach((file, index) => {
                     const div = document.createElement('div');
-                    div.className = 'portfolio-item tilt-card reveal';
+                    // ВАЖНО: Убрал класс 'reveal', чтобы фото были видны сразу
+                    div.className = 'portfolio-item tilt-card'; 
                     div.onclick = function() { openModal(index); };
                     div.innerHTML = `<div class="tilt-inner"><img src="${file.download_url}" loading="lazy"></div>`;
                     container.appendChild(div);
                 });
-                setTimeout(() => { reveal(); initTilt(); initMobileObserver(); }, 500);
-            } catch (e) {}
+                
+                // Запускаем тилт и обсервер, но reveal уже не нужен для галереи
+                setTimeout(() => { initTilt(); initMobileObserver(); }, 500);
+                
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = `<p style="color:red">Ошибка загрузки фото: ${e.message}.<br>Возможно, превышен лимит запросов к GitHub.</p>`;
+            }
         }
 
         function downloadCurrent() { if (currentPhoto.url) window.open(currentPhoto.url, '_blank'); }
