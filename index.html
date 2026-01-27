@@ -84,20 +84,20 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        /* --- КНОПКА ОБНОВЛЕНИЯ (ТОЛЬКО МОБИЛЬНЫЕ) --- */
+        /* --- КНОПКА ОБНОВЛЕНИЯ (ЛЕВЫЙ НИЖНИЙ УГОЛ) --- */
         #refresh-fab {
             display: none; /* Скрыто на ПК */
             position: fixed;
-            bottom: 25px;
-            left: 25px; /* Слева внизу */
-            width: 50px;
-            height: 50px;
+            bottom: 20px; /* Самый низ */
+            left: 20px;   /* Самый левый угол */
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px); /* Эффект стекла */
+            backdrop-filter: blur(10px); 
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 9000; /* Ниже модалки, но выше контента */
+            z-index: 9000; 
             cursor: pointer;
             align-items: center;
             justify-content: center;
@@ -106,24 +106,25 @@
         }
         
         #refresh-fab svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
+            width: 20px;
+            height: 20px;
+            fill: rgba(255,255,255,0.8);
             transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         #refresh-fab:active {
             transform: scale(0.9);
-            background: rgba(91, 81, 216, 0.3); /* Подсветка цветом бренда */
+            background: rgba(91, 81, 216, 0.3); 
             border-color: var(--primary);
         }
 
         #refresh-fab:active svg {
-            transform: rotate(360deg); /* Вращение при нажатии */
+            transform: rotate(360deg); 
+            fill: white;
         }
 
         @media (max-width: 1024px) {
-            #refresh-fab { display: flex; } /* Показываем только на мобильных */
+            #refresh-fab { display: flex; } 
         }
 
         /* Чекбоксы */
