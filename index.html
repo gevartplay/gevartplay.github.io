@@ -111,9 +111,9 @@
         }
         #modal-img:active { cursor: grabbing; }
 
-        /* === АНИМАЦИИ ПЕРЕХОДА (ZOOM EFFECT) === */
+        /* === АНИМАЦИИ ПЕРЕХОДА (ZOOM EFFECT + ANGRY BIRDS) === */
         
-        /* 1. Уход старого фото (Сжимается в точку и исчезает) */
+        /* 1. Уход старого фото (Сжимается в точку и исчезает - для ПК кнопок) */
         .zoom-out-exit {
             animation: zoomOutExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
@@ -124,13 +124,32 @@
 
         /* 2. Приход нового фото (Растет из точки) */
         .zoom-in-enter {
-            animation: zoomInEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; /* Пружинистый эффект */
+            animation: zoomInEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
         @keyframes zoomInEnter {
             0% { opacity: 0; transform: scale(0.5); }
             100% { opacity: 1; transform: scale(1); }
         }
 
+        /* 3. ANGRY BIRDS STYLE (MOBILE SWIPE) */
+        
+        /* Улетает ВВЕРХ и уменьшается */
+        .fly-up-exit {
+            animation: flyUpOut 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+        }
+        @keyframes flyUpOut {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-120vh) scale(0.2); opacity: 0; }
+        }
+
+        /* Улетает ВНИЗ и уменьшается */
+        .fly-down-exit {
+            animation: flyDownOut 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+        }
+        @keyframes flyDownOut {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(120vh) scale(0.2); opacity: 0; }
+        }
 
         /* Кнопки Навигации (Стрелки) */
         .nav-btn {
@@ -429,36 +448,83 @@
             }
         }
 
+        // ОБНОВЛЕННЫЙ ТАЧ END (СВАЙП ANGRY BIRDS)
         function handleTouchEnd(e) {
             isDragging = false;
+            
+            // Если масштаб обычный и палец был один (свайп)
             if (scale < 1.05 && e.changedTouches.length === 1) {
                 const endY = e.changedTouches[0].pageY;
                 const endX = e.changedTouches[0].pageX;
+                
                 const diffY = touchStartY - endY; 
                 const diffX = touchStartX - endX;
+
+                // Проверяем, что движение было вертикальным и достаточно длинным (> 50px)
                 if (Math.abs(diffY) > 50 && Math.abs(diffY) > Math.abs(diffX)) {
-                    if (diffY > 0) nextImage(); 
-                    else prevImage(); 
+                    if (diffY > 0) {
+                        // Свайп ВВЕРХ (бросаем вверх) -> След. фото
+                        performSwipeAction('up'); 
+                    } else {
+                        // Свайп ВНИЗ (бросаем вниз) -> Пред. фото
+                        performSwipeAction('down'); 
+                    }
                 }
             }
         }
 
+        // Логика броска фото (Angry Birds style)
+        function performSwipeAction(direction) {
+            if (portfolioImages.length === 0) return;
+
+            const img = document.getElementById('modal-img');
+            img.className = ''; // Сброс
+
+            if (direction === 'up') {
+                img.classList.add('fly-up-exit'); // Летит вверх и уменьшается
+                currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
+            } else {
+                img.classList.add('fly-down-exit'); // Летит вниз и уменьшается
+                currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
+            }
+
+            // Ждем завершения полета (500мс), потом меняем контент
+            setTimeout(() => {
+                resetZoom();
+                
+                const file = portfolioImages[currentImageIndex];
+                currentPhoto.url = file.download_url;
+                currentPhoto.sha = file.sha;
+                currentPhoto.path = file.path;
+                
+                img.src = file.download_url;
+
+                // Новое фото появляется (растет)
+                img.className = ''; 
+                img.classList.add('zoom-in-enter');
+
+                setTimeout(() => { img.classList.remove('zoom-in-enter'); }, 400);
+
+            }, 450); 
+        }
+
         function updateTransform() {
             const img = document.getElementById('modal-img');
-            // Применяем transform только если нет анимации перехода
-            if (!img.classList.contains('zoom-out-exit') && !img.classList.contains('zoom-in-enter')) {
+            if (!img.classList.contains('zoom-out-exit') && 
+                !img.classList.contains('zoom-in-enter') &&
+                !img.classList.contains('fly-up-exit') &&
+                !img.classList.contains('fly-down-exit')) {
                 img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
             }
         }
 
         function resetZoom() {
             scale = 1; translateX = 0; translateY = 0; 
-            // Сброс через стиль, чтобы не конфликтовать с анимацией классами
             const img = document.getElementById('modal-img');
             img.style.transform = 'translate(0px, 0px) scale(1)';
         }
 
-        // НАВИГАЦИЯ С АНИМАЦИЕЙ
+        // НАВИГАЦИЯ ДЛЯ ПК (КНОПКИ)
         function nextImage() {
             if (portfolioImages.length === 0) return;
             currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
@@ -473,32 +539,19 @@
 
         function animateTransition(index) {
             const img = document.getElementById('modal-img');
-            
-            // 1. Старое фото уменьшается и исчезает
-            img.className = ''; // Сброс классов
-            img.classList.add('zoom-out-exit');
+            img.className = ''; 
+            img.classList.add('zoom-out-exit'); // Обычное исчезновение
 
-            // Ждем окончания анимации исчезновения (300ms)
             setTimeout(() => {
                 resetZoom();
-                
                 const file = portfolioImages[index];
                 currentPhoto.url = file.download_url;
                 currentPhoto.sha = file.sha;
                 currentPhoto.path = file.path;
-                
-                // Меняем источник пока фото не видно
                 img.src = file.download_url;
-
-                // 2. Новое фото появляется (увеличивается из центра)
-                img.className = ''; // Сброс
+                img.className = ''; 
                 img.classList.add('zoom-in-enter');
-
-                // Убираем класс анимации после завершения, чтобы работал зум
-                setTimeout(() => {
-                    img.classList.remove('zoom-in-enter');
-                }, 400);
-
+                setTimeout(() => { img.classList.remove('zoom-in-enter'); }, 400);
             }, 280); 
         }
 
@@ -508,7 +561,6 @@
             const adminToken = localStorage.getItem('github_token_gevartplay');
             currentImageIndex = index;
             
-            // Первое открытие - просто показываем без сложной анимации перехода
             resetZoom();
             const file = portfolioImages[index];
             const img = document.getElementById('modal-img');
