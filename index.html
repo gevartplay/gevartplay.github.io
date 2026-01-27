@@ -14,7 +14,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; overflow-x: hidden; line-height: 1.6; cursor: default; }
 
-        /* --- КНОПКИ АДМИНА --- */
+        /* --- КНОПКИ АДМИНА В ШАПКЕ (Edit / Save) --- */
         .header-admin-btn {
             display: none; 
             position: absolute;
@@ -38,18 +38,6 @@
         #save-btn { right: 100px; }
         #enable-edit-btn { right: 100px; }
         
-        #batch-delete-btn {
-            display: none;
-            right: 190px; 
-            border-color: rgba(255, 68, 68, 0.5);
-            color: #ff4444;
-        }
-        #batch-delete-btn:hover {
-            background: #ff4444;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
-        }
-
         .header-admin-btn:hover {
             color: #fff;
             border-color: var(--primary);
@@ -63,6 +51,37 @@
             box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
             background: rgba(255, 68, 68, 0.1);
             color: #ff4444;
+        }
+
+        /* --- ПЛАВАЮЩАЯ КНОПКА УДАЛЕНИЯ (ВНИЗУ СПРАВА) --- */
+        #batch-delete-btn {
+            display: none; /* Скрыта по умолчанию */
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            color: white;
+            background: #ff4444;
+            border: none;
+            border-radius: 50px;
+            z-index: 20001; /* Поверх всего */
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 68, 68, 0.5);
+            text-transform: uppercase;
+            animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        #batch-delete-btn:hover {
+            transform: scale(1.05) translateY(-5px);
+            background: red;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.6);
+        }
+
+        @keyframes popUp {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
         /* Чекбоксы */
@@ -93,7 +112,8 @@
         .section-header h2 { font-size: 3rem; line-height: 1; }
         .section-header span { display: block; font-size: 1rem; color: var(--text-muted); letter-spacing: 4px; margin-bottom: 10px; }
         
-        img { width: 100%; display: block; image-rendering: -webkit-optimize-contrast; }
+        img { width: 100%; display: block; } 
+        
         a { text-decoration: none; color: white; transition: 0.3s; }
         .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } .reveal.active { opacity: 1; transform: translateY(0); }
 
@@ -158,23 +178,24 @@
             border-radius: 2px; 
             box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); 
             cursor: grab; 
-            /* Transition теперь управляется JS для свайпа */
             transition: transform 0.1s ease-out; 
             transform-origin: center center;
             will-change: transform, opacity;
+            
+            /* МАКСИМАЛЬНОЕ КАЧЕСТВО */
+            image-rendering: auto; 
+            object-fit: contain;
         }
         #modal-img:active { cursor: grabbing; }
 
         /* === АНИМАЦИИ ПЕРЕХОДА === */
         
-        /* Стандартные для кнопок */
         .zoom-out-exit { animation: zoomOutExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes zoomOutExit { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.5); } }
 
         .zoom-in-enter { animation: zoomInEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         @keyframes zoomInEnter { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
 
-        /* Инерционные вылеты (для свайпов) */
         .fly-up-exit { animation: flyUpOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         @keyframes flyUpOut { 100% { transform: translateY(-150vh) scale(0.5); opacity: 0; } }
 
@@ -187,7 +208,6 @@
         .fly-right-exit { animation: flyRightOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         @keyframes flyRightOut { 100% { transform: translateX(150vw) scale(0.5); opacity: 0; } }
         
-        /* Возврат на место (пружина) */
         .snap-back { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; transform: translate(0, 0) scale(1) !important; }
 
         .nav-btn {
@@ -299,11 +319,12 @@
     </div>
 
     <div id="video-modal" class="modal"><span class="close-btn" onclick="closeModal('video-modal')">&times;</span><div class="video-content modal-content" id="video-modal-content"></div></div>
+    
+    <button id="batch-delete-btn" onclick="deleteSelectedImages()">🗑 DELETE SELECTED</button>
 
     <header>
         <a href="admin.html" class="admin-link">ADMIN</a>
         
-        <button id="batch-delete-btn" class="header-admin-btn" onclick="deleteSelectedImages()">🗑 DELETE SELECTED</button>
         <button id="enable-edit-btn" class="header-admin-btn" onclick="startEditing()">✏️ EDIT</button>
         <button id="save-btn" class="header-admin-btn" onclick="saveAllContent()">💾 SAVE</button>
         
@@ -427,7 +448,6 @@
                 startY = e.clientY - translateY;
                 touchStartX = e.clientX; 
                 img.style.cursor = 'grabbing';
-                // Отключаем плавность при перетаскивании, чтобы не лагало
                 img.style.transition = 'none'; 
             });
             
@@ -677,7 +697,8 @@
             document.getElementById('enable-edit-btn').style.display = 'none';
             document.getElementById('save-btn').style.display = 'block';
             document.getElementById('edit-bg-btn').style.display = 'block';
-            document.getElementById('batch-delete-btn').style.display = 'block'; 
+            // КНОПКА УДАЛЕНИЯ ПОКА СКРЫТА (пока ничего не выбрано)
+            document.getElementById('batch-delete-btn').style.display = 'none'; 
             
             editables.forEach(id => { const el = document.getElementById(id); if(el) { el.contentEditable = "true"; el.classList.add('editable-active'); } });
             document.querySelector('.hero-content').style.pointerEvents = 'auto';
@@ -701,11 +722,14 @@
                 selectedFiles.push(sha);
                 parent.classList.add('selected');
             }
+            
+            // ЛОГИКА ВСПЛЫВАЮЩЕЙ КНОПКИ
             const btn = document.getElementById('batch-delete-btn');
             if (selectedFiles.length > 0) {
-                btn.innerText = `🗑 DELETE SELECTED (${selectedFiles.length})`;
+                btn.style.display = 'block'; // Показываем
+                btn.innerText = `🗑 DELETE (${selectedFiles.length})`;
             } else {
-                btn.innerText = `🗑 DELETE SELECTED`;
+                btn.style.display = 'none'; // Скрываем
             }
         }
 
