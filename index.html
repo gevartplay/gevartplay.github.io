@@ -35,18 +35,18 @@
         a { text-decoration: none; color: white; transition: 0.3s; }
         .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* TILT (Базовый стиль) */
+        /* TILT (Только для ПК) */
         .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
         .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
+        
         /* На ПК сброс при уходе мыши */
         @media (min-width: 1025px) {
              .tilt-card:not(:hover) .tilt-inner { transition: transform 0.5s ease-out; transform: perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1) !important; }
         }
-        /* На Мобильном сброс если гироскоп не активен */
+        /* На Мобильном ОТКЛЮЧАЕМ любые трансформации тилта */
         @media (max-width: 1024px) {
-             .tilt-inner:not(.gyro-active) { transition: transform 0.5s ease-out; transform: perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1) !important; }
+             .tilt-inner { transform: none !important; transition: none !important; }
         }
-
 
         /* HEADER */
         header { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-left: 5vw; background: #050505; }
@@ -86,10 +86,6 @@
         .admin-link { position: absolute; top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; color: rgba(255, 255, 255, 0.2); letter-spacing: 3px; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; z-index: 1000; transition: all 0.4s ease; backdrop-filter: blur(5px); }
         .admin-link:hover { color: #fff; border-color: var(--primary); box-shadow: 0 0 20px rgba(91, 81, 216, 0.6); transform: scale(1.05); background: rgba(91, 81, 216, 0.1); }
         
-        /* Кнопка гироскопа */
-        #gyro-btn { display: none; margin: 30px auto 0; background: linear-gradient(45deg, var(--primary), #ff00cc); color: white; border: none; padding: 12px 30px; font-family: 'Oswald'; font-size: 1rem; border-radius: 30px; cursor: pointer; box-shadow: 0 0 20px rgba(91, 81, 216, 0.5); animation: pulseBtn 2s infinite; }
-        @keyframes pulseBtn { 0% { transform: scale(1); box-shadow: 0 0 20px rgba(91, 81, 216, 0.5); } 50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(91, 81, 216, 0.8), 0 0 20px #ff00cc; } 100% { transform: scale(1); box-shadow: 0 0 20px rgba(91, 81, 216, 0.5); } }
-
         /* МОДАЛКА (LightBox) */
         .modal { 
             display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; 
@@ -109,36 +105,31 @@
             border-radius: 2px; 
             box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); 
             cursor: grab; 
-            transition: transform 0.05s linear;
+            transition: none; /* Убираем стандартные транзишны для ручного контроля */
             transform-origin: center center;
             will-change: transform, opacity;
         }
         #modal-img:active { cursor: grabbing; }
 
-        /* МАГИЧЕСКИЕ ЭФФЕКТЫ */
-        /* Вспышка на контейнере */
-        @keyframes magicFlash { 0% { box-shadow: 0 0 0 0 rgba(91, 81, 216, 0); } 20% { box-shadow: 0 0 100px 50px rgba(91, 81, 216, 0.8), 0 0 200px 100px rgba(255, 255, 255, 0.4); } 100% { box-shadow: 0 0 0 0 rgba(91, 81, 216, 0); } }
-        .magic-glow { animation: magicFlash 0.8s ease-out forwards; }
-
-        /* Искры */
-        .spark {
-            position: absolute;
-            width: 4px; height: 4px;
-            background: white;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10010;
-            box-shadow: 0 0 10px var(--primary), 0 0 20px white;
-            opacity: 1;
-            animation: flySpark 0.8s ease-out forwards;
+        /* === АНИМАЦИИ ПЕРЕХОДА (ZOOM EFFECT) === */
+        
+        /* 1. Уход старого фото (Сжимается в точку и исчезает) */
+        .zoom-out-exit {
+            animation: zoomOutExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
-        @keyframes flySpark { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; } }
+        @keyframes zoomOutExit {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
 
-        /* Анимации свайпа (Дорогие) */
-        .slide-in-up { animation: slideInUp 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-        @keyframes slideInUp { from { opacity: 0; transform: translateY(150px) scale(0.8) rotateX(-20deg); filter: blur(10px); } to { opacity: 1; transform: translateY(0) scale(1) rotateX(0); filter: blur(0); } }
-        .slide-in-down { animation: slideInDown 0.7s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
-        @keyframes slideInDown { from { opacity: 0; transform: translateY(-150px) scale(0.8) rotateX(20deg); filter: blur(10px); } to { opacity: 1; transform: translateY(0) scale(1) rotateX(0); filter: blur(0); } }
+        /* 2. Приход нового фото (Растет из точки) */
+        .zoom-in-enter {
+            animation: zoomInEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; /* Пружинистый эффект */
+        }
+        @keyframes zoomInEnter {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
 
 
         /* Кнопки Навигации (Стрелки) */
@@ -224,10 +215,6 @@
             .about-img-container img { filter: grayscale(100%); transition: filter 2.0s ease; }
             .in-view { filter: grayscale(0%) !important; }
             .hero-content h1 { font-size: 15vw; } 
-            
-            /* Отключаем десктопный тилт, если нет гироскопа */
-            .tilt-inner:not(.gyro-active) { transform: none !important; }
-            
             .section-header h2 { font-size: 2.2rem; } 
             .about-wrapper { display: block; } 
             .about-img-container { float: right; width: 50%; margin-left: 20px; margin-bottom: 15px; } 
@@ -241,7 +228,6 @@
             .video-content { padding: 60px 20px; gap: 30px; } 
             .clickable-service:hover::after { content: none; } 
             .admin-link { top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; } 
-            #gyro-btn { display: block; } /* Показываем кнопку только на мобиле */
         }
     </style>
 </head>
@@ -253,8 +239,8 @@
     <div id="single-image-modal" class="modal">
         <span class="close-btn" onclick="closeModal('single-image-modal')">&times;</span>
         
-        <button class="nav-btn prev-btn" onclick="prevImage('down')">&#10094;</button>
-        <button class="nav-btn next-btn" onclick="nextImage('up')">&#10095;</button>
+        <button class="nav-btn prev-btn" onclick="prevImage()">&#10094;</button>
+        <button class="nav-btn next-btn" onclick="nextImage()">&#10095;</button>
 
         <div class="gallery-content" id="gallery-container">
             <img id="modal-img" src="" alt="View">
@@ -327,7 +313,6 @@
                     <img id="footer-logo" src="images/logo.png" alt="Logo" style="max-width: 200px; width: 100%; height: auto;">
                 </div>
             </div>
-             <button id="gyro-btn" onclick="requestGyroPermission()">✨ ВКЛЮЧИТЬ 3D МАГИЮ ✨</button>
         </div>
     </section>
 
@@ -452,97 +437,94 @@
                 const diffY = touchStartY - endY; 
                 const diffX = touchStartX - endX;
                 if (Math.abs(diffY) > 50 && Math.abs(diffY) > Math.abs(diffX)) {
-                    if (diffY > 0) nextImage('up'); 
-                    else prevImage('down'); 
+                    if (diffY > 0) nextImage(); 
+                    else prevImage(); 
                 }
             }
         }
 
         function updateTransform() {
             const img = document.getElementById('modal-img');
-            img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            // Применяем transform только если нет анимации перехода
+            if (!img.classList.contains('zoom-out-exit') && !img.classList.contains('zoom-in-enter')) {
+                img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            }
         }
 
         function resetZoom() {
-            scale = 1; translateX = 0; translateY = 0; updateTransform();
+            scale = 1; translateX = 0; translateY = 0; 
+            // Сброс через стиль, чтобы не конфликтовать с анимацией классами
+            const img = document.getElementById('modal-img');
+            img.style.transform = 'translate(0px, 0px) scale(1)';
         }
 
-        // НАВИГАЦИЯ С МАГИЕЙ
-        function nextImage(direction = 'none') {
+        // НАВИГАЦИЯ С АНИМАЦИЕЙ
+        function nextImage() {
             if (portfolioImages.length === 0) return;
             currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
-            showImage(currentImageIndex, direction);
+            animateTransition(currentImageIndex);
         }
 
-        function prevImage(direction = 'none') {
+        function prevImage() {
             if (portfolioImages.length === 0) return;
             currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
-            showImage(currentImageIndex, direction);
+            animateTransition(currentImageIndex);
         }
 
-        function showImage(index, direction) {
-            resetZoom(); 
+        function animateTransition(index) {
+            const img = document.getElementById('modal-img');
+            
+            // 1. Старое фото уменьшается и исчезает
+            img.className = ''; // Сброс классов
+            img.classList.add('zoom-out-exit');
+
+            // Ждем окончания анимации исчезновения (300ms)
+            setTimeout(() => {
+                resetZoom();
+                
+                const file = portfolioImages[index];
+                currentPhoto.url = file.download_url;
+                currentPhoto.sha = file.sha;
+                currentPhoto.path = file.path;
+                
+                // Меняем источник пока фото не видно
+                img.src = file.download_url;
+
+                // 2. Новое фото появляется (увеличивается из центра)
+                img.className = ''; // Сброс
+                img.classList.add('zoom-in-enter');
+
+                // Убираем класс анимации после завершения, чтобы работал зум
+                setTimeout(() => {
+                    img.classList.remove('zoom-in-enter');
+                }, 400);
+
+            }, 280); 
+        }
+
+        function openModal(index) {
+            const modal = document.getElementById('single-image-modal');
+            const delBtn = document.getElementById('modal-delete-btn');
+            const adminToken = localStorage.getItem('github_token_gevartplay');
+            currentImageIndex = index;
+            
+            // Первое открытие - просто показываем без сложной анимации перехода
+            resetZoom();
             const file = portfolioImages[index];
+            const img = document.getElementById('modal-img');
+            
             currentPhoto.url = file.download_url;
             currentPhoto.sha = file.sha;
             currentPhoto.path = file.path;
             
-            const img = document.getElementById('modal-img');
-            const container = document.getElementById('gallery-container');
-            
-            // Запуск магического эффекта
-            createMagicEffect(container);
-            
-            img.classList.remove('slide-in-up', 'slide-in-down');
-            void img.offsetWidth; 
-            
             img.src = file.download_url;
-            
-            if (direction === 'up') { img.classList.add('slide-in-up'); } 
-            else if (direction === 'down') { img.classList.add('slide-in-down'); } 
-            else { img.style.opacity = 0.5; setTimeout(() => { img.style.opacity = 1; }, 150); }
+            img.className = '';
+            img.style.opacity = 1;
+
+            delBtn.style.display = adminToken ? "flex" : "none";
+            modal.style.display = "flex"; 
+            document.body.style.overflow = "hidden";
         }
-
-        // === МАГИЧЕСКИЙ ЭФФЕКТ (ИСКРЫ) ===
-        function createMagicEffect(container) {
-             // Добавляем свечение контейнеру
-            container.classList.remove('magic-glow');
-            void container.offsetWidth; // Триггер перерисовки
-            container.classList.add('magic-glow');
-
-            // Создаем искры
-            const rect = container.getBoundingClientRect();
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            for (let i = 0; i < 30; i++) {
-                const spark = document.createElement('div');
-                spark.classList.add('spark');
-                
-                const angle = Math.random() * Math.PI * 2; // Случайный угол
-                const distance = Math.random() * 150 + 50; // Случайная дистанция
-                const tx = Math.cos(angle) * distance + 'px';
-                const ty = Math.sin(angle) * distance + 'px';
-                
-                // Устанавливаем переменные для CSS анимации
-                spark.style.setProperty('--tx', tx);
-                spark.style.setProperty('--ty', ty);
-                spark.style.left = centerX + 'px';
-                spark.style.top = centerY + 'px';
-                
-                // Случайный размер и задержка
-                const size = Math.random() * 4 + 2 + 'px';
-                spark.style.width = size;
-                spark.style.height = size;
-                spark.style.animationDelay = Math.random() * 0.2 + 's';
-
-                container.appendChild(spark);
-
-                // Удаляем искру после анимации
-                setTimeout(() => { spark.remove(); }, 1000);
-            }
-        }
-
 
         // =========================================================
         // СЛУЖЕБНЫЕ ФУНКЦИИ
@@ -686,17 +668,6 @@
             } catch (e) {}
         }
 
-        function openModal(index) {
-            const modal = document.getElementById('single-image-modal');
-            const delBtn = document.getElementById('modal-delete-btn');
-            const adminToken = localStorage.getItem('github_token_gevartplay');
-            currentImageIndex = index;
-            showImage(index);
-            delBtn.style.display = adminToken ? "flex" : "none";
-            modal.style.display = "flex"; 
-            document.body.style.overflow = "hidden";
-        }
-
         function downloadCurrent() { if (currentPhoto.url) window.open(currentPhoto.url, '_blank'); }
         async function deleteCurrent() {
             const token = localStorage.getItem('github_token_gevartplay');
@@ -722,9 +693,8 @@
         function reveal() { document.querySelectorAll(".reveal").forEach(r => { if(r.getBoundingClientRect().top < window.innerHeight - 50) r.classList.add("active"); }); }
         window.addEventListener("scroll", reveal);
         
-        // --- 3D TILT (ПК и Мобильный Гироскоп) ---
+        // --- 3D TILT (Только для ПК) ---
         function initTilt() { 
-            // ПК: Мышь
             if (window.innerWidth > 1024) { 
                 document.querySelectorAll('.tilt-card').forEach(card => { 
                     const inner = card.querySelector('.tilt-inner');
@@ -743,46 +713,8 @@
                         inner.style.transition = 'none';
                         inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scaleMult}, ${scaleMult}, ${scaleMult})`; 
                     }); 
-                    // Сброс при уходе мыши обрабатывается в CSS
                 }); 
             } 
-        }
-
-        // ЗАПРОС РАЗРЕШЕНИЯ НА ГИРОСКОП (для iOS)
-        function requestGyroPermission() {
-            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                DeviceOrientationEvent.requestPermission()
-                    .then(permissionState => {
-                        if (permissionState === 'granted') {
-                            initGyroscope();
-                            document.getElementById('gyro-btn').style.display = 'none'; // Скрываем кнопку
-                        } else {
-                            alert("Доступ к датчикам отклонен. Магия не сработает :(");
-                        }
-                    })
-                    .catch(console.error);
-            } else {
-                // Android или старый iOS (разрешение не требуется)
-                initGyroscope();
-                document.getElementById('gyro-btn').style.display = 'none';
-            }
-        }
-
-        // ИНИЦИАЛИЗАЦИЯ ГИРОСКОПА
-        function initGyroscope() {
-            if (window.innerWidth <= 1024) {
-                window.addEventListener('deviceorientation', (e) => {
-                    const tiltX = e.beta / 2; // Наклон вперед/назад
-                    const tiltY = -e.gamma / 1.5; // Наклон влево/вправо (инвертирован для эффекта компаса)
-
-                    document.querySelectorAll('.tilt-card .tilt-inner').forEach(inner => {
-                        inner.classList.add('gyro-active'); // Добавляем класс для отключения CSS-сброса
-                        // Применяем наклон ко всем элементам
-                        inner.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-                    });
-                });
-                alert("Магия включена! Наклоняй телефон.");
-            }
         }
         
         function initMobileObserver() { 
