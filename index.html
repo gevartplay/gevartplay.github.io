@@ -14,13 +14,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; overflow-x: hidden; line-height: 1.6; cursor: default; }
 
-        /* --- КНОПКИ АДМИНА (В ШАПКЕ) --- */
-        /* Теперь они выглядят как часть меню */
+        /* --- КНОПКИ АДМИНА --- */
         .header-admin-btn {
-            display: none; /* Скрыты по умолчанию */
+            display: none; 
             position: absolute;
             top: 20px;
-            right: 100px; /* Располагаем СЛЕВА от кнопки ADMIN (которая на 20px) */
             padding: 5px 15px;
             font-size: 0.7rem;
             color: rgba(255, 255, 255, 0.5);
@@ -37,6 +35,21 @@
             font-family: 'Oswald', sans-serif;
         }
 
+        #save-btn { right: 100px; }
+        #enable-edit-btn { right: 100px; }
+        
+        #batch-delete-btn {
+            display: none;
+            right: 190px; 
+            border-color: rgba(255, 68, 68, 0.5);
+            color: #ff4444;
+        }
+        #batch-delete-btn:hover {
+            background: #ff4444;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+        }
+
         .header-admin-btn:hover {
             color: #fff;
             border-color: var(--primary);
@@ -45,7 +58,6 @@
             background: rgba(91, 81, 216, 0.1);
         }
 
-        /* Кнопка сохранить будет красной при наведении */
         #save-btn:hover {
             border-color: #ff4444;
             box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
@@ -53,11 +65,29 @@
             color: #ff4444;
         }
 
+        /* Чекбоксы */
+        .select-overlay {
+            display: none; 
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 25px;
+            height: 25px;
+            border: 2px solid white;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            z-index: 20000;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .portfolio-item.editing .select-overlay { display: block; }
+        .portfolio-item.selected .select-overlay { background: #ff4444; border-color: #ff4444; box-shadow: 0 0 10px #ff4444; }
+        .portfolio-item.selected img { filter: grayscale(100%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8); }
+
         .editable-active { outline: 1px dashed rgba(91, 81, 216, 0.5); cursor: text; min-height: 1em; }
         .editable-active:focus { outline: 2px solid var(--primary); background: rgba(255,255,255,0.05); }
         .edit-bg-btn { display: none; position: absolute; top: 60px; right: 20px; background: rgba(0,0,0,0.7); border: 1px solid white; color: white; padding: 5px 15px; cursor: pointer; z-index: 1000; font-family: sans-serif; font-size: 10px; border-radius: 20px; }
 
-        /* --- СТАНДАРТНЫЕ СТИЛИ --- */
         h1, h2, h3, .contact-link { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
         .section-header { margin-bottom: 40px; padding-left: 20px; border-left: 4px solid var(--primary); }
         .section-header h2 { font-size: 3rem; line-height: 1; }
@@ -67,7 +97,6 @@
         a { text-decoration: none; color: white; transition: 0.3s; }
         .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* TILT (Только для ПК) */
         .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
         .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
         
@@ -78,7 +107,6 @@
              .tilt-inner { transform: none !important; transition: none !important; }
         }
 
-        /* HEADER */
         header { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-left: 5vw; background: #050505; }
         #hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/photo_2026-01-21_18-52-52.jpg') center/cover no-repeat; z-index: 0; opacity: 0.6; animation: bgZoom 20s infinite alternate ease-in-out; }
         @keyframes bgZoom { from { transform: scale(1); } to { transform: scale(1.05); } }
@@ -87,13 +115,11 @@
         .hero-subtitle { font-size: 1.5rem; font-weight: 300; letter-spacing: 2px; color: var(--text-muted); opacity: 0; transform: translateY(30px); animation: epicFadeInUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 1.5s; }
         @keyframes epicFadeInUp { to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
 
-        /* ABOUT */
         .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-areas: "head img" "text img"; gap: 50px; align-items: center; }
         .about-header-wrap { grid-area: head; } .about-text-content { grid-area: text; } .about-img-container { grid-area: img; width: 100%; }
         .about-img-container img { border-radius: 5px; box-shadow: 20px 20px 0 var(--primary); }
         .exp-badge { display: inline-block; margin-top: 30px; padding: 10px 20px; border: 1px solid var(--primary); color: var(--primary); font-family: 'Oswald'; letter-spacing: 1px; }
 
-        /* SERVICES */
         .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .clickable-service { cursor: pointer; }
         .service-card { background: #111; padding: 40px; border-bottom: 2px solid transparent; transition: all 0.3s; height: 100%; position: relative; overflow: hidden; }
@@ -103,7 +129,6 @@
         .service-card p { color: #ccc; font-size: 0.95rem; }
         .layer-icon { position: absolute; top: 15px; right: 15px; width: 20px; height: 20px; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21 7.25V18.25C21 19.9069 19.6569 21.25 18 21.25H7C5.34315 21.25 4 19.9069 4 18.25V7.25C4 5.59315 5.34315 4.25 7 4.25H18C19.6569 4.25 21 5.59315 21 7.25Z' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M17 3V1.75C17 1.33579 16.6642 1 16.25 1H4.25C2.45507 1 1 2.45507 1 4.25V16.25C1 16.6642 1.33579 17 1.75 17H3' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; opacity: 0.8; z-index: 5; pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
 
-        /* CONTACT */
         .contact-section { background: #0a0a0a; text-align: center; padding: 150px 20px; position: relative; }
         .contact-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 15vw; font-family: 'Oswald'; color: rgba(255,255,255,0.02); pointer-events: none; z-index: 0; }
         .contact-content { position: relative; z-index: 1; }
@@ -113,12 +138,9 @@
         .social-row { display: flex; justify-content: center; gap: 30px; margin-top: 60px; }
         .social-link { font-size: 1.2rem; border-bottom: 1px solid #555; padding-bottom: 5px; transition: 0.3s; }
         .social-link:hover { color: var(--primary); border-bottom-color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-        
-        /* Стили кнопки ADMIN */
         .admin-link { position: absolute; top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; color: rgba(255, 255, 255, 0.2); letter-spacing: 3px; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; z-index: 1000; transition: all 0.4s ease; backdrop-filter: blur(5px); }
         .admin-link:hover { color: #fff; border-color: var(--primary); box-shadow: 0 0 20px rgba(91, 81, 216, 0.6); transform: scale(1.05); background: rgba(91, 81, 216, 0.1); }
         
-        /* МОДАЛКА (LightBox) */
         .modal { 
             display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; 
             background-color: rgba(0,0,0,0.95); overflow: hidden; backdrop-filter: blur(10px); 
@@ -136,7 +158,8 @@
             border-radius: 2px; 
             box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); 
             cursor: grab; 
-            transition: none; 
+            /* Transition теперь управляется JS для свайпа */
+            transition: transform 0.1s ease-out; 
             transform-origin: center center;
             will-change: transform, opacity;
         }
@@ -144,19 +167,28 @@
 
         /* === АНИМАЦИИ ПЕРЕХОДА === */
         
-        /* ПК */
+        /* Стандартные для кнопок */
         .zoom-out-exit { animation: zoomOutExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes zoomOutExit { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.5); } }
 
         .zoom-in-enter { animation: zoomInEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         @keyframes zoomInEnter { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
 
-        /* MOBILE ANGRY BIRDS */
-        .fly-up-exit { animation: flyUpOut 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
-        @keyframes flyUpOut { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-120vh) scale(0.2); opacity: 0; } }
+        /* Инерционные вылеты (для свайпов) */
+        .fly-up-exit { animation: flyUpOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes flyUpOut { 100% { transform: translateY(-150vh) scale(0.5); opacity: 0; } }
 
-        .fly-down-exit { animation: flyDownOut 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
-        @keyframes flyDownOut { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(120vh) scale(0.2); opacity: 0; } }
+        .fly-down-exit { animation: flyDownOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes flyDownOut { 100% { transform: translateY(150vh) scale(0.5); opacity: 0; } }
+
+        .fly-left-exit { animation: flyLeftOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes flyLeftOut { 100% { transform: translateX(-150vw) scale(0.5); opacity: 0; } }
+
+        .fly-right-exit { animation: flyRightOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+        @keyframes flyRightOut { 100% { transform: translateX(150vw) scale(0.5); opacity: 0; } }
+        
+        /* Возврат на место (пружина) */
+        .snap-back { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; transform: translate(0, 0) scale(1) !important; }
 
         .nav-btn {
             position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.1);
@@ -211,6 +243,9 @@
                 opacity: 1 !important;
                 box-shadow: 0 30px 60px -10px rgba(91, 81, 216, 0.8), 0 0 30px rgba(91, 81, 216, 0.5);
             }
+            body.is-editing .portfolio-masonry:hover .portfolio-item img { filter: none; transform: none; opacity: 1; }
+            body.is-editing .portfolio-masonry .portfolio-item:hover img { transform: none !important; box-shadow: none; filter: none !important; }
+
             .about-img-container:hover img { filter: grayscale(0%); box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6); transform: translateY(-7px) scale(1.05); z-index: 10; }
             .services-grid .tilt-card:hover .service-card { box-shadow: 0 0 30px var(--primary), 0 0 60px var(--primary); z-index: 100; border-color: var(--primary); }
             .services-grid .tilt-card:hover .service-bg { opacity: 0.8; }
@@ -268,6 +303,7 @@
     <header>
         <a href="admin.html" class="admin-link">ADMIN</a>
         
+        <button id="batch-delete-btn" class="header-admin-btn" onclick="deleteSelectedImages()">🗑 DELETE SELECTED</button>
         <button id="enable-edit-btn" class="header-admin-btn" onclick="startEditing()">✏️ EDIT</button>
         <button id="save-btn" class="header-admin-btn" onclick="saveAllContent()">💾 SAVE</button>
         
@@ -349,6 +385,9 @@
         let initialDistance = 0;
         let initialScale = 1;
 
+        let isEditMode = false;
+        let selectedFiles = []; 
+
         const editables = [ 'hero-title', 'hero-subtitle', 'about-title', 'about-text', 'about-badge', 'services-title', 'serv-title-1', 'serv-desc-1', 'serv-title-2', 'serv-desc-2', 'serv-title-3', 'serv-desc-3', 'contact-title', 'contact-phone' ];
         const imageIds = ['main-photo', 'serv-img-1', 'serv-img-2', 'serv-img-3', 'footer-logo'];
 
@@ -360,12 +399,13 @@
         });
 
         // =========================================================
-        // ЛОГИКА ГАЛЕРЕИ
+        // ЛОГИКА ГАЛЕРЕИ (SWIPE & ZOOM)
         // =========================================================
 
         function initGalleryEvents() {
             const container = document.getElementById('gallery-container');
             const modal = document.getElementById('single-image-modal');
+            const img = document.getElementById('modal-img');
 
             // ПК Зум
             container.addEventListener('wheel', (e) => {
@@ -379,51 +419,79 @@
                 }
             }, { passive: false });
 
-            // ПК Драг
+            // ПК Драг + Свайп
             container.addEventListener('mousedown', (e) => {
-                if (scale > 1) { 
-                    e.preventDefault();
-                    isDragging = true;
-                    startX = e.clientX - translateX;
-                    startY = e.clientY - translateY;
-                    document.getElementById('modal-img').style.cursor = 'grabbing';
-                }
+                e.preventDefault(); 
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                touchStartX = e.clientX; 
+                img.style.cursor = 'grabbing';
+                // Отключаем плавность при перетаскивании, чтобы не лагало
+                img.style.transition = 'none'; 
             });
+            
             window.addEventListener('mousemove', (e) => {
-                if (isDragging && scale > 1) {
+                if (isDragging) {
                     e.preventDefault();
                     translateX = e.clientX - startX;
                     translateY = e.clientY - startY;
                     updateTransform();
                 }
             });
-            window.addEventListener('mouseup', () => {
+            
+            window.addEventListener('mouseup', (e) => {
+                if(!isDragging) return;
                 isDragging = false;
-                if(document.getElementById('modal-img')) { document.getElementById('modal-img').style.cursor = 'grab'; }
+                img.style.cursor = 'grab';
+                img.style.transition = 'transform 0.1s ease-out'; // Возвращаем плавность
+
+                // ЛОГИКА ПК СВАЙПА (если масштаб 1)
+                if (scale === 1) {
+                    const diffX = e.clientX - touchStartX;
+                    if (Math.abs(diffX) > 100) {
+                        if (diffX > 0) performSwipeAction('right'); 
+                        else performSwipeAction('left');
+                    } else {
+                        // Возврат на место, если не добросил
+                        translateX = 0; translateY = 0;
+                        updateTransform();
+                    }
+                }
             });
 
-            // Мобильный Тач
+            // Мобильный Тач (STICKY SWIPE)
             container.addEventListener('touchstart', handleTouchStart, { passive: false });
             container.addEventListener('touchmove', handleTouchMove, { passive: false });
             container.addEventListener('touchend', handleTouchEnd);
         }
 
         function handleTouchStart(e) {
+            const img = document.getElementById('modal-img');
+            
             if (e.touches.length === 2) {
+                // Начало зума двумя пальцами
                 isDragging = false;
                 initialDistance = Math.hypot( e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY );
                 initialScale = scale;
             } else if (e.touches.length === 1) {
+                // Начало одного пальца (драг или свайп)
                 isDragging = true;
                 touchStartX = e.touches[0].pageX;
                 touchStartY = e.touches[0].pageY;
+                
+                // Пересчитываем стартовые координаты с учетом текущего сдвига
                 startX = e.touches[0].pageX - translateX;
                 startY = e.touches[0].pageY - translateY;
+                
+                // ВАЖНО: Убираем задержку анимации, чтобы фото "прилипло" к пальцу моментально
+                img.style.transition = 'none';
             }
         }
 
         function handleTouchMove(e) {
             if (e.touches.length === 2) {
+                // ЗУМ
                 e.preventDefault(); 
                 const currentDistance = Math.hypot( e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY );
                 if (initialDistance > 0) {
@@ -432,81 +500,105 @@
                     updateTransform();
                 }
             } else if (e.touches.length === 1 && isDragging) {
-                if (scale > 1.05) {
-                    e.preventDefault();
-                    translateX = e.touches[0].pageX - startX;
-                    translateY = e.touches[0].pageY - startY;
-                    updateTransform();
-                }
+                // ДВИЖЕНИЕ (STICKY)
+                e.preventDefault(); // Блокируем скролл страницы
+                
+                // Вычисляем новые координаты
+                translateX = e.touches[0].pageX - startX;
+                translateY = e.touches[0].pageY - startY;
+                
+                // Применяем сразу
+                updateTransform();
             }
         }
 
-        // ОБНОВЛЕННЫЙ ТАЧ END (СВАЙП ANGRY BIRDS)
         function handleTouchEnd(e) {
             isDragging = false;
+            const img = document.getElementById('modal-img');
             
-            // Если масштаб обычный и палец был один (свайп)
+            // Если масштаб обычный (1) и отпустили один палец
             if (scale < 1.05 && e.changedTouches.length === 1) {
                 const endY = e.changedTouches[0].pageY;
                 const endX = e.changedTouches[0].pageX;
                 
                 const diffY = touchStartY - endY; 
-                const diffX = touchStartX - endX;
-
-                // Проверяем, что движение было вертикальным и достаточно длинным (> 50px)
-                if (Math.abs(diffY) > 50 && Math.abs(diffY) > Math.abs(diffX)) {
-                    if (diffY > 0) {
-                        // Свайп ВВЕРХ (бросаем вверх) -> След. фото
-                        performSwipeAction('up'); 
-                    } else {
-                        // Свайп ВНИЗ (бросаем вниз) -> Пред. фото
-                        performSwipeAction('down'); 
-                    }
+                // Если движение было сильным по вертикали (> 80px)
+                if (Math.abs(diffY) > 80) {
+                    // Инерция: определяем направление
+                    if (diffY > 0) performSwipeAction('up'); // Вверх
+                    else performSwipeAction('down'); // Вниз
+                } else {
+                    // ПРУЖИНА: Возвращаем на место, если не добросил
+                    img.classList.add('snap-back');
+                    translateX = 0;
+                    translateY = 0;
+                    updateTransform();
+                    setTimeout(() => img.classList.remove('snap-back'), 400);
                 }
+            } else {
+                 // Если был зум, просто возвращаем плавность
+                 img.style.transition = 'transform 0.1s ease-out';
             }
         }
 
-        // Логика броска фото (Angry Birds style)
         function performSwipeAction(direction) {
             if (portfolioImages.length === 0) return;
 
             const img = document.getElementById('modal-img');
-            img.className = ''; // Сброс
+            img.className = ''; 
 
+            // Применяем CSS анимацию вылета
             if (direction === 'up') {
-                img.classList.add('fly-up-exit'); // Летит вверх и уменьшается
+                img.classList.add('fly-up-exit');
                 currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
-            } else {
-                img.classList.add('fly-down-exit'); // Летит вниз и уменьшается
+            } else if (direction === 'down') {
+                img.classList.add('fly-down-exit');
+                currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
+            } else if (direction === 'left') {
+                img.classList.add('fly-left-exit');
+                currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
+            } else if (direction === 'right') {
+                img.classList.add('fly-right-exit');
                 currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
             }
 
-            // Ждем завершения полета (500мс), потом меняем контент
+            // ПРЕДЗАГРУЗКА: пока летит старое, готовим новое
+            preloadNextImages();
+
             setTimeout(() => {
                 resetZoom();
-                
                 const file = portfolioImages[currentImageIndex];
                 currentPhoto.url = file.download_url;
                 currentPhoto.sha = file.sha;
                 currentPhoto.path = file.path;
-                
                 img.src = file.download_url;
-
-                // Новое фото появляется (растет)
+                
                 img.className = ''; 
+                // Анимация появления нового
                 img.classList.add('zoom-in-enter');
-
                 setTimeout(() => { img.classList.remove('zoom-in-enter'); }, 400);
-
             }, 450); 
+        }
+
+        // Функция предзагрузки соседей (чтобы не было глюков)
+        function preloadNextImages() {
+            if (portfolioImages.length < 2) return;
+            const nextIndex = (currentImageIndex + 1) % portfolioImages.length;
+            const prevIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
+            
+            // Создаем невидимые изображения, браузер их закэширует
+            const imgNext = new Image(); imgNext.src = portfolioImages[nextIndex].download_url;
+            const imgPrev = new Image(); imgPrev.src = portfolioImages[prevIndex].download_url;
         }
 
         function updateTransform() {
             const img = document.getElementById('modal-img');
-            if (!img.classList.contains('zoom-out-exit') && 
-                !img.classList.contains('zoom-in-enter') &&
-                !img.classList.contains('fly-up-exit') &&
-                !img.classList.contains('fly-down-exit')) {
+            // Применяем transform только если нет активных анимаций вылета
+            if (!img.classList.contains('fly-up-exit') && 
+                !img.classList.contains('fly-down-exit') &&
+                !img.classList.contains('fly-left-exit') &&
+                !img.classList.contains('fly-right-exit') &&
+                !img.classList.contains('snap-back')) {
                 img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
             }
         }
@@ -514,10 +606,10 @@
         function resetZoom() {
             scale = 1; translateX = 0; translateY = 0; 
             const img = document.getElementById('modal-img');
+            img.style.transition = 'none'; // Сброс без анимации
             img.style.transform = 'translate(0px, 0px) scale(1)';
         }
 
-        // НАВИГАЦИЯ ДЛЯ ПК (КНОПКИ)
         function nextImage() {
             if (portfolioImages.length === 0) return;
             currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
@@ -533,7 +625,9 @@
         function animateTransition(index) {
             const img = document.getElementById('modal-img');
             img.className = ''; 
-            img.classList.add('zoom-out-exit'); // Обычное исчезновение
+            img.classList.add('zoom-out-exit'); 
+
+            preloadNextImages(); // Предзагрузка
 
             setTimeout(() => {
                 resetZoom();
@@ -549,31 +643,104 @@
         }
 
         function openModal(index) {
+            if (isEditMode) return; 
+
             const modal = document.getElementById('single-image-modal');
             const delBtn = document.getElementById('modal-delete-btn');
             const adminToken = localStorage.getItem('github_token_gevartplay');
             currentImageIndex = index;
             
+            // Сразу предзагружаем соседей
+            preloadNextImages();
+
             resetZoom();
             const file = portfolioImages[index];
             const img = document.getElementById('modal-img');
-            
             currentPhoto.url = file.download_url;
             currentPhoto.sha = file.sha;
             currentPhoto.path = file.path;
-            
             img.src = file.download_url;
             img.className = '';
             img.style.opacity = 1;
-
             delBtn.style.display = adminToken ? "flex" : "none";
             modal.style.display = "flex"; 
             document.body.style.overflow = "hidden";
         }
 
         // =========================================================
-        // СЛУЖЕБНЫЕ ФУНКЦИИ
+        // РЕДАКТИРОВАНИЕ И МАССОВОЕ УДАЛЕНИЕ
         // =========================================================
+        function startEditing() {
+            isEditMode = true;
+            document.body.classList.add('is-editing');
+            
+            document.getElementById('enable-edit-btn').style.display = 'none';
+            document.getElementById('save-btn').style.display = 'block';
+            document.getElementById('edit-bg-btn').style.display = 'block';
+            document.getElementById('batch-delete-btn').style.display = 'block'; 
+            
+            editables.forEach(id => { const el = document.getElementById(id); if(el) { el.contentEditable = "true"; el.classList.add('editable-active'); } });
+            document.querySelector('.hero-content').style.pointerEvents = 'auto';
+            imageIds.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) { el.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e.pageX, e.pageY, el); }; }
+            });
+
+            document.querySelectorAll('.portfolio-item').forEach(item => {
+                item.classList.add('editing');
+            });
+        }
+
+        function toggleSelection(sha, element) {
+            if (!isEditMode) return;
+            const parent = element.closest('.portfolio-item');
+            if (selectedFiles.includes(sha)) {
+                selectedFiles = selectedFiles.filter(s => s !== sha);
+                parent.classList.remove('selected');
+            } else {
+                selectedFiles.push(sha);
+                parent.classList.add('selected');
+            }
+            const btn = document.getElementById('batch-delete-btn');
+            if (selectedFiles.length > 0) {
+                btn.innerText = `🗑 DELETE SELECTED (${selectedFiles.length})`;
+            } else {
+                btn.innerText = `🗑 DELETE SELECTED`;
+            }
+        }
+
+        async function deleteSelectedImages() {
+            if (selectedFiles.length === 0) return alert("Сначала выберите фото галочками!");
+            if (!confirm(`Удалить выбранные фото (${selectedFiles.length} шт.) навсегда?`)) return;
+
+            const btn = document.getElementById('batch-delete-btn');
+            btn.innerText = "DELETING...";
+            const token = localStorage.getItem('github_token_gevartplay');
+            
+            let promises = [];
+            for (let sha of selectedFiles) {
+                const file = portfolioImages.find(f => f.sha === sha);
+                if (file) {
+                    promises.push(
+                        fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(file.path)}`, {
+                            method: 'DELETE', 
+                            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ message: `Batch delete`, sha: file.sha })
+                        })
+                    );
+                }
+            }
+
+            try {
+                await Promise.all(promises);
+                alert("Все выбранные фото удалены!");
+                location.reload();
+            } catch (e) {
+                alert("Ошибка при удалении: " + e);
+                btn.innerText = "ERROR";
+            }
+        }
+
         async function loadContent() {
             const adminToken = localStorage.getItem('github_token_gevartplay');
             try {
@@ -595,18 +762,6 @@
                 if (el) el.src = "images/" + data.images[key]; 
             }
             if (data.heroBg) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${data.heroBg}')`;
-        }
-
-        function startEditing() {
-            document.getElementById('enable-edit-btn').style.display = 'none';
-            document.getElementById('save-btn').style.display = 'block';
-            document.getElementById('edit-bg-btn').style.display = 'block';
-            editables.forEach(id => { const el = document.getElementById(id); if(el) { el.contentEditable = "true"; el.classList.add('editable-active'); } });
-            document.querySelector('.hero-content').style.pointerEvents = 'auto';
-            imageIds.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { el.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e.pageX, e.pageY, el); }; }
-            });
         }
 
         async function saveAllContent() {
@@ -705,8 +860,24 @@
                 images.forEach((file, index) => {
                     const div = document.createElement('div');
                     div.className = 'portfolio-item tilt-card reveal';
-                    div.onclick = function() { openModal(index); };
+                    
+                    const overlay = document.createElement('div');
+                    overlay.className = 'select-overlay';
+                    overlay.onclick = (e) => {
+                        e.stopPropagation(); 
+                        toggleSelection(file.sha, overlay);
+                    };
+
+                    div.onclick = function() { 
+                        if (isEditMode) {
+                            toggleSelection(file.sha, div.querySelector('.select-overlay'));
+                        } else {
+                            openModal(index); 
+                        }
+                    };
+                    
                     div.innerHTML = `<div class="tilt-inner"><img src="${file.download_url}" loading="lazy"></div>`;
+                    div.appendChild(overlay);
                     container.appendChild(div);
                 });
                 setTimeout(() => { reveal(); initTilt(); initMobileObserver(); }, 500);
@@ -738,7 +909,6 @@
         function reveal() { document.querySelectorAll(".reveal").forEach(r => { if(r.getBoundingClientRect().top < window.innerHeight - 50) r.classList.add("active"); }); }
         window.addEventListener("scroll", reveal);
         
-        // --- 3D TILT (Только для ПК) ---
         function initTilt() { 
             if (window.innerWidth > 1024) { 
                 document.querySelectorAll('.tilt-card').forEach(card => { 
@@ -746,6 +916,7 @@
                     const isSpecial = card.closest('.services-grid') || card.closest('.contact-content');
                     card.addEventListener('mousemove', (e) => { 
                         if (!inner) return;
+                        if (isEditMode) return;
                         const rect = card.getBoundingClientRect(); 
                         const x = e.clientX - rect.left; 
                         const y = e.clientY - rect.top; 
