@@ -14,16 +14,48 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; overflow-x: hidden; line-height: 1.6; cursor: default; }
 
-        /* --- КНОПКИ АДМИНА --- */
-        .admin-btn { display: none; position: fixed; bottom: 30px; right: 30px; padding: 15px 30px; font-family: 'Oswald'; font-size: 1.2rem; border: none; border-radius: 50px; z-index: 20000; cursor: pointer; transition: 0.3s; text-transform: uppercase; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        #enable-edit-btn { background: #5b51d8; color: white; box-shadow: 0 0 20px rgba(91, 81, 216, 0.5); }
-        #enable-edit-btn:hover { transform: scale(1.1); background: #6c63ff; }
-        #save-btn { background: #ff4444; color: white; box-shadow: 0 0 20px rgba(255, 68, 68, 0.5); }
-        #save-btn:hover { transform: scale(1.1); background: red; }
+        /* --- КНОПКИ АДМИНА (В ШАПКЕ) --- */
+        /* Теперь они выглядят как часть меню */
+        .header-admin-btn {
+            display: none; /* Скрыты по умолчанию */
+            position: absolute;
+            top: 20px;
+            right: 100px; /* Располагаем СЛЕВА от кнопки ADMIN (которая на 20px) */
+            padding: 5px 15px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            z-index: 1000;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(5px);
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .header-admin-btn:hover {
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(91, 81, 216, 0.6);
+            transform: scale(1.05);
+            background: rgba(91, 81, 216, 0.1);
+        }
+
+        /* Кнопка сохранить будет красной при наведении */
+        #save-btn:hover {
+            border-color: #ff4444;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+            background: rgba(255, 68, 68, 0.1);
+            color: #ff4444;
+        }
 
         .editable-active { outline: 1px dashed rgba(91, 81, 216, 0.5); cursor: text; min-height: 1em; }
         .editable-active:focus { outline: 2px solid var(--primary); background: rgba(255,255,255,0.05); }
-        .edit-bg-btn { display: none; position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); border: 1px solid white; color: white; padding: 5px 15px; cursor: pointer; z-index: 1000; font-family: sans-serif; font-size: 12px; }
+        .edit-bg-btn { display: none; position: absolute; top: 60px; right: 20px; background: rgba(0,0,0,0.7); border: 1px solid white; color: white; padding: 5px 15px; cursor: pointer; z-index: 1000; font-family: sans-serif; font-size: 10px; border-radius: 20px; }
 
         /* --- СТАНДАРТНЫЕ СТИЛИ --- */
         h1, h2, h3, .contact-link { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
@@ -39,11 +71,9 @@
         .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
         .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
         
-        /* На ПК сброс при уходе мыши */
         @media (min-width: 1025px) {
              .tilt-card:not(:hover) .tilt-inner { transition: transform 0.5s ease-out; transform: perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1) !important; }
         }
-        /* На Мобильном ОТКЛЮЧАЕМ любые трансформации тилта */
         @media (max-width: 1024px) {
              .tilt-inner { transform: none !important; transition: none !important; }
         }
@@ -83,6 +113,8 @@
         .social-row { display: flex; justify-content: center; gap: 30px; margin-top: 60px; }
         .social-link { font-size: 1.2rem; border-bottom: 1px solid #555; padding-bottom: 5px; transition: 0.3s; }
         .social-link:hover { color: var(--primary); border-bottom-color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+        
+        /* Стили кнопки ADMIN */
         .admin-link { position: absolute; top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; color: rgba(255, 255, 255, 0.2); letter-spacing: 3px; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 30px; z-index: 1000; transition: all 0.4s ease; backdrop-filter: blur(5px); }
         .admin-link:hover { color: #fff; border-color: var(--primary); box-shadow: 0 0 20px rgba(91, 81, 216, 0.6); transform: scale(1.05); background: rgba(91, 81, 216, 0.1); }
         
@@ -96,7 +128,6 @@
         @keyframes fadeInModal { from {opacity: 0;} to {opacity: 1;} }
         .gallery-content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; position: relative; }
         
-        /* Стили для картинки в модалке */
         #modal-img { 
             max-height: 85vh; 
             max-width: 90vw; 
@@ -105,77 +136,38 @@
             border-radius: 2px; 
             box-shadow: 0 0 50px rgba(91, 81, 216, 0.2); 
             cursor: grab; 
-            transition: none; /* Убираем стандартные транзишны для ручного контроля */
+            transition: none; 
             transform-origin: center center;
             will-change: transform, opacity;
         }
         #modal-img:active { cursor: grabbing; }
 
-        /* === АНИМАЦИИ ПЕРЕХОДА (ZOOM EFFECT + ANGRY BIRDS) === */
+        /* === АНИМАЦИИ ПЕРЕХОДА === */
         
-        /* 1. Уход старого фото (Сжимается в точку и исчезает - для ПК кнопок) */
-        .zoom-out-exit {
-            animation: zoomOutExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-        @keyframes zoomOutExit {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.5); }
-        }
+        /* ПК */
+        .zoom-out-exit { animation: zoomOutExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes zoomOutExit { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.5); } }
 
-        /* 2. Приход нового фото (Растет из точки) */
-        .zoom-in-enter {
-            animation: zoomInEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        @keyframes zoomInEnter {
-            0% { opacity: 0; transform: scale(0.5); }
-            100% { opacity: 1; transform: scale(1); }
-        }
+        .zoom-in-enter { animation: zoomInEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        @keyframes zoomInEnter { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
 
-        /* 3. ANGRY BIRDS STYLE (MOBILE SWIPE) */
-        
-        /* Улетает ВВЕРХ и уменьшается */
-        .fly-up-exit {
-            animation: flyUpOut 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
-        }
-        @keyframes flyUpOut {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-120vh) scale(0.2); opacity: 0; }
-        }
+        /* MOBILE ANGRY BIRDS */
+        .fly-up-exit { animation: flyUpOut 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
+        @keyframes flyUpOut { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-120vh) scale(0.2); opacity: 0; } }
 
-        /* Улетает ВНИЗ и уменьшается */
-        .fly-down-exit {
-            animation: flyDownOut 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
-        }
-        @keyframes flyDownOut {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(120vh) scale(0.2); opacity: 0; }
-        }
+        .fly-down-exit { animation: flyDownOut 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; }
+        @keyframes flyDownOut { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(120vh) scale(0.2); opacity: 0; } }
 
-        /* Кнопки Навигации (Стрелки) */
         .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 10005;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-            backdrop-filter: blur(5px);
+            position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.1);
+            color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px;
+            cursor: pointer; z-index: 10005; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s; backdrop-filter: blur(5px);
         }
         .nav-btn:hover { background: var(--primary); transform: translateY(-50%) scale(1.1); box-shadow: 0 0 20px var(--primary); }
         .prev-btn { left: 20px; }
         .next-btn { right: 20px; }
         
-        /* Скрытие стрелок на мобильных */
         @media (max-width: 1024px) {
             .nav-btn { display: none !important; }
         }
@@ -252,9 +244,6 @@
 </head>
 <body>
 
-    <button id="enable-edit-btn" class="admin-btn" onclick="startEditing()">✏️ РЕДАКТИРОВАТЬ</button>
-    <button id="save-btn" class="admin-btn" onclick="saveAllContent()">💾 СОХРАНИТЬ</button>
-
     <div id="single-image-modal" class="modal">
         <span class="close-btn" onclick="closeModal('single-image-modal')">&times;</span>
         
@@ -278,6 +267,10 @@
 
     <header>
         <a href="admin.html" class="admin-link">ADMIN</a>
+        
+        <button id="enable-edit-btn" class="header-admin-btn" onclick="startEditing()">✏️ EDIT</button>
+        <button id="save-btn" class="header-admin-btn" onclick="saveAllContent()">💾 SAVE</button>
+        
         <div id="hero-bg"></div>
         <button id="edit-bg-btn" class="edit-bg-btn" onclick="changeHeroBg()">Изменить фон шапки</button>
         <div class="hero-content">
@@ -637,7 +630,7 @@
                 });
                 if (res.ok) {
                     const ans = await res.json(); contentSha = ans.content.sha;
-                    btn.innerText = "✅ СОХРАНЕНО!"; setTimeout(() => { btn.innerText = "💾 СОХРАНИТЬ"; location.reload(); }, 1000);
+                    btn.innerText = "✅ СОХРАНЕНО!"; setTimeout(() => { btn.innerText = "💾 SAVE"; location.reload(); }, 1000);
                 } else { btn.innerText = "ОШИБКА"; }
             } catch(e) { alert("Ошибка: " + e); }
         }
