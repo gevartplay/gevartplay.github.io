@@ -13,7 +13,7 @@
         :root { --primary: #5b51d8; --bg: #050505; --text: #ffffff; --text-muted: #a3a3a3; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; overflow-x: hidden; line-height: 1.6; cursor: default; }
-
+        
         /* --- КНОПКИ АДМИНА В ШАПКЕ --- */
         .header-admin-btn {
             display: none; 
@@ -34,7 +34,6 @@
             backdrop-filter: blur(5px);
             font-family: 'Oswald', sans-serif;
         }
-
         #save-btn { right: 100px; }
         #enable-edit-btn { right: 100px; }
         
@@ -45,14 +44,13 @@
             transform: scale(1.05);
             background: rgba(91, 81, 216, 0.1);
         }
-
         #save-btn:hover {
             border-color: #ff4444;
             box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
             background: rgba(255, 68, 68, 0.1);
             color: #ff4444;
         }
-
+        
         /* --- ПЛАВАЮЩАЯ КНОПКА УДАЛЕНИЯ (ВНИЗУ СПРАВА) --- */
         #batch-delete-btn {
             display: none; 
@@ -78,12 +76,11 @@
             background: red;
             box-shadow: 0 10px 30px rgba(255, 0, 0, 0.6);
         }
-
         @keyframes popUp {
             from { transform: scale(0); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-
+        
         /* --- КНОПКА ОБНОВЛЕНИЯ (ЛЕВЫЙ НИЖНИЙ УГОЛ) --- */
         #refresh-fab {
             display: none; /* Скрыто на ПК */
@@ -111,22 +108,19 @@
             fill: rgba(255,255,255,0.8);
             transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-
         #refresh-fab:active {
             transform: scale(0.9);
             background: rgba(91, 81, 216, 0.3); 
             border-color: var(--primary);
         }
-
         #refresh-fab:active svg {
             transform: rotate(360deg); 
             fill: white;
         }
-
         @media (max-width: 1024px) {
             #refresh-fab { display: flex; } 
         }
-
+        
         /* Чекбоксы */
         .select-overlay {
             display: none; 
@@ -145,11 +139,9 @@
         .portfolio-item.editing .select-overlay { display: block; }
         .portfolio-item.selected .select-overlay { background: #ff4444; border-color: #ff4444; box-shadow: 0 0 10px #ff4444; }
         .portfolio-item.selected img { filter: grayscale(100%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8); }
-
         .editable-active { outline: 1px dashed rgba(91, 81, 216, 0.5); cursor: text; min-height: 1em; }
         .editable-active:focus { outline: 2px solid var(--primary); background: rgba(255,255,255,0.05); }
         .edit-bg-btn { display: none; position: absolute; top: 60px; right: 20px; background: rgba(0,0,0,0.7); border: 1px solid white; color: white; padding: 5px 15px; cursor: pointer; z-index: 1000; font-family: sans-serif; font-size: 10px; border-radius: 20px; }
-
         h1, h2, h3, .contact-link { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
         .section-header { margin-bottom: 40px; padding-left: 20px; border-left: 4px solid var(--primary); }
         .section-header h2 { font-size: 3rem; line-height: 1; }
@@ -159,7 +151,6 @@
         
         a { text-decoration: none; color: white; transition: 0.3s; }
         .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s ease-out; } .reveal.active { opacity: 1; transform: translateY(0); }
-
         .tilt-card { perspective: 1000px; transform-style: preserve-3d; }
         .tilt-inner { transition: transform 0.1s ease-out; will-change: transform; transform-style: preserve-3d; backface-visibility: hidden; }
         
@@ -169,7 +160,6 @@
         @media (max-width: 1024px) {
              .tilt-inner { transform: none !important; transition: none !important; }
         }
-
         header { height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-left: 5vw; background: #050505; }
         #hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/photo_2026-01-21_18-52-52.jpg') center/cover no-repeat; z-index: 0; opacity: 0.6; animation: bgZoom 20s infinite alternate ease-in-out; }
         @keyframes bgZoom { from { transform: scale(1); } to { transform: scale(1.05); } }
@@ -177,12 +167,10 @@
         .hero-content h1 { font-size: 12vw; font-weight: 900; line-height: 0.9; background: linear-gradient(45deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; text-align: left; opacity: 0; transform: translateY(50px) scale(0.95); filter: blur(10px); animation: epicFadeInUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 0.5s; }
         .hero-subtitle { font-size: 1.5rem; font-weight: 300; letter-spacing: 2px; color: var(--text-muted); opacity: 0; transform: translateY(30px); animation: epicFadeInUp 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards 1.5s; }
         @keyframes epicFadeInUp { to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
-
         .about-wrapper { display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-areas: "head img" "text img"; gap: 50px; align-items: center; }
         .about-header-wrap { grid-area: head; } .about-text-content { grid-area: text; } .about-img-container { grid-area: img; width: 100%; }
         .about-img-container img { border-radius: 5px; box-shadow: 20px 20px 0 var(--primary); }
         .exp-badge { display: inline-block; margin-top: 30px; padding: 10px 20px; border: 1px solid var(--primary); color: var(--primary); font-family: 'Oswald'; letter-spacing: 1px; }
-
         .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .clickable-service { cursor: pointer; }
         .service-card { background: #111; padding: 40px; border-bottom: 2px solid transparent; transition: all 0.3s; height: 100%; position: relative; overflow: hidden; }
@@ -191,7 +179,6 @@
         .service-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: white; }
         .service-card p { color: #ccc; font-size: 0.95rem; }
         .layer-icon { position: absolute; top: 15px; right: 15px; width: 20px; height: 20px; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21 7.25V18.25C21 19.9069 19.6569 21.25 18 21.25H7C5.34315 21.25 4 19.9069 4 18.25V7.25C4 5.59315 5.34315 4.25 7 4.25H18C19.6569 4.25 21 5.59315 21 7.25Z' stroke='white' stroke-width='1.5'/%3E%3Cpath d='M17 3V1.75C17 1.33579 16.6642 1 16.25 1H4.25C2.45507 1 1 2.45507 1 4.25V16.25C1 16.6642 1.33579 17 1.75 17H3' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; opacity: 0.8; z-index: 5; pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
-
         .contact-section { background: #0a0a0a; text-align: center; padding: 150px 20px; position: relative; }
         .contact-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 15vw; font-family: 'Oswald'; color: rgba(255,255,255,0.02); pointer-events: none; z-index: 0; }
         .contact-content { position: relative; z-index: 1; }
@@ -210,6 +197,14 @@
             animation: fadeInModal 0.3s; 
             touch-action: none;
         }
+
+        /* --- ИСПРАВЛЕНИЕ ДЛЯ ПРОКРУТКИ ВИДЕО --- */
+        #video-modal {
+            overflow-y: auto !important; 
+            overflow-x: hidden !important;
+            touch-action: auto !important; 
+        }
+
         @keyframes fadeInModal { from {opacity: 0;} to {opacity: 1;} }
         .gallery-content { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; position: relative; }
         
@@ -229,29 +224,22 @@
             object-fit: contain;
         }
         #modal-img:active { cursor: grabbing; }
-
-        /* === АНИМАЦИИ ПЕРЕХОДА === */
         
+        /* === АНИМАЦИИ ПЕРЕХОДА === */
         .zoom-out-exit { animation: zoomOutExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes zoomOutExit { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.5); } }
-
         .zoom-in-enter { animation: zoomInEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
         @keyframes zoomInEnter { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
-
         .fly-up-exit { animation: flyUpOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         @keyframes flyUpOut { 100% { transform: translateY(-150vh) scale(0.5); opacity: 0; } }
-
         .fly-down-exit { animation: flyDownOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         @keyframes flyDownOut { 100% { transform: translateY(150vh) scale(0.5); opacity: 0; } }
-
         .fly-left-exit { animation: flyLeftOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         @keyframes flyLeftOut { 100% { transform: translateX(-150vw) scale(0.5); opacity: 0; } }
-
         .fly-right-exit { animation: flyRightOut 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
         @keyframes flyRightOut { 100% { transform: translateX(150vw) scale(0.5); opacity: 0; } }
         
         .snap-back { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; transform: translate(0, 0) scale(1) !important; }
-
         .nav-btn {
             position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.1);
             color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px;
@@ -265,7 +253,6 @@
         @media (max-width: 1024px) {
             .nav-btn { display: none !important; }
         }
-
         .modal-controls { position: absolute; bottom: 30px; display: flex; gap: 20px; z-index: 10002; }
         .modal-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 25px; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; border-radius: 30px; transition: 0.3s; backdrop-filter: blur(5px); display: flex; align-items: center; gap: 10px; }
         .modal-btn:hover { background: white; color: black; transform: scale(1.05); box-shadow: 0 0 30px white; }
@@ -283,739 +270,7 @@
         #custom-context-menu { display: none; position: absolute; z-index: 20000; background: rgba(10, 10, 10, 0.95); border: 1px solid var(--primary); border-radius: 8px; padding: 10px; backdrop-filter: blur(10px); min-width: 180px; }
         .ctx-btn { display: block; width: 100%; background: none; border: none; color: white; padding: 10px 15px; text-align: left; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .ctx-btn:hover { background: var(--primary); }
-
+        
         /* ==================== DESKTOP ================== */
         @media (min-width: 1025px) {
-            .container { padding: 100px 10vw; }
-            .portfolio-masonry { column-count: 4; column-gap: 20px; }
-            .portfolio-item { margin-bottom: 20px; display: inline-block; width: 100%; position: relative; border-radius: 4px; cursor: pointer; }
-            .portfolio-item img { 
-                width: 100%; display: block; border-radius: 4px; 
-                transition: filter 0.5s ease-out, transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.5s ease-out, opacity 0.5s ease;
-                filter: grayscale(0%);
-            }
-            .portfolio-masonry:hover .portfolio-item img {
-                filter: grayscale(100%) blur(1.5px) brightness(0.6); 
-                transform: scale(0.95); opacity: 0.7;
-            }
-            .portfolio-masonry .portfolio-item:hover { z-index: 10000; }
-            .portfolio-masonry .portfolio-item:hover img {
-                filter: grayscale(0%) blur(0px) brightness(1.1) !important;
-                transform: scale(1.15) !important;
-                opacity: 1 !important;
-                box-shadow: 0 30px 60px -10px rgba(91, 81, 216, 0.8), 0 0 30px rgba(91, 81, 216, 0.5);
-            }
-            body.is-editing .portfolio-masonry:hover .portfolio-item img { filter: none; transform: none; opacity: 1; }
-            body.is-editing .portfolio-masonry .portfolio-item:hover img { transform: none !important; box-shadow: none; filter: none !important; }
-
-            .about-img-container:hover img { filter: grayscale(0%); box-shadow: 0 15px 40px -5px rgba(91, 81, 216, 0.6); transform: translateY(-7px) scale(1.05); z-index: 10; }
-            .services-grid .tilt-card:hover .service-card { box-shadow: 0 0 30px var(--primary), 0 0 60px var(--primary); z-index: 100; border-color: var(--primary); }
-            .services-grid .tilt-card:hover .service-bg { opacity: 0.8; }
-            .contact-content .tilt-card:hover img { filter: drop-shadow(0 0 20px var(--primary)) drop-shadow(0 0 40px var(--primary)); z-index: 100; }
-        }
-
-        /* ======================= MOBILE ========================== */
-        @media (max-width: 1024px) {
-            .container { padding: 60px 5vw; } 
-            .portfolio-masonry { column-count: 3; column-gap: 15px; } 
-            .portfolio-item { margin-bottom: 15px; position: relative; border-radius: 4px; break-inside: avoid; }
-            .portfolio-item img { width: 100%; display: block; border-radius: 4px; filter: grayscale(100%); transition: filter 2.0s ease; }
-            .about-img-container img { filter: grayscale(100%); transition: filter 2.0s ease; }
-            .in-view { filter: grayscale(0%) !important; }
-            .hero-content h1 { font-size: 15vw; } 
-            .section-header h2 { font-size: 2.2rem; } 
-            .about-wrapper { display: block; } 
-            .about-img-container { float: right; width: 50%; margin-left: 20px; margin-bottom: 15px; } 
-            .about-text-content { display: block; text-align: left; } 
-            .about-wrapper::after { content: ""; display: table; clear: both; } 
-            .contact-link { font-size: 1.8rem; -webkit-text-stroke: 0.5px rgba(255,255,255,0.7); } 
-            .contact-title { font-size: 2rem; } 
-            .contact-bg-text { display: none; } 
-            .close-btn { top: 10px; right: 20px; font-size: 40px; } 
-            .services-grid { grid-template-columns: 1fr; } 
-            .video-content { padding: 60px 20px; gap: 30px; } 
-            .clickable-service:hover::after { content: none; } 
-            .admin-link { top: 20px; right: 20px; padding: 5px 15px; font-size: 0.7rem; } 
-        }
-    </style>
-</head>
-<body>
-
-    <button id="refresh-fab" onclick="location.reload()">
-        <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
-    </button>
-
-    <div id="single-image-modal" class="modal">
-        <span class="close-btn" onclick="closeModal('single-image-modal')">&times;</span>
-        
-        <button class="nav-btn prev-btn" onclick="prevImage()">&#10094;</button>
-        <button class="nav-btn next-btn" onclick="nextImage()">&#10095;</button>
-
-        <div class="gallery-content" id="gallery-container">
-            <img id="modal-img" src="" alt="View">
-            <div class="modal-controls">
-                <button class="modal-btn" onclick="downloadCurrent()">⬇ СКАЧАТЬ</button>
-                <button id="modal-delete-btn" class="modal-btn delete" onclick="deleteCurrent()">🗑 УДАЛИТЬ</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="custom-context-menu">
-        <button class="ctx-btn" id="ctx-change-img" onclick="changeImage()">🖼 СМЕНИТЬ ФОТО</button>
-    </div>
-
-    <div id="video-modal" class="modal"><span class="close-btn" onclick="closeModal('video-modal')">&times;</span><div class="video-content modal-content" id="video-modal-content"></div></div>
-    
-    <button id="batch-delete-btn" onclick="deleteSelectedImages()">🗑 DELETE SELECTED</button>
-
-    <header>
-        <a href="admin.html" class="admin-link">ADMIN</a>
-        
-        <button id="enable-edit-btn" class="header-admin-btn" onclick="startEditing()">✏️ EDIT</button>
-        <button id="save-btn" class="header-admin-btn" onclick="saveAllContent()">💾 SAVE</button>
-        
-        <div id="hero-bg"></div>
-        <button id="edit-bg-btn" class="edit-bg-btn" onclick="changeHeroBg()">Изменить фон шапки</button>
-        <div class="hero-content">
-            <h1 id="hero-title">GEVART<br>PLAY</h1>
-            <p id="hero-subtitle" class="hero-subtitle">ГЕВОРГ НАЗАРЯН | ФОТО & ВИДЕО ИСКУССТВО</p>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="about-wrapper">
-            <div class="about-header-wrap reveal"><div class="section-header"><span>ABOUT ME</span><h2 id="about-title">КТО Я</h2></div></div>
-            <div class="about-img-container tilt-card reveal">
-                <div class="tilt-inner">
-                    <img id="main-photo" src="images/avatar.jpg" alt="Me" onerror="this.onerror=null; this.src='images/avatar.jpg';">
-                </div>
-            </div>
-            <div class="about-text-content reveal">
-                <div id="about-text" style="color: #ccc; margin-bottom: 50px;">
-                    <p>Здравствуйте, меня зовут Геворг.<br><br>Когда-то всё начиналось с простых съёмок на телефон. Сегодня — это дело жизни. Более 5 лет я занимаюсь фото и видеосъёмкой в Москве.</p>
-                </div>
-                <div id="about-badge" class="exp-badge">WORK EXPERIENCE: SINCE 2020</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container" style="background: #080808;">
-        <div class="section-header reveal"><span>SERVICES</span><h2 id="services-title">НАПРАВЛЕНИЯ</h2></div>
-        <div class="services-grid">
-            <div class="tilt-card reveal clickable-service" onclick="openVideoModal('events')"><div class="service-card tilt-inner"><div class="layer-icon"></div><img id="serv-img-1" src="images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg" class="service-bg" alt="Event"><div class="service-content"><h3 id="serv-title-1">Events</h3><p id="serv-desc-1">Репортажная съемка мероприятий. Живые эмоции, отсутствие постановки.</p></div></div></div>
-            <div class="tilt-card reveal clickable-service" onclick="openVideoModal('fashion')"><div class="service-card tilt-inner"><div class="layer-icon"></div><img id="serv-img-2" src="images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" class="service-bg" alt="Fashion"><div class="service-content"><h3 id="serv-title-2">Fashion & Model</h3><p id="serv-desc-2">Студийная и уличная съемка. Работа с позированием и светом.</p></div></div></div>
-            <div class="tilt-card reveal clickable-service" onclick="openVideoModal('music')"><div class="service-card tilt-inner"><div class="layer-icon"></div><img id="serv-img-3" src="images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" class="service-bg" alt="Music"><div class="service-content"><h3 id="serv-title-3">Music Video</h3><p id="serv-desc-3">Создание клипов. Кинематографичный подход и монтаж.</p></div></div></div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="section-header reveal"><span>PORTFOLIO</span><h2>ГАЛЕРЕЯ</h2></div>
-        <div class="portfolio-masonry" id="auto-portfolio"></div>
-    </div>
-
-    <section class="contact-section">
-        <div class="contact-bg-text">CONTACT</div>
-        <div class="contact-content">
-            <h2 id="contact-title" class="contact-title reveal">LET'S WORK TOGETHER</h2>
-            <a href="tel:+79398512521" id="contact-phone" class="contact-link reveal">+7 (939) 851 25 21</a>
-            <a href="#" class="contact-link reveal" onclick="copyEmail(this); return false;">EMAIL ME</a>
-            <div class="social-row reveal">
-                <a href="https://t.me/Gevoplay" class="social-link" style="margin-right: 20px;">Telegram</a>
-                <a href="https://vk.com/gnazaryan1993" class="social-link">Vkontakte</a>
-            </div>
-            <div class="reveal tilt-card" style="margin-top: 15px; display: flex; justify-content: center; width: 200px; margin-left: auto; margin-right: auto;">
-                <div class="tilt-inner" style="width: 100%; display: flex; justify-content: center;">
-                    <img id="footer-logo" src="images/logo.png" alt="Logo" style="max-width: 200px; width: 100%; height: auto;">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        const USERNAME = 'gevartplay';
-        const REPO = 'gevartplay.github.io';
-        const CONTENT_FILE = 'content.json';
-        const VIDEO_FILE = 'videos.json';
-        
-        let allVideos = [];
-        let contentSha = null; 
-        
-        let portfolioImages = [];
-        let currentImageIndex = 0;
-        let currentPhoto = { url: null, sha: null, path: null };
-
-        let scale = 1;
-        let isDragging = false;
-        let startX = 0, startY = 0;
-        let translateX = 0, translateY = 0;
-        let touchStartX = 0, touchStartY = 0;
-        let initialDistance = 0;
-        let initialScale = 1;
-
-        let isEditMode = false;
-        let selectedFiles = []; 
-
-        const editables = [ 'hero-title', 'hero-subtitle', 'about-title', 'about-text', 'about-badge', 'services-title', 'serv-title-1', 'serv-desc-1', 'serv-title-2', 'serv-desc-2', 'serv-title-3', 'serv-desc-3', 'contact-title', 'contact-phone' ];
-        const imageIds = ['main-photo', 'serv-img-1', 'serv-img-2', 'serv-img-3', 'footer-logo'];
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadVideos();
-            loadPortfolio();
-            loadContent(); 
-            initGalleryEvents(); 
-        });
-
-        // =========================================================
-        // ЛОГИКА ГАЛЕРЕИ (SWIPE & ZOOM)
-        // =========================================================
-
-        function initGalleryEvents() {
-            const container = document.getElementById('gallery-container');
-            const modal = document.getElementById('single-image-modal');
-            const img = document.getElementById('modal-img');
-
-            // ПК Зум
-            container.addEventListener('wheel', (e) => {
-                if (modal.style.display === 'flex') {
-                    e.preventDefault();
-                    const delta = Math.sign(e.deltaY) * -0.2;
-                    scale += delta;
-                    scale = Math.min(Math.max(1, scale), 5); 
-                    if (scale === 1) { translateX = 0; translateY = 0; }
-                    updateTransform();
-                }
-            }, { passive: false });
-
-            // ПК Драг + Свайп
-            container.addEventListener('mousedown', (e) => {
-                e.preventDefault(); 
-                isDragging = true;
-                startX = e.clientX - translateX;
-                startY = e.clientY - translateY;
-                touchStartX = e.clientX; 
-                img.style.cursor = 'grabbing';
-                img.style.transition = 'none'; 
-            });
-            
-            window.addEventListener('mousemove', (e) => {
-                if (isDragging) {
-                    e.preventDefault();
-                    translateX = e.clientX - startX;
-                    translateY = e.clientY - startY;
-                    updateTransform();
-                }
-            });
-            
-            window.addEventListener('mouseup', (e) => {
-                if(!isDragging) return;
-                isDragging = false;
-                img.style.cursor = 'grab';
-                img.style.transition = 'transform 0.1s ease-out'; // Возвращаем плавность
-
-                // ЛОГИКА ПК СВАЙПА (если масштаб 1)
-                if (scale === 1) {
-                    const diffX = e.clientX - touchStartX;
-                    if (Math.abs(diffX) > 100) {
-                        if (diffX > 0) performSwipeAction('right'); 
-                        else performSwipeAction('left');
-                    } else {
-                        // Возврат на место, если не добросил
-                        translateX = 0; translateY = 0;
-                        updateTransform();
-                    }
-                }
-            });
-
-            // Мобильный Тач (STICKY SWIPE)
-            container.addEventListener('touchstart', handleTouchStart, { passive: false });
-            container.addEventListener('touchmove', handleTouchMove, { passive: false });
-            container.addEventListener('touchend', handleTouchEnd);
-        }
-
-        function handleTouchStart(e) {
-            const img = document.getElementById('modal-img');
-            
-            if (e.touches.length === 2) {
-                // Начало зума двумя пальцами
-                isDragging = false;
-                initialDistance = Math.hypot( e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY );
-                initialScale = scale;
-            } else if (e.touches.length === 1) {
-                // Начало одного пальца (драг или свайп)
-                isDragging = true;
-                touchStartX = e.touches[0].pageX;
-                touchStartY = e.touches[0].pageY;
-                
-                // Пересчитываем стартовые координаты с учетом текущего сдвига
-                startX = e.touches[0].pageX - translateX;
-                startY = e.touches[0].pageY - translateY;
-                
-                // ВАЖНО: Убираем задержку анимации, чтобы фото "прилипло" к пальцу моментально
-                img.style.transition = 'none';
-            }
-        }
-
-        function handleTouchMove(e) {
-            if (e.touches.length === 2) {
-                // ЗУМ
-                e.preventDefault(); 
-                const currentDistance = Math.hypot( e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY );
-                if (initialDistance > 0) {
-                    scale = initialScale * (currentDistance / initialDistance);
-                    scale = Math.min(Math.max(1, scale), 5);
-                    updateTransform();
-                }
-            } else if (e.touches.length === 1 && isDragging) {
-                // ДВИЖЕНИЕ (STICKY)
-                e.preventDefault(); // Блокируем скролл страницы
-                
-                // Вычисляем новые координаты
-                translateX = e.touches[0].pageX - startX;
-                translateY = e.touches[0].pageY - startY;
-                
-                // Применяем сразу
-                updateTransform();
-            }
-        }
-
-        function handleTouchEnd(e) {
-            isDragging = false;
-            const img = document.getElementById('modal-img');
-            
-            // Если масштаб обычный (1) и отпустили один палец
-            if (scale < 1.05 && e.changedTouches.length === 1) {
-                const endY = e.changedTouches[0].pageY;
-                const endX = e.changedTouches[0].pageX;
-                
-                const diffY = touchStartY - endY; 
-                // Если движение было сильным по вертикали (> 80px)
-                if (Math.abs(diffY) > 80) {
-                    // Инерция: определяем направление
-                    if (diffY > 0) performSwipeAction('up'); // Вверх
-                    else performSwipeAction('down'); // Вниз
-                } else {
-                    // ПРУЖИНА: Возвращаем на место, если не добросил
-                    img.classList.add('snap-back');
-                    translateX = 0;
-                    translateY = 0;
-                    updateTransform();
-                    setTimeout(() => img.classList.remove('snap-back'), 400);
-                }
-            } else {
-                 // Если был зум, просто возвращаем плавность
-                 img.style.transition = 'transform 0.1s ease-out';
-            }
-        }
-
-        function performSwipeAction(direction) {
-            if (portfolioImages.length === 0) return;
-
-            const img = document.getElementById('modal-img');
-            img.className = ''; 
-
-            // Применяем CSS анимацию вылета
-            if (direction === 'up') {
-                img.classList.add('fly-up-exit');
-                currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
-            } else if (direction === 'down') {
-                img.classList.add('fly-down-exit');
-                currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
-            } else if (direction === 'left') {
-                img.classList.add('fly-left-exit');
-                currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
-            } else if (direction === 'right') {
-                img.classList.add('fly-right-exit');
-                currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
-            }
-
-            // ПРЕДЗАГРУЗКА: пока летит старое, готовим новое
-            preloadNextImages();
-
-            setTimeout(() => {
-                resetZoom();
-                const file = portfolioImages[currentImageIndex];
-                currentPhoto.url = file.download_url;
-                currentPhoto.sha = file.sha;
-                currentPhoto.path = file.path;
-                img.src = file.download_url;
-                
-                img.className = ''; 
-                // Анимация появления нового
-                img.classList.add('zoom-in-enter');
-                setTimeout(() => { img.classList.remove('zoom-in-enter'); }, 400);
-            }, 450); 
-        }
-
-        // Функция предзагрузки соседей (чтобы не было глюков)
-        function preloadNextImages() {
-            if (portfolioImages.length < 2) return;
-            const nextIndex = (currentImageIndex + 1) % portfolioImages.length;
-            const prevIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
-            
-            // Создаем невидимые изображения, браузер их закэширует
-            const imgNext = new Image(); imgNext.src = portfolioImages[nextIndex].download_url;
-            const imgPrev = new Image(); imgPrev.src = portfolioImages[prevIndex].download_url;
-        }
-
-        function updateTransform() {
-            const img = document.getElementById('modal-img');
-            // Применяем transform только если нет активных анимаций вылета
-            if (!img.classList.contains('fly-up-exit') && 
-                !img.classList.contains('fly-down-exit') &&
-                !img.classList.contains('fly-left-exit') &&
-                !img.classList.contains('fly-right-exit') &&
-                !img.classList.contains('snap-back')) {
-                img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-            }
-        }
-
-        function resetZoom() {
-            scale = 1; translateX = 0; translateY = 0; 
-            const img = document.getElementById('modal-img');
-            img.style.transition = 'none'; // Сброс без анимации
-            img.style.transform = 'translate(0px, 0px) scale(1)';
-        }
-
-        function nextImage() {
-            if (portfolioImages.length === 0) return;
-            currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
-            animateTransition(currentImageIndex);
-        }
-
-        function prevImage() {
-            if (portfolioImages.length === 0) return;
-            currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
-            animateTransition(currentImageIndex);
-        }
-
-        function animateTransition(index) {
-            const img = document.getElementById('modal-img');
-            img.className = ''; 
-            img.classList.add('zoom-out-exit'); 
-
-            preloadNextImages(); // Предзагрузка
-
-            setTimeout(() => {
-                resetZoom();
-                const file = portfolioImages[index];
-                currentPhoto.url = file.download_url;
-                currentPhoto.sha = file.sha;
-                currentPhoto.path = file.path;
-                img.src = file.download_url;
-                img.className = ''; 
-                img.classList.add('zoom-in-enter');
-                setTimeout(() => { img.classList.remove('zoom-in-enter'); }, 400);
-            }, 280); 
-        }
-
-        function openModal(index) {
-            if (isEditMode) return; 
-
-            const modal = document.getElementById('single-image-modal');
-            const delBtn = document.getElementById('modal-delete-btn');
-            const adminToken = localStorage.getItem('github_token_gevartplay');
-            currentImageIndex = index;
-            
-            // Сразу предзагружаем соседей
-            preloadNextImages();
-
-            resetZoom();
-            const file = portfolioImages[index];
-            const img = document.getElementById('modal-img');
-            currentPhoto.url = file.download_url;
-            currentPhoto.sha = file.sha;
-            currentPhoto.path = file.path;
-            img.src = file.download_url;
-            img.className = '';
-            img.style.opacity = 1;
-            delBtn.style.display = adminToken ? "flex" : "none";
-            modal.style.display = "flex"; 
-            document.body.style.overflow = "hidden";
-        }
-
-        // =========================================================
-        // РЕДАКТИРОВАНИЕ И МАССОВОЕ УДАЛЕНИЕ
-        // =========================================================
-        function startEditing() {
-            isEditMode = true;
-            document.body.classList.add('is-editing');
-            
-            document.getElementById('enable-edit-btn').style.display = 'none';
-            document.getElementById('save-btn').style.display = 'block';
-            document.getElementById('edit-bg-btn').style.display = 'block';
-            // КНОПКА УДАЛЕНИЯ ПОКА СКРЫТА (пока ничего не выбрано)
-            document.getElementById('batch-delete-btn').style.display = 'none'; 
-            
-            editables.forEach(id => { const el = document.getElementById(id); if(el) { el.contentEditable = "true"; el.classList.add('editable-active'); } });
-            document.querySelector('.hero-content').style.pointerEvents = 'auto';
-            imageIds.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { el.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e.pageX, e.pageY, el); }; }
-            });
-
-            document.querySelectorAll('.portfolio-item').forEach(item => {
-                item.classList.add('editing');
-            });
-        }
-
-        function toggleSelection(sha, element) {
-            if (!isEditMode) return;
-            const parent = element.closest('.portfolio-item');
-            if (selectedFiles.includes(sha)) {
-                selectedFiles = selectedFiles.filter(s => s !== sha);
-                parent.classList.remove('selected');
-            } else {
-                selectedFiles.push(sha);
-                parent.classList.add('selected');
-            }
-            
-            // ЛОГИКА ВСПЛЫВАЮЩЕЙ КНОПКИ
-            const btn = document.getElementById('batch-delete-btn');
-            if (selectedFiles.length > 0) {
-                btn.style.display = 'block'; // Показываем
-                btn.innerText = `🗑 DELETE (${selectedFiles.length})`;
-            } else {
-                btn.style.display = 'none'; // Скрываем
-            }
-        }
-
-        async function deleteSelectedImages() {
-            if (selectedFiles.length === 0) return alert("Сначала выберите фото галочками!");
-            if (!confirm(`Удалить выбранные фото (${selectedFiles.length} шт.) навсегда?`)) return;
-
-            const btn = document.getElementById('batch-delete-btn');
-            btn.innerText = "DELETING...";
-            const token = localStorage.getItem('github_token_gevartplay');
-            
-            let promises = [];
-            for (let sha of selectedFiles) {
-                const file = portfolioImages.find(f => f.sha === sha);
-                if (file) {
-                    promises.push(
-                        fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(file.path)}`, {
-                            method: 'DELETE', 
-                            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: `Batch delete`, sha: file.sha })
-                        })
-                    );
-                }
-            }
-
-            try {
-                await Promise.all(promises);
-                alert("Все выбранные фото удалены!");
-                location.reload();
-            } catch (e) {
-                alert("Ошибка при удалении: " + e);
-                btn.innerText = "ERROR";
-            }
-        }
-
-        async function loadContent() {
-            const adminToken = localStorage.getItem('github_token_gevartplay');
-            try {
-                const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${CONTENT_FILE}?t=${Date.now()}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    contentSha = data.sha;
-                    const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-                    applyContent(content);
-                }
-            } catch (e) { console.log("Контент еще не создан"); }
-            if (adminToken) document.getElementById('enable-edit-btn').style.display = 'block';
-        }
-
-        function applyContent(data) {
-            for (let key in data.texts) { const el = document.getElementById(key); if (el) el.innerHTML = data.texts[key]; }
-            for (let key in data.images) { 
-                const el = document.getElementById(key); 
-                if (el) el.src = "images/" + data.images[key]; 
-            }
-            if (data.heroBg) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${data.heroBg}')`;
-        }
-
-        async function saveAllContent() {
-            const btn = document.getElementById('save-btn');
-            btn.innerText = "СОХРАНЕНИЕ...";
-            let data = { texts: {}, images: {}, heroBg: "" };
-            editables.forEach(id => { const el = document.getElementById(id); if(el) data.texts[id] = el.innerHTML; });
-            imageIds.forEach(id => { const el = document.getElementById(id); if(el) { const src = el.src.split('/').pop(); data.images[id] = src; } });
-            const bgDiv = document.getElementById('hero-bg');
-            const bgStyle = window.getComputedStyle(bgDiv).backgroundImage;
-            const match = bgStyle.match(/images\/([^"\)]+)/); 
-            if(match) data.heroBg = match[1];
-            const token = localStorage.getItem('github_token_gevartplay');
-            const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-            try {
-                const body = { message: "Update site content", content: contentBase64 };
-                if (contentSha) body.sha = contentSha;
-                const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${CONTENT_FILE}`, {
-                    method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                if (res.ok) {
-                    const ans = await res.json(); contentSha = ans.content.sha;
-                    btn.innerText = "✅ СОХРАНЕНО!"; setTimeout(() => { btn.innerText = "💾 SAVE"; location.reload(); }, 1000);
-                } else { btn.innerText = "ОШИБКА"; }
-            } catch(e) { alert("Ошибка: " + e); }
-        }
-
-        let selectedElement = null;
-        const menu = document.getElementById('custom-context-menu');
-        function showContextMenu(x, y, element) { selectedElement = element; menu.style.display = 'block'; menu.style.left = x + 'px'; menu.style.top = y + 'px'; }
-        function changeImage() { if (!selectedElement) return; const newName = prompt("Введите имя файла (например: me.jpg):"); if (newName) selectedElement.src = "images/" + newName; menu.style.display = 'none'; }
-        document.addEventListener('click', (e) => { if (!e.target.closest('#custom-context-menu')) menu.style.display = 'none'; });
-        function changeHeroBg() { const newName = prompt("Введите имя файла для фона:"); if (newName) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${newName}')`; }
-
-        async function loadVideos() { try { const r = await fetch(`https://gevartplay.github.io/videos.json?t=${Date.now()}`); if (r.ok) allVideos = await r.json(); } catch (e) {} }
-        function openVideoModal(category) {
-            const modal = document.getElementById('video-modal');
-            const contentDiv = document.getElementById('video-modal-content');
-            const adminToken = localStorage.getItem('github_token_gevartplay');
-            contentDiv.innerHTML = "";
-            const filtered = allVideos.filter(v => v.category === category);
-            filtered.sort((a, b) => (b.date || 0) - (a.date || 0));
-            if (filtered.length === 0) {
-                contentDiv.innerHTML = "<h2 style='color:white'>Скоро...</h2>";
-            } else {
-                filtered.forEach(v => {
-                    let delBtn = '';
-                    if (adminToken) { delBtn = `<button class="video-del-btn" onclick="deleteVideo('${v.id}')">🗑 УДАЛИТЬ</button>`; }
-                    contentDiv.innerHTML += `
-                        <div class="video-item-container">
-                            <div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${v.id}" allowfullscreen></iframe></div>
-                            ${delBtn}
-                        </div>
-                    `;
-                });
-            }
-            modal.style.display = 'block'; document.body.style.overflow = 'hidden';
-        }
-
-        async function deleteVideo(id) {
-            if(!confirm("Удалить это видео?")) return;
-            const token = localStorage.getItem('github_token_gevartplay');
-            const r = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, { headers: { 'Authorization': `token ${token}` } });
-            const data = await r.json();
-            const currentSha = data.sha;
-            const currentList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-            const newList = currentList.filter(v => v.id !== id);
-            const content = btoa(unescape(encodeURIComponent(JSON.stringify(newList))));
-            await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
-                method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: "Delete video", content: content, sha: currentSha })
-            });
-            alert("Видео удалено! Обновите страницу.");
-            location.reload();
-        }
-
-        async function loadPortfolio() {
-            const container = document.getElementById('auto-portfolio');
-            try {
-                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images`);
-                const files = await response.json();
-                const images = files.filter(file => 
-                    file.name.match(/\.(jpg|jpeg|png|gif)$/i) && 
-                    !file.name.includes('logo.png') && 
-                    !file.name.includes('avatar.jpg') &&
-                    !file.name.includes('ikon.png')
-                );
-                const getTimestamp = (name) => {
-                    const match = name.match(/img_(\d+)_/);
-                    return match ? parseInt(match[1]) : 0;
-                };
-                images.sort((a, b) => getTimestamp(b.name) - getTimestamp(a.name));
-                portfolioImages = images;
-                if (images.length === 0) { container.innerHTML = "<p>Пусто.</p>"; return; }
-                images.forEach((file, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'portfolio-item tilt-card reveal';
-                    
-                    const overlay = document.createElement('div');
-                    overlay.className = 'select-overlay';
-                    overlay.onclick = (e) => {
-                        e.stopPropagation(); 
-                        toggleSelection(file.sha, overlay);
-                    };
-
-                    div.onclick = function() { 
-                        if (isEditMode) {
-                            toggleSelection(file.sha, div.querySelector('.select-overlay'));
-                        } else {
-                            openModal(index); 
-                        }
-                    };
-                    
-                    div.innerHTML = `<div class="tilt-inner"><img src="${file.download_url}" loading="lazy"></div>`;
-                    div.appendChild(overlay);
-                    container.appendChild(div);
-                });
-                setTimeout(() => { reveal(); initTilt(); initMobileObserver(); }, 500);
-            } catch (e) {}
-        }
-
-        function downloadCurrent() { if (currentPhoto.url) window.open(currentPhoto.url, '_blank'); }
-        async function deleteCurrent() {
-            const token = localStorage.getItem('github_token_gevartplay');
-            if (!token) return alert("Вы не админ!");
-            if (confirm("УДАЛИТЬ это фото навсегда?")) {
-                await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(currentPhoto.path)}`, {
-                    method: 'DELETE', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `Delete from modal`, sha: currentPhoto.sha })
-                });
-                location.reload();
-            }
-        }
-
-        function closeModal(id) { 
-            document.getElementById(id).style.display = 'none'; 
-            document.body.style.overflow = 'auto'; 
-            resetZoom();
-            const iframes = document.querySelectorAll('iframe'); 
-            iframes.forEach(i => i.src = i.src); 
-        }
-        
-        function copyEmail(element) { const email = "1993gevorg1993@mail.ru"; navigator.clipboard.writeText(email); alert("Email скопирован!"); }
-        function reveal() { document.querySelectorAll(".reveal").forEach(r => { if(r.getBoundingClientRect().top < window.innerHeight - 50) r.classList.add("active"); }); }
-        window.addEventListener("scroll", reveal);
-        
-        function initTilt() { 
-            if (window.innerWidth > 1024) { 
-                document.querySelectorAll('.tilt-card').forEach(card => { 
-                    const inner = card.querySelector('.tilt-inner');
-                    const isSpecial = card.closest('.services-grid') || card.closest('.contact-content');
-                    card.addEventListener('mousemove', (e) => { 
-                        if (!inner) return;
-                        if (isEditMode) return;
-                        const rect = card.getBoundingClientRect(); 
-                        const x = e.clientX - rect.left; 
-                        const y = e.clientY - rect.top; 
-                        const centerX = rect.width / 2; 
-                        const centerY = rect.height / 2; 
-                        let rotateMult = isSpecial ? 45 : 15; 
-                        let scaleMult = isSpecial ? 1.15 : 1.02;
-                        const rotateX = ((y - centerY) / centerY) * -rotateMult; 
-                        const rotateY = ((x - centerX) / centerX) * rotateMult; 
-                        inner.style.transition = 'none';
-                        inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scaleMult}, ${scaleMult}, ${scaleMult})`; 
-                    }); 
-                }); 
-            } 
-        }
-        
-        function initMobileObserver() { 
-            if (window.innerWidth <= 1024) { 
-                const options = { root: null, rootMargin: '-20% 0px -20% 0px', threshold: 0 };
-                const observer = new IntersectionObserver((entries) => { 
-                    entries.forEach(entry => { 
-                        if (entry.isIntersecting) { entry.target.classList.add('in-view'); } 
-                        else { entry.target.classList.remove('in-view'); } 
-                    }); 
-                }, options); 
-                const allImages = document.querySelectorAll('.portfolio-item img'); 
-                allImages.forEach(img => { observer.observe(img); }); 
-            } 
-        }
-    </script>
-</body>
-</html>
+            .container { paddi
