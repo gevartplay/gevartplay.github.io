@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GevArtPlay | 3D Выставка</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <style>
         @layer reset, tokens, base, layout, cube, ui, cards, reveal, theme, responsive;
 
@@ -13,19 +13,35 @@
         @layer tokens {
           :root {
             color-scheme: dark;
-            --dark-bg: #030303; --dark-fg: #ede8df; --dark-muted: #8a7b6e;
-            --light-bg: #e6e0d4; --light-fg: #0d0d14; --light-muted: #666;
-            --accent-dark: #5b51d8;
-            --bg: var(--dark-bg); --fg: var(--dark-fg); --muted: var(--dark-muted); --accent: var(--accent-dark);
-            --font-display: "Oswald", sans-serif; --font-mono: "Montserrat", sans-serif;
-            --hairline: 0.0625rem; --ui-inset: 2rem; 
-            --card-bg: rgba(5, 5, 5, 0.4); 
+            --dark-bg: #0a0807; /* Глубокий темный фон */
+            --dark-fg: #ede8df;
+            --dark-muted: #8a7b6e;
+            --light-bg: #f0ece3;
+            --light-fg: #0d0d14;
+            --light-muted: #9a9aaa;
+            --accent-dark: #5b51d8; /* Ваш фирменный цвет */
+            
+            --bg: var(--dark-bg);
+            --fg: var(--dark-fg);
+            --muted: var(--dark-muted);
+            --accent: var(--accent-dark);
+
+            --font-display: "Bebas Neue", sans-serif;
+            --font-mono: "DM Mono", monospace;
+            --hairline: 0.0625rem;
+            --ui-inset: 2rem;
+            --card-bg: rgba(28, 24, 20, 0.82); /* Оригинальный цвет карточек */
+            --card-border: rgba(91, 81, 216, 0.5);
+            --nav-x: calc(var(--ui-inset) + 0.125rem);
+            --reveal-offset: 0.625rem;
+            --reveal-duration: 0.5s;
             --z-ui: 10;
           }
         }
 
         @layer base {
-          body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); overflow-x: hidden; transition: 0.3s ease; }
+          html { color-scheme: dark; }
+          body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; }
           ::-webkit-scrollbar { width: 6px; }
           ::-webkit-scrollbar-track { background: var(--bg); }
           ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
@@ -35,35 +51,32 @@
           /* Подсветка позади куба */
           #ambient_glow {
               position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-              width: 60vw; height: 60vw; border-radius: 50%;
-              background: radial-gradient(circle, rgba(91, 81, 216, 0.15) 0%, transparent 60%);
-              filter: blur(40px); z-index: 0; pointer-events: none;
+              width: 50vw; height: 50vw; border-radius: 50%;
+              background: radial-gradient(circle, rgba(91, 81, 216, 0.2) 0%, transparent 70%);
+              filter: blur(50px); z-index: 0; pointer-events: none;
               animation: pulseGlow 6s infinite alternate ease-in-out;
           }
-          @keyframes pulseGlow { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; } 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } }
+          @keyframes pulseGlow { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; } 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } }
 
-          #scene { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; perspective: 1200px; pointer-events: none; }
+          #scene { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; perspective: 1100px; pointer-events: none; }
           #scroll_container { position: relative; z-index: 2; }
-          section { min-height: 100vh; display: flex; align-items: center; padding: 0 5vw; pointer-events: none;}
+          section { min-height: 100vh; display: flex; align-items: center; padding: 6rem calc(5rem + var(--ui-inset)) 6rem 5rem; pointer-events: none;}
         }
 
         @layer cube {
-          #cube { 
-              --s: min(55vw, 55vh, 600px); width: var(--s); height: var(--s); 
-              position: relative; transform-style: preserve-3d; transition: transform 0.1s linear; 
-          }
+          #cube { --s: min(60vw, 60vh, 560px); width: var(--s); height: var(--s); position: relative; transform-style: preserve-3d; transform: rotateX(90deg) rotateY(0deg); will-change: transform; transition: transform 0.1s linear;}
           
           /* === ТЕКСТУРА СТЕНЫ (Ржавый металл) === */
           .face { 
               position: absolute; inset: 0; backface-visibility: hidden; 
               background-color: #1a1614;
               background-image: 
-                  radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.5) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(205, 92, 92, 0.2) 0%, transparent 40%),
-                  radial-gradient(circle at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.9) 100%),
-                  linear-gradient(135deg, rgba(43, 37, 34, 0.8) 0%, rgba(10, 8, 7, 0.8) 100%);
-              border: 2px solid #2a221e; 
-              box-shadow: inset 0 0 100px rgba(0,0,0,1); 
+                  radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(205, 92, 92, 0.15) 0%, transparent 40%),
+                  repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 2px, transparent 2px, transparent 4px),
+                  linear-gradient(135deg, rgba(20, 15, 12, 0.9) 0%, rgba(5, 4, 3, 0.95) 100%);
+              border: 1px solid #332822; 
+              box-shadow: inset 0 0 120px rgba(0,0,0,1); 
               display: flex; align-items: center; justify-content: center;
           }
           
@@ -71,37 +84,33 @@
           .picture-frame {
               width: 70%; height: 70%;
               background: #fdfdfd; 
-              padding: 4%; 
-              border: 8px solid #3e2723; /* Цвет темного дерева */
+              padding: 3%; 
+              border: 8px solid #2b1d14; /* Темное дерево */
               border-radius: 2px;
-              box-shadow: 15px 25px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.1); 
+              box-shadow: 20px 30px 50px rgba(0,0,0,0.9), inset 0 0 15px rgba(0,0,0,0.2); 
               display: flex; align-items: center; justify-content: center;
               position: relative;
-          }
-          /* Тень под самой рамкой */
-          .picture-frame::after {
-              content: ''; position: absolute; bottom: -20px; left: 5%; width: 90%; height: 20px;
-              background: rgba(0,0,0,0.6); filter: blur(10px); z-index: -1;
           }
 
           /* === САМА ФОТОГРАФИЯ === */
           .picture-frame img { 
               max-width: 100%; max-height: 100%; object-fit: contain; 
-              box-shadow: inset 0 0 15px rgba(0,0,0,0.6); 
-              filter: contrast(1.05) saturate(1.1);
+              box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
           }
 
           .face[data-face="front"] { transform: translateZ(calc(var(--s) / 2)); }
-          .face[data-face="right"] { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
           .face[data-face="back"] { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+          .face[data-face="right"] { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
           .face[data-face="left"] { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
           .face[data-face="top"] { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
           .face[data-face="bottom"] { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
         }
 
         @layer ui {
-          #back_btn { position: fixed; top: 2rem; left: 2rem; z-index: 100; color: white; text-decoration: none; font-family: 'Oswald'; font-size: 1.2rem; letter-spacing: 2px; transition: 0.3s; padding: 10px 20px; border: 1px solid rgba(255,255,255,0.2); border-radius: 30px; backdrop-filter: blur(5px);}
-          #back_btn:hover { color: #fff; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 20px var(--accent);}
+          #hud { position: fixed; top: var(--ui-inset); right: var(--ui-inset); z-index: var(--z-ui); text-align: right; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+          .progress-bar { width: 7.5rem; height: var(--hairline); background: var(--muted); margin-block-start: 0.5rem; margin-inline-start: auto; position: relative; overflow: hidden; }
+          .progress-fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0%; background: var(--accent); transition: width 0.1s linear; }
+          .scene-label { font-size: 0.6rem; color: var(--accent); margin-block-start: 0.4rem; }
           
           /* КНОПКИ ВПЕРЕД / НАЗАД */
           .nav-arrow {
@@ -112,60 +121,77 @@
               transition: 0.3s; backdrop-filter: blur(5px);
           }
           .nav-arrow:hover { background: var(--accent); transform: translateY(-50%) scale(1.1); box-shadow: 0 0 20px var(--accent); }
-          #btn_prev { left: 2rem; } #btn_next { right: 2rem; }
+          #btn_prev { left: var(--nav-x); } 
+          #btn_next { right: var(--nav-x); }
 
-          #hud { position: fixed; top: var(--ui-inset); right: var(--ui-inset); z-index: var(--z-ui); text-align: right; font-size: 0.8rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
-          .progress-bar { width: 7.5rem; height: 2px; background: #333; margin-block-start: 0.5rem; margin-inline-start: auto; position: relative; overflow: hidden; }
-          .progress-fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0%; background: var(--accent); transition: width 0.1s linear; }
+          #face_caption { position: fixed; bottom: var(--ui-inset); left: 50%; translate: -50% 0; z-index: var(--z-ui); text-align: center; pointer-events: none; user-select: none; }
+          #face_caption_num { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--accent); text-transform: uppercase; margin-block-end: 0.15rem; }
+          #face_caption_name { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: 0.08em; color: var(--muted); opacity: 0.5; line-height: 1; text-transform: uppercase;}
           
-          #loading_screen { position: fixed; inset: 0; background: #030303; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); font-family: 'Oswald'; font-size: 2rem; letter-spacing: 5px; transition: opacity 1s; }
+          #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 100; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; }
+          #back_btn:hover { color: var(--fg); border-color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
         }
 
         @layer cards {
-          /* ТЕКСТОВЫЕ КАРТОЧКИ - ПРИЖАТЫ К КРАЯМ */
-          .text-card { 
-              width: 25vw; min-width: 300px;
-              padding: 2.5rem; 
-              background: var(--card-bg); 
-              border-left: 3px solid var(--accent); 
-              backdrop-filter: blur(15px); 
-              box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-              pointer-events: auto;
+          /* ОРИГИНАЛЬНЫЕ КАРТОЧКИ ТЕКСТА */
+          .text-card {
+            max-width: 23.75rem; /* Ограничитель ширины, чтобы не перекрывать центр */
+            padding: 2.25rem 2rem;
+            background: var(--card-bg);
+            border-left: var(--hairline) solid var(--card-border);
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+            overflow: hidden;
+            transition: background 0.3s ease, border-color 0.3s ease;
+            pointer-events: auto; /* Чтобы можно было выделить текст */
           }
-          .text-card.right { 
-              margin-left: auto; border-left: none; border-right: 3px solid var(--accent); text-align: right; 
+
+          .text-card.right {
+            margin-inline-start: auto;
+            border-left: none;
+            border-right: var(--hairline) solid var(--card-border);
+            text-align: right;
           }
-          .tag { font-size: 0.8rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-block-end: 1rem; font-weight: bold;}
-          h1, h2 { font-family: 'Oswald', sans-serif; font-weight: 700; letter-spacing: 0.05em; line-height: 1.1; text-transform: uppercase;}
-          h1 { font-size: clamp(2.5rem, 4vw, 4rem); margin-bottom: 20px;} 
-          h2 { font-size: clamp(2rem, 3vw, 3rem); margin-bottom: 20px;}
-          .body-text { font-size: 1rem; line-height: 1.8; color: #ddd; font-style: italic; font-weight: 300;}
-          .author { display: block; margin-top: 15px; font-weight: 500; color: var(--accent); font-style: normal; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase;}
+          .text-card.right .h-line { transform-origin: right; margin-inline-start: auto; }
+
+          .tag { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-block-end: 1.1rem; }
+          :where(h1, h2) { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; line-height: 0.92; }
+          h1 { font-size: clamp(3rem, 8vw, 6.5rem); }
+          h2 { font-size: clamp(2.2rem, 5vw, 4rem); text-transform: uppercase;}
+          .body-text { font-size: 0.78rem; line-height: 1.8; color: color-mix(in srgb, var(--fg) 80%, transparent); margin-block-start: 1.25rem; font-style: italic;}
+          
+          .h-line { width: 3.125rem; height: var(--hairline); background: var(--accent); margin-block-end: 1.2rem; transform-origin: left; }
+          
+          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-style: normal; font-size: 0.7rem; text-transform: uppercase;}
         }
 
         @layer reveal {
-          .reveal-el { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
-          .reveal-el.visible { opacity: 1; transform: translateY(0); }
+          :is(.tag, h1, h2, .body-text, .cta, .cta-back, .author) { opacity: 0; translate: 0 var(--reveal-offset); }
+          :is(h1, h2) { translate: 0 1.125rem; transition: opacity var(--reveal-duration) ease 0.08s, translate var(--reveal-duration) ease 0.08s; }
+          .tag { transition: opacity var(--reveal-duration) ease, translate var(--reveal-duration) ease; }
+          .body-text, .author { transition: opacity var(--reveal-duration) ease 0.2s, translate var(--reveal-duration) ease 0.2s; }
+          .h-line { opacity: 0; scale: 0 1; transition: opacity 0.4s ease, scale 0.4s ease; }
+          
+          :is(.tag, h1, h2, .body-text, .author).visible { opacity: 1; translate: 0 0; }
+          .h-line.visible { opacity: 1; scale: 1 1; }
         }
 
         @media (max-width: 1024px) {
             #ambient_glow { width: 100vw; height: 100vw; }
-            #cube { --s: min(80vw, 80vh, 400px); margin-top: -15vh;}
-            section { align-items: flex-end; padding: 5vh 5vw; }
-            .text-card, .text-card.right { width: 100%; max-width: 100%; margin: 0; padding: 1.5rem; text-align: center; border: none; border-top: 3px solid var(--accent); }
-            .nav-arrow { top: auto; bottom: 2rem; transform: none; }
-            #btn_prev { left: 1rem; } #btn_next { right: 1rem; }
-            #back_btn { top: 1rem; left: 1rem; font-size: 0.9rem; padding: 5px 15px;}
+            #cube { --s: min(80vw, 80vh, 400px); margin-top: -20vh;}
+            section { align-items: flex-end; padding: 0 1.5rem 3.5rem; min-height: 150vh;}
+            #s0 { min-height: 100vh; align-items: center; padding: 4rem 1.5rem; }
+            .text-card, .text-card.right { max-width: 100%; padding: 1.5rem 1.25rem; }
+            .nav-arrow { display: none; } /* Скрываем стрелки на мобильном, там свайп/скролл */
+            #back_btn { top: 1rem; left: 1rem; }
             #hud { top: 1rem; right: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="loading_screen">СОЗДАНИЕ ГАЛЕРЕИ...</div>
     <div id="ambient_glow"></div>
-
-    <a href="index.html" id="back_btn">← НАЗВАТЬ</a>
+    <a href="index.html" id="back_btn">← НА ГЛАВНУЮ</a>
 
     <button class="nav-arrow" id="btn_prev">❮</button>
     <button class="nav-arrow" id="btn_next">❯</button>
@@ -173,11 +199,11 @@
     <div id="scene">
         <div id="cube">
             <!-- 6 физических граней куба -->
+            <div class="face" data-face="top"></div>
             <div class="face" data-face="front"></div>
             <div class="face" data-face="right"></div>
             <div class="face" data-face="back"></div>
             <div class="face" data-face="left"></div>
-            <div class="face" data-face="top"></div>
             <div class="face" data-face="bottom"></div>
         </div>
     </div>
@@ -185,6 +211,12 @@
     <div id="hud">
         <div id="hud_pct">000%</div>
         <div class="progress-bar"><div class="progress-fill" id="prog_fill"></div></div>
+        <div class="scene-label" id="scene_name">ГАЛЕРЕЯ</div>
+    </div>
+
+    <div id="face_caption">
+        <div id="face_caption_num">01</div>
+        <div id="face_caption_name">ВВЕДЕНИЕ</div>
     </div>
 
     <div id="scroll_container">
@@ -195,7 +227,6 @@
         const USERNAME = 'gevartplay';
         const REPO = 'gevartplay.github.io';
         
-        // 15 Глубоких цитат
         const QUOTES = [
             { text: "«Фотография — это секрет о секрете. Чем больше она говорит вам, тем меньше вы знаете.»", author: "Диана Арбус" },
             { text: "«Вы не фотографируете, вы создаете. Вы вкладываете в снимок все картины, которые когда-либо видели.»", author: "Ансель Адамс" },
@@ -203,15 +234,10 @@
             { text: "«Камера — это инструмент, который учит людей, как видеть мир без камеры.»", author: "Доротея Ланж" },
             { text: "«То, что вы ловите на пленку, запечатлевается навсегда. Она помнит мелочи, которые вы давно забыли.»", author: "Аарон Сискинд" },
             { text: "«Фотография оставляет открытыми мгновения, которые сразу же перекрываются напором времени.»", author: "Морис Мерло-Понти" },
-            { text: "«Каждая фотография — это сертификат присутствия.»", author: "Ролан Барт" },
             { text: "«Смотреть — значит забыть названия вещей, на которые ты смотришь.»", author: "Пол Валери" },
             { text: "«Свет прославляет всё. Он превращает мусор в золото.»", author: "Уинстон Линк" },
-            { text: "«Хорошая фотография — это та, которая передает факт, затрагивает сердце и оставляет зрителя изменившимся.»", author: "Ирвинг Пенн" },
-            { text: "«Если ваши снимки недостаточно хороши, значит, вы находитесь недостаточно близко.»", author: "Роберт Капа" },
             { text: "«Мы видим не вещи, а то, как на них падает свет.»", author: "Карл Юнг" },
-            { text: "«Снимать — значит в одну долю секунды распознать факт и строгую организацию форм.»", author: "Анри Картье-Брессон" },
-            { text: "«В фотографии нет теней, которые нельзя было бы осветить.»", author: "Август Зандер" },
-            { text: "«Фотография — это картина, написанная солнцем без участия художника.»", author: "Амброз Бирс" }
+            { text: "«В фотографии нет теней, которые нельзя было бы осветить.»", author: "Август Зандер" }
         ];
 
         let portfolioImages = [];
@@ -225,23 +251,44 @@
             scrollEl: document.getElementById("scroll_container"),
             hudPct: document.getElementById("hud_pct"),
             progFill: document.getElementById("prog_fill"),
-            loading: document.getElementById("loading_screen"),
+            sceneName: document.getElementById("scene_name"),
+            captionNum: document.getElementById("face_caption_num"),
+            captionName: document.getElementById("face_caption_name"),
             btnPrev: document.getElementById("btn_prev"),
             btnNext: document.getElementById("btn_next")
         };
 
-        // КИНЕМАТОГРАФИЧНЫЙ ПУТЬ ВРАЩЕНИЯ (Вверх, Вниз, Влево, Вправо)
-        // Этот паттерн циклично обходит все 6 граней без переворота камеры вверх ногами.
-        const PATH_TEMPLATE = [
-            { face: 'front', rx: 0, ry: 0 },
-            { face: 'right', rx: 0, ry: -90 },
-            { face: 'top', rx: -90, ry: -90 },    // Поднимаем камеру наверх
-            { face: 'back', rx: 0, ry: -180 },    // Переходим назад
-            { face: 'bottom', rx: 90, ry: -180 }, // Опускаем камеру вниз
-            { face: 'left', rx: 0, ry: -270 }     // Возвращаемся через лево
-        ];
-        
-        let STOPS = []; // Сгенерированный массив вращений для всех фото
+        // ОРИГИНАЛЬНАЯ МАТЕМАТИКА (чтобы фото не были вверх ногами)
+        function buildStops(n) {
+            const base = [
+                { rx: 90, ry: 0 },   // Top
+                { rx: 0, ry: 0 },    // Front
+                { rx: 0, ry: -90 },  // Right
+                { rx: 0, ry: -180 }, // Back
+                { rx: 0, ry: -270 }, // Left
+                { rx: -90, ry: -360 }// Bottom
+            ];
+            const out = base.slice(0, Math.min(n, 6));
+            for (let i = 6; i < n; i++) {
+                // После 6-й грани крутимся просто по горизонтали, чтобы не ломать оси
+                out.push({ rx: 0, ry: -360 - (i - 5) * 90 }); 
+            }
+            return out;
+        }
+
+        // Определение, какая грань сейчас смотрит на нас
+        function faceAtStop(i) {
+            if (i === 0) return 'top';
+            if (i === 1) return 'front';
+            if (i === 2) return 'right';
+            if (i === 3) return 'back';
+            if (i === 4) return 'left';
+            if (i === 5) return 'bottom';
+            const sides = ['front', 'right', 'back', 'left'];
+            return sides[(i - 1) % 4];
+        }
+
+        let STOPS = [];
 
         async function loadImages() {
             try {
@@ -260,46 +307,37 @@
                 portfolioImages = [
                     { download_url: "images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" },
                     { download_url: "images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg" },
-                    { download_url: "images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" }
+                    { download_url: "images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" },
+                    { download_url: "images/photo_2026-01-21_18-52-52.jpg" },
+                    { download_url: "images/avatar.jpg" },
+                    { download_url: "images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" }
                 ];
             }
 
             if(portfolioImages.length > 0) {
-                generateStops();
+                STOPS = buildStops(portfolioImages.length);
                 buildSections();
-                dom.loading.style.opacity = '0';
-                setTimeout(() => dom.loading.style.display = 'none', 1000);
-            }
-        }
-
-        // Генерация пути вращения для нужного кол-ва фото
-        function generateStops() {
-            STOPS = [];
-            let loops = Math.ceil(portfolioImages.length / PATH_TEMPLATE.length);
-            for(let i = 0; i <= loops; i++) {
-                let yOffset = i * -360; // Каждый цикл добавляет полный оборот для непрерывности
-                PATH_TEMPLATE.forEach(step => {
-                    STOPS.push({ face: step.face, rx: step.rx, ry: step.ry + yOffset });
-                });
             }
         }
 
         function buildSections() {
             let html = `
             <section id="s0">
-                <div class="text-card reveal-el">
+                <div class="text-card">
+                    <div class="h-line"></div>
                     <div class="tag">GevArtPlay 3D Галерея</div>
                     <h1>ИСКУССТВО<br>ВИДЕТЬ</h1>
-                    <p class="body-text">Добро пожаловать в виртуальный выставочный зал. Каждая фотография здесь — это застывшая мысль.<br><br>Используйте стрелки или скролл для перемещения по галерее.</p>
+                    <p class="body-text">Добро пожаловать в виртуальный выставочный зал. Каждая фотография здесь — это застывшая мысль.</p>
                 </div>
             </section>`;
 
             for(let i = 1; i < portfolioImages.length; i++) {
                 const quote = QUOTES[i % QUOTES.length];
-                const alignment = (i % 2 !== 0) ? 'right' : ''; 
+                const alignmentClass = (i % 2 !== 0) ? 'right' : ''; 
                 html += `
                 <section id="s${i}">
-                    <div class="text-card ${alignment} reveal-el">
+                    <div class="text-card ${alignmentClass}">
+                        <div class="h-line"></div>
                         <div class="tag">ЭКСПОНАТ ${String(i).padStart(2, '0')}</div>
                         <h2>ЭКСПРЕССИЯ</h2>
                         <p class="body-text">${quote.text}</p>
@@ -310,19 +348,20 @@
 
             dom.scrollEl.innerHTML = html;
             
-            const revealEls = document.querySelectorAll(".reveal-el");
+            const revealEls = document.querySelectorAll(".tag, h1, h2, .body-text, .author, .h-line");
             const io = new IntersectionObserver((entries) => {
-                entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("visible"); });
+                entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); } });
             }, { threshold: 0.2 });
             revealEls.forEach(el => io.observe(el));
 
             setTimeout(() => { recalcScroll(); init3DScroll(); }, 500);
         }
 
-        function updateFaceImage(faceName, imageIndex) {
+        function updateFaceImage(stopIndex, imageIndex) {
             if (imageIndex < 0 || imageIndex >= portfolioImages.length) return;
             const src = portfolioImages[imageIndex].download_url;
             
+            const faceName = faceAtStop(stopIndex);
             const faceElem = document.querySelector(`.face[data-face="${faceName}"]`);
             if(!faceElem) return;
 
@@ -347,7 +386,6 @@
 
         window.addEventListener("resize", recalcScroll);
 
-        // КНОПКИ НАВИГАЦИИ
         function scrollToSection(index) {
             if(index < 0 || index >= portfolioImages.length) return;
             window.scrollTo({ top: sectionTops[index], behavior: 'smooth' });
@@ -363,8 +401,7 @@
             scrollToSection(currentIndex + 1);
         });
 
-        // Функция плавности Easing
-        const easeInOutQuad = t => t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        const easeIO = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
 
         let currentActiveIndex = -1;
         
@@ -382,35 +419,30 @@
                 const N = portfolioImages.length;
                 if(N < 2) return;
 
-                // Вычисляем текущую позицию между остановками (STOPS)
                 const t = smoothScroll * (N - 1);
                 const i = Math.min(Math.floor(t), N - 2);
-                const f = easeInOutQuad(t - i); // Плавный переход между гранями
+                const f = easeIO(t - i); 
                 
                 const a = STOPS[i];
                 const b = STOPS[i + 1];
                 
-                // Вращение куба по 2 осям
                 const rx = a.rx + (b.rx - a.rx) * f;
                 const ry = a.ry + (b.ry - a.ry) * f;
                 dom.cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
 
-                // Логика подмены фотографий на нужных гранях
                 let activeIndex = Math.round(t);
                 if (activeIndex !== currentActiveIndex) {
                     currentActiveIndex = activeIndex;
                     
-                    // Загружаем фото на текущую грань
-                    updateFaceImage(STOPS[activeIndex].face, activeIndex);
+                    const title = activeIndex === 0 ? "ВВЕДЕНИЕ" : "ЭКСПРЕССИЯ";
+                    dom.sceneName.textContent = title;
+                    dom.captionNum.textContent = String(activeIndex + 1).padStart(2, "0");
+                    dom.captionName.textContent = title;
                     
-                    // Предзагружаем фото на следующую грань
-                    if(activeIndex + 1 < N) {
-                        updateFaceImage(STOPS[activeIndex + 1].face, activeIndex + 1);
-                    }
-                    // Оставляем фото сзади
-                    if(activeIndex - 1 >= 0) {
-                        updateFaceImage(STOPS[activeIndex - 1].face, activeIndex - 1);
-                    }
+                    // Обновление фото на гранях
+                    updateFaceImage(activeIndex, activeIndex);
+                    if(activeIndex + 1 < N) updateFaceImage(activeIndex + 1, activeIndex + 1);
+                    if(activeIndex - 1 >= 0) updateFaceImage(activeIndex - 1, activeIndex - 1);
                 }
             };
             requestAnimationFrame(frame);
