@@ -270,6 +270,29 @@
         #custom-context-menu { display: none; position: absolute; z-index: 20000; background: rgba(10, 10, 10, 0.95); border: 1px solid var(--primary); border-radius: 8px; padding: 10px; backdrop-filter: blur(10px); min-width: 180px; }
         .ctx-btn { display: block; width: 100%; background: none; border: none; color: white; padding: 10px 15px; text-align: left; font-family: 'Oswald', sans-serif; font-size: 1rem; cursor: pointer; transition: 0.2s; }
         .ctx-btn:hover { background: var(--primary); }
+
+        /* --- КНОПКА 3D ВЫСТАВКИ --- */
+        .exhibition-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            color: white;
+            text-decoration: none;
+            background: rgba(91, 81, 216, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 0 0 15px rgba(91, 81, 216, 0.3);
+        }
+        .exhibition-btn:hover {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 30px rgba(91, 81, 216, 0.8);
+            transform: scale(1.05);
+        }
         
         /* ==================== DESKTOP ================== */
         @media (min-width: 1025px) {
@@ -385,6 +408,12 @@
             <div class="tilt-card reveal clickable-service" onclick="openVideoModal('music')"><div class="service-card tilt-inner"><div class="layer-icon"></div><img id="serv-img-3" src="images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" class="service-bg" alt="Music"><div class="service-content"><h3 id="serv-title-3">Music Video</h3><p id="serv-desc-3">Создание клипов. Кинематографичный подход и монтаж.</p></div></div></div>
         </div>
     </div>
+
+    <!-- КНОПКА ПЕРЕХОДА В 3D ВЫСТАВКУ -->
+    <div class="container reveal" style="text-align: center; padding-top: 40px; padding-bottom: 20px;">
+        <a href="exhibition.html" class="exhibition-btn">ПЕРЕЙТИ В 3D ВЫСТАВКУ ✦</a>
+    </div>
+
     <div class="container">
         <div class="section-header reveal"><span>PORTFOLIO</span><h2>ГАЛЕРЕЯ</h2></div>
         <div class="portfolio-masonry" id="auto-portfolio"></div>
@@ -438,15 +467,11 @@
             initGalleryEvents(); 
         });
 
-        // =========================================================
-        // ЛОГИКА ГАЛЕРЕИ (SWIPE & ZOOM)
-        // =========================================================
         function initGalleryEvents() {
             const container = document.getElementById('gallery-container');
             const modal = document.getElementById('single-image-modal');
             const img = document.getElementById('modal-img');
 
-            // ПК Зум
             container.addEventListener('wheel', (e) => {
                 if (modal.style.display === 'flex') {
                     e.preventDefault();
@@ -458,7 +483,6 @@
                 }
             }, { passive: false });
 
-            // ПК Драг + Свайп
             container.addEventListener('mousedown', (e) => {
                 e.preventDefault(); 
                 isDragging = true;
@@ -482,22 +506,19 @@
                 if(!isDragging) return;
                 isDragging = false;
                 img.style.cursor = 'grab';
-                img.style.transition = 'transform 0.1s ease-out'; // Возвращаем плавность
-                // ЛОГИКА ПК СВАЙПА (если масштаб 1)
+                img.style.transition = 'transform 0.1s ease-out'; 
                 if (scale === 1) {
                     const diffX = e.clientX - touchStartX;
                     if (Math.abs(diffX) > 100) {
                         if (diffX > 0) performSwipeAction('right'); 
                         else performSwipeAction('left');
                     } else {
-                        // Возврат на место, если не добросил
                         translateX = 0; translateY = 0;
                         updateTransform();
                     }
                 }
             });
 
-            // Мобильный Тач (STICKY SWIPE)
             container.addEventListener('touchstart', handleTouchStart, { passive: false });
             container.addEventListener('touchmove', handleTouchMove, { passive: false });
             container.addEventListener('touchend', handleTouchEnd);
@@ -507,28 +528,21 @@
             const img = document.getElementById('modal-img');
             
             if (e.touches.length === 2) {
-                // Начало зума двумя пальцами
                 isDragging = false;
                 initialDistance = Math.hypot( e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY );
                 initialScale = scale;
             } else if (e.touches.length === 1) {
-                // Начало одного пальца (драг или свайп)
                 isDragging = true;
                 touchStartX = e.touches[0].pageX;
                 touchStartY = e.touches[0].pageY;
-                
-                // Пересчитываем стартовые координаты с учетом текущего сдвига
                 startX = e.touches[0].pageX - translateX;
                 startY = e.touches[0].pageY - translateY;
-                
-                // ВАЖНО: Убираем задержку анимации, чтобы фото "прилипло" к пальцу моментально
                 img.style.transition = 'none';
             }
         }
 
         function handleTouchMove(e) {
             if (e.touches.length === 2) {
-                // ЗУМ
                 e.preventDefault(); 
                 const currentDistance = Math.hypot( e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY );
                 if (initialDistance > 0) {
@@ -537,14 +551,9 @@
                     updateTransform();
                 }
             } else if (e.touches.length === 1 && isDragging) {
-                // ДВИЖЕНИЕ (STICKY)
-                e.preventDefault(); // Блокируем скролл страницы
-                
-                // Вычисляем новые координаты
+                e.preventDefault(); 
                 translateX = e.touches[0].pageX - startX;
                 translateY = e.touches[0].pageY - startY;
-                
-                // Применяем сразу
                 updateTransform();
             }
         }
@@ -553,19 +562,15 @@
             isDragging = false;
             const img = document.getElementById('modal-img');
             
-            // Если масштаб обычный (1) и отпустили один палец
             if (scale < 1.05 && e.changedTouches.length === 1) {
                 const endY = e.changedTouches[0].pageY;
                 const endX = e.changedTouches[0].pageX;
                 
                 const diffY = touchStartY - endY; 
-                // Если движение было сильным по вертикали (> 80px)
                 if (Math.abs(diffY) > 80) {
-                    // Инерция: определяем направление
-                    if (diffY > 0) performSwipeAction('up'); // Вверх
-                    else performSwipeAction('down'); // Вниз
+                    if (diffY > 0) performSwipeAction('up'); 
+                    else performSwipeAction('down'); 
                 } else {
-                    // ПРУЖИНА: Возвращаем на место, если не добросил
                     img.classList.add('snap-back');
                     translateX = 0;
                     translateY = 0;
@@ -573,7 +578,6 @@
                     setTimeout(() => img.classList.remove('snap-back'), 400);
                 }
             } else {
-                 // Если был зум, просто возвращаем плавность
                  img.style.transition = 'transform 0.1s ease-out';
             }
         }
@@ -582,7 +586,6 @@
             if (portfolioImages.length === 0) return;
             const img = document.getElementById('modal-img');
             img.className = ''; 
-            // Применяем CSS анимацию вылета
             if (direction === 'up') {
                 img.classList.add('fly-up-exit');
                 currentImageIndex = (currentImageIndex + 1) % portfolioImages.length;
@@ -596,7 +599,6 @@
                 img.classList.add('fly-right-exit');
                 currentImageIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
             }
-            // ПРЕДЗАГРУЗКА: пока летит старое, готовим новое
             preloadNextImages();
             setTimeout(() => {
                 resetZoom();
@@ -607,26 +609,21 @@
                 img.src = file.download_url;
                 
                 img.className = ''; 
-                // Анимация появления нового
                 img.classList.add('zoom-in-enter');
                 setTimeout(() => { img.classList.remove('zoom-in-enter'); }, 400);
             }, 450); 
         }
 
-        // Функция предзагрузки соседей (чтобы не было глюков)
         function preloadNextImages() {
             if (portfolioImages.length < 2) return;
             const nextIndex = (currentImageIndex + 1) % portfolioImages.length;
             const prevIndex = (currentImageIndex - 1 + portfolioImages.length) % portfolioImages.length;
-            
-            // Создаем невидимые изображения, браузер их закэширует
             const imgNext = new Image(); imgNext.src = portfolioImages[nextIndex].download_url;
             const imgPrev = new Image(); imgPrev.src = portfolioImages[prevIndex].download_url;
         }
 
         function updateTransform() {
             const img = document.getElementById('modal-img');
-            // Применяем transform только если нет активных анимаций вылета
             if (!img.classList.contains('fly-up-exit') && 
                 !img.classList.contains('fly-down-exit') &&
                 !img.classList.contains('fly-left-exit') &&
@@ -639,7 +636,7 @@
         function resetZoom() {
             scale = 1; translateX = 0; translateY = 0; 
             const img = document.getElementById('modal-img');
-            img.style.transition = 'none'; // Сброс без анимации
+            img.style.transition = 'none'; 
             img.style.transform = 'translate(0px, 0px) scale(1)';
         }
 
@@ -659,7 +656,7 @@
             const img = document.getElementById('modal-img');
             img.className = ''; 
             img.classList.add('zoom-out-exit'); 
-            preloadNextImages(); // Предзагрузка
+            preloadNextImages(); 
             setTimeout(() => {
                 resetZoom();
                 const file = portfolioImages[index];
@@ -680,7 +677,6 @@
             const adminToken = localStorage.getItem('github_token_gevartplay');
             currentImageIndex = index;
             
-            // Сразу предзагружаем соседей
             preloadNextImages();
             resetZoom();
             const file = portfolioImages[index];
@@ -696,9 +692,6 @@
             document.body.style.overflow = "hidden";
         }
 
-        // =========================================================
-        // РЕДАКТИРОВАНИЕ И МАССОВОЕ УДАЛЕНИЕ
-        // =========================================================
         function startEditing() {
             isEditMode = true;
             document.body.classList.add('is-editing');
@@ -706,7 +699,6 @@
             document.getElementById('enable-edit-btn').style.display = 'none';
             document.getElementById('save-btn').style.display = 'block';
             document.getElementById('edit-bg-btn').style.display = 'block';
-            // КНОПКА УДАЛЕНИЯ ПОКА СКРЫТА (пока ничего не выбрано)
             document.getElementById('batch-delete-btn').style.display = 'none'; 
             
             editables.forEach(id => { const el = document.getElementById(id); if(el) { el.contentEditable = "true"; el.classList.add('editable-active'); } });
@@ -731,13 +723,12 @@
                 parent.classList.add('selected');
             }
             
-            // ЛОГИКА ВСПЛЫВАЮЩЕЙ КНОПКИ
             const btn = document.getElementById('batch-delete-btn');
             if (selectedFiles.length > 0) {
-                btn.style.display = 'block'; // Показываем
+                btn.style.display = 'block'; 
                 btn.innerText = `🗑 DELETE (${selectedFiles.length})`;
             } else {
-                btn.style.display = 'none'; // Скрываем
+                btn.style.display = 'none'; 
             }
         }
 
@@ -840,144 +831,4 @@
                 contentDiv.innerHTML = "<h2 style='color:white'>Скоро...</h2>";
             } else {
                 filtered.forEach(v => {
-                    let delBtn = '';
-                    if (adminToken) { delBtn = `<button class="video-del-btn" onclick="deleteVideo('${v.id}')">🗑 УДАЛИТЬ</button>`; }
-                    contentDiv.innerHTML += `
-                        <div class="video-item-container">
-                            <div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${v.id}" allowfullscreen></iframe></div>
-                            ${delBtn}
-                        </div>
-                    `;
-                });
-            }
-            modal.style.display = 'block'; document.body.style.overflow = 'hidden';
-        }
-
-        async function deleteVideo(id) {
-            if(!confirm("Удалить это видео?")) return;
-            const token = localStorage.getItem('github_token_gevartplay');
-            const r = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, { headers: { 'Authorization': `token ${token}` } });
-            const data = await r.json();
-            const currentSha = data.sha;
-            const currentList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-            const newList = currentList.filter(v => v.id !== id);
-            const content = btoa(unescape(encodeURIComponent(JSON.stringify(newList))));
-            await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
-                method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: "Delete video", content: content, sha: currentSha })
-            });
-            alert("Видео удалено! Обновите страницу.");
-            location.reload();
-        }
-
-        async function loadPortfolio() {
-            const container = document.getElementById('auto-portfolio');
-            try {
-                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images`);
-                const files = await response.json();
-                const images = files.filter(file => 
-                    file.name.match(/\.(jpg|jpeg|png|gif)$/i) && 
-                    !file.name.includes('logo.png') && 
-                    !file.name.includes('avatar.jpg') &&
-                    !file.name.includes('ikon.png')
-                );
-                const getTimestamp = (name) => {
-                    const match = name.match(/img_(\d+)_/);
-                    return match ? parseInt(match[1]) : 0;
-                };
-                images.sort((a, b) => getTimestamp(b.name) - getTimestamp(a.name));
-                portfolioImages = images;
-                if (images.length === 0) { container.innerHTML = "<p>Пусто.</p>"; return; }
-                images.forEach((file, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'portfolio-item tilt-card reveal';
-                    
-                    const overlay = document.createElement('div');
-                    overlay.className = 'select-overlay';
-                    overlay.onclick = (e) => {
-                        e.stopPropagation(); 
-                        toggleSelection(file.sha, overlay);
-                    };
-                    div.onclick = function() { 
-                        if (isEditMode) {
-                            toggleSelection(file.sha, div.querySelector('.select-overlay'));
-                        } else {
-                            openModal(index); 
-                        }
-                    };
-                    
-                    div.innerHTML = `<div class="tilt-inner"><img src="${file.download_url}" loading="lazy"></div>`;
-                    div.appendChild(overlay);
-                    container.appendChild(div);
-                });
-                setTimeout(() => { reveal(); initTilt(); initMobileObserver(); }, 500);
-            } catch (e) {}
-        }
-
-        function downloadCurrent() { if (currentPhoto.url) window.open(currentPhoto.url, '_blank'); }
-
-        async function deleteCurrent() {
-            const token = localStorage.getItem('github_token_gevartplay');
-            if (!token) return alert("Вы не админ!");
-            if (confirm("УДАЛИТЬ это фото навсегда?")) {
-                await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${encodeURI(currentPhoto.path)}`, {
-                    method: 'DELETE', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: `Delete from modal`, sha: currentPhoto.sha })
-                });
-                location.reload();
-            }
-        }
-
-        function closeModal(id) { 
-            document.getElementById(id).style.display = 'none'; 
-            document.body.style.overflow = 'auto'; 
-            resetZoom();
-            const iframes = document.querySelectorAll('iframe'); 
-            iframes.forEach(i => i.src = i.src); 
-        }
-
-        function copyEmail(element) { const email = "1993gevorg1993@mail.ru"; navigator.clipboard.writeText(email); alert("Email скопирован!"); }
-        
-        function reveal() { document.querySelectorAll(".reveal").forEach(r => { if(r.getBoundingClientRect().top < window.innerHeight - 50) r.classList.add("active"); }); }
-        window.addEventListener("scroll", reveal);
-
-        function initTilt() { 
-            if (window.innerWidth > 1024) { 
-                document.querySelectorAll('.tilt-card').forEach(card => { 
-                    const inner = card.querySelector('.tilt-inner');
-                    const isSpecial = card.closest('.services-grid') || card.closest('.contact-content');
-                    card.addEventListener('mousemove', (e) => { 
-                        if (!inner) return;
-                        if (isEditMode) return;
-                        const rect = card.getBoundingClientRect(); 
-                        const x = e.clientX - rect.left; 
-                        const y = e.clientY - rect.top; 
-                        const centerX = rect.width / 2; 
-                        const centerY = rect.height / 2; 
-                        let rotateMult = isSpecial ? 45 : 15; 
-                        let scaleMult = isSpecial ? 1.15 : 1.02;
-                        const rotateX = ((y - centerY) / centerY) * -rotateMult; 
-                        const rotateY = ((x - centerX) / centerX) * rotateMult; 
-                        inner.style.transition = 'none';
-                        inner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${scaleMult}, ${scaleMult}, ${scaleMult})`; 
-                    }); 
-                }); 
-            } 
-        }
-
-        function initMobileObserver() { 
-            if (window.innerWidth <= 1024) { 
-                const options = { root: null, rootMargin: '-20% 0px -20% 0px', threshold: 0 };
-                const observer = new IntersectionObserver((entries) => { 
-                    entries.forEach(entry => { 
-                        if (entry.isIntersecting) { entry.target.classList.add('in-view'); } 
-                        else { entry.target.classList.remove('in-view'); } 
-                    }); 
-                }, options); 
-                const allImages = document.querySelectorAll('.portfolio-item img'); 
-                allImages.forEach(img => { observer.observe(img); }); 
-            } 
-        }
-    </script>
-</body>
-</html>
+                    let d
