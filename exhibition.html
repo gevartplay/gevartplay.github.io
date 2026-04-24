@@ -2,7 +2,7 @@
 <html lang="ru" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GevArtPlay | 3D Выставка</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -27,7 +27,7 @@
             --font-mono: "DM Mono", monospace;
             --hairline: 0.0625rem;
             --ui-inset: 2rem;
-            --card-bg: rgba(20, 18, 16, 0.85); 
+            --card-bg: rgba(28, 24, 20, 0.82); 
             --card-border: rgba(91, 81, 216, 0.5);
             --nav-x: calc(var(--ui-inset) + 0.125rem);
             --reveal-offset: 0.625rem;
@@ -57,7 +57,7 @@
 
           #scene { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; perspective: 1100px; pointer-events: none; }
           #scroll_container { position: relative; z-index: 2; }
-          section { min-height: 100vh; display: flex; align-items: center; padding: 6rem calc(3rem + var(--ui-inset)) 6rem 3rem; pointer-events: none;}
+          section { min-height: 100vh; display: flex; align-items: center; padding: 6rem calc(5rem + var(--ui-inset)) 6rem 5rem;}
         }
 
         @layer cube {
@@ -65,7 +65,9 @@
               --s: min(60vw, 60vh, 560px); width: var(--s); height: var(--s); 
               position: relative; transform-style: preserve-3d; transform: rotateX(90deg) rotateY(0deg); 
               will-change: transform; transition: transform 0.1s linear; 
+              cursor: grab; pointer-events: auto; /* Позволяет тянуть куб мышкой */
           }
+          #cube:active { cursor: grabbing; }
           
           .face { 
               position: absolute; inset: 0; backface-visibility: hidden; 
@@ -96,6 +98,7 @@
           .picture-frame img { 
               max-width: 100%; max-height: 100%; object-fit: contain; 
               box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
+              pointer-events: none;
           }
 
           .face[data-face="front"] { transform: translateZ(calc(var(--s) / 2)); }
@@ -107,35 +110,49 @@
         }
 
         @layer ui {
-          #hud { position: fixed; top: var(--ui-inset); right: var(--ui-inset); z-index: var(--z-ui); text-align: right; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+          #loading_screen { position: fixed; inset: 0; background: #0a0807; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); font-family: 'Oswald'; font-size: 2rem; letter-spacing: 5px; transition: opacity 0.5s ease; pointer-events: none;}
+
+          #hud { position: fixed; top: var(--ui-inset); right: var(--ui-inset); z-index: var(--z-ui); text-align: right; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; pointer-events: none;}
           .progress-bar { width: 7.5rem; height: var(--hairline); background: var(--muted); margin-block-start: 0.5rem; margin-inline-start: auto; position: relative; overflow: hidden; }
           .progress-fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0%; background: var(--accent); transition: width 0.1s linear; }
+          
+          /* КНОПКИ ВПЕРЕД / НАЗАД */
+          .nav-arrow {
+              position: fixed; top: 50%; transform: translateY(-50%); z-index: 100;
+              background: rgba(0,0,0,0.3); color: var(--muted); border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent);
+              width: 50px; height: 50px; border-radius: 50%; font-size: 20px;
+              cursor: pointer; display: flex; align-items: center; justify-content: center;
+              transition: 0.3s; backdrop-filter: blur(5px); outline: none;
+          }
+          .nav-arrow:hover { background: color-mix(in srgb, var(--muted) 12%, transparent); color: var(--fg); border-color: var(--muted); }
+          #btn_prev { left: var(--nav-x); } 
+          #btn_next { right: var(--nav-x); }
           
           #face_caption { position: fixed; bottom: var(--ui-inset); left: 50%; translate: -50% 0; z-index: var(--z-ui); text-align: center; pointer-events: none; user-select: none; }
           #face_caption_num { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--accent); text-transform: uppercase; margin-block-end: 0.15rem; }
           #face_caption_name { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: 0.08em; color: var(--muted); opacity: 0.5; line-height: 1; text-transform: uppercase;}
           
+          /* КНОПКА НА ГЛАВНУЮ */
           #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 100; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; }
           #back_btn:hover { color: var(--fg); border-color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
 
           /* КНОПКИ АДМИНА */
           .admin-btn {
               display: none; position: fixed; top: 2rem; z-index: 100;
-              color: var(--muted); border: var(--hairline) solid var(--card-border); background: transparent;
+              color: var(--muted); border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); background: transparent;
               padding: 0.6rem 1.25rem; font-family: var(--font-mono); font-size: 0.7rem; 
-              letter-spacing: 0.18em; cursor: pointer; transition: 0.3s; text-transform: uppercase;
+              letter-spacing: 0.18em; cursor: pointer; transition: 0.3s; text-transform: uppercase; outline: none;
           }
           .admin-btn:hover { color: var(--fg); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
           #edit-btn { left: 180px; } 
-          #save-btn { left: 180px; border-color: #ff4444; color: #ff4444; }
-          #save-btn:hover { background: rgba(255, 68, 68, 0.1); color: #ff4444; }
+          #save-btn { left: 180px; border-color: rgba(255, 68, 68, 0.5); color: #ff4444; }
+          #save-btn:hover { background: rgba(255, 68, 68, 0.1); border-color: #ff4444; color: #ff4444;}
         }
 
         @layer cards {
           /* ВАШИ ОРИГИНАЛЬНЫЕ КАРТОЧКИ! */
           .text-card {
-            width: 100%;
-            max-width: 28rem; 
+            max-width: 23.75rem; 
             padding: 2.25rem 2rem;
             background: var(--card-bg);
             border-left: var(--hairline) solid var(--card-border);
@@ -155,15 +172,15 @@
           }
           .text-card.right .h-line { transform-origin: right; margin-inline-start: auto; }
 
-          .tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-block-end: 1.1rem; outline: none;}
+          .tag { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-block-end: 1.1rem; outline: none;}
           
           :where(h1, h2) { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; line-height: 0.92; word-wrap: break-word; outline: none;}
-          h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: 10px; }
-          h2 { font-size: clamp(2rem, 4vw, 3.5rem); text-transform: uppercase; margin-bottom: 10px;}
+          h1 { font-size: clamp(3rem, 8vw, 6.5rem); margin-bottom: 10px; }
+          h2 { font-size: clamp(2.2rem, 5vw, 4rem); text-transform: uppercase; margin-bottom: 10px;}
           
-          .body-text { font-size: 0.85rem; line-height: 1.8; color: color-mix(in srgb, var(--fg) 80%, transparent); margin-block-start: 1.25rem; font-style: italic; outline: none;}
+          .body-text { font-size: 0.78rem; line-height: 1.8; color: color-mix(in srgb, var(--fg) 80%, transparent); margin-block-start: 1.25rem; font-style: italic; outline: none;}
           .h-line { width: 3.125rem; height: var(--hairline); background: var(--accent); margin-block-end: 1.2rem; transform-origin: left; }
-          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-style: normal; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
+          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
 
           .editable-active { border: 1px dashed var(--accent); padding: 5px; background: rgba(255,255,255,0.05); }
         }
@@ -185,19 +202,25 @@
             section { align-items: flex-end; padding: 0 1.5rem 3.5rem; min-height: 150vh;}
             #s0 { min-height: 100vh; align-items: center; padding: 4rem 1.5rem; }
             .text-card, .text-card.right { max-width: 100%; padding: 1.5rem 1.25rem; }
+            .nav-arrow { display: none; } /* Скрываем кнопки на телефоне, там свайп */
             #back_btn { top: 1rem; left: 1rem; }
             #hud { top: 1rem; right: 1rem; }
-            .admin-btn { left: 110px !important; font-size: 0.6rem !important; padding: 0.4rem 0.8rem !important; top: 1rem !important;}
+            .admin-btn { left: 130px !important; font-size: 0.6rem !important; padding: 0.5rem 1rem !important; top: 1rem !important;}
         }
     </style>
 </head>
 <body>
 
+    <div id="loading_screen">СОЗДАНИЕ ГАЛЕРЕИ...</div>
     <div id="ambient_glow"></div>
-    
+
+    <!-- КНОПКИ УПРАВЛЕНИЯ -->
     <a href="index.html" id="back_btn">← НА ГЛАВНУЮ</a>
     <button id="edit-btn" class="admin-btn" onclick="startEditing()">✏️ EDIT</button>
     <button id="save-btn" class="admin-btn" onclick="saveExhibition()">💾 SAVE</button>
+
+    <button class="nav-arrow" id="btn_prev">❮</button>
+    <button class="nav-arrow" id="btn_next">❯</button>
 
     <div id="scene">
         <div id="cube">
@@ -264,7 +287,10 @@
             progFill: document.getElementById("prog_fill"),
             sceneName: document.getElementById("scene_name"),
             captionNum: document.getElementById("face_caption_num"),
-            captionName: document.getElementById("face_caption_name")
+            captionName: document.getElementById("face_caption_name"),
+            btnPrev: document.getElementById("btn_prev"),
+            btnNext: document.getElementById("btn_next"),
+            loading: document.getElementById("loading_screen")
         };
 
         let STOPS = [];
@@ -274,11 +300,10 @@
         let targetScroll = 0;
 
         async function initApp() {
-            // Включаем Админ-кнопку
             const token = localStorage.getItem('github_token_gevartplay');
             if (token) document.getElementById('edit-btn').style.display = 'block';
 
-            // Загружаем тексты
+            // Загружаем сохраненные тексты (если есть)
             try {
                 const resData = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}?t=${Date.now()}`);
                 if(resData.ok) {
@@ -289,22 +314,42 @@
                 }
             } catch(e) {}
 
-            // Загружаем фото с защитой от кэша
+            // Загружаем фото в ХАОТИЧНОМ порядке
             try {
                 const resImg = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images?t=${Date.now()}`);
                 if (!resImg.ok) throw new Error("API Limit");
                 const files = await resImg.json();
                 
-                portfolioImages = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i) && !f.name.includes('logo.png') && !f.name.includes('avatar.jpg') && !f.name.includes('ikon.png'));
-            } catch (e) { console.error("Ошибка загрузки фото", e); }
+                let tempImages = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i) && !f.name.includes('logo.png') && !f.name.includes('avatar.jpg') && !f.name.includes('ikon.png'));
+                
+                // Рандом Фишера-Йетса
+                for (let i = tempImages.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [tempImages[i], tempImages[j]] = [tempImages[j], tempImages[i]];
+                }
+                portfolioImages = tempImages;
+            } catch (e) { 
+                console.error("Ошибка загрузки фото", e); 
+                // РЕЗЕРВНЫЙ ПЛАН если GitHub заблокировал запросы
+                portfolioImages = [
+                    { download_url: "images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg", sha: "demo1" },
+                    { download_url: "images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg", sha: "demo2" },
+                    { download_url: "images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg", sha: "demo3" }
+                ];
+            }
 
             if(portfolioImages.length === 0) {
                 dom.scrollEl.innerHTML = `<section style="justify-content:center"><h1 style="color:white; text-align:center;">ГАЛЕРЕЯ ПУСТА<br><span style="font-size:1rem; font-weight:normal">Загрузите фото на главной странице</span></h1></section>`;
+                dom.loading.style.opacity = '0';
+                setTimeout(() => dom.loading.style.display = 'none', 500);
                 return;
             }
 
             STOPS = buildChaoticStops(portfolioImages.length);
             buildSections();
+            
+            dom.loading.style.opacity = '0';
+            setTimeout(() => dom.loading.style.display = 'none', 500);
         }
 
         // --- УМНАЯ ХАОТИЧНАЯ МАТЕМАТИКА (БЕЗ ПЕРЕВОРОТОВ ВВЕРХ НОГАМИ) ---
@@ -314,9 +359,9 @@
             
             for (let i = 0; i < n; i++) {
                 stops.push({ rx: crx, ry: cry });
-                
                 let nrx = crx, nry = cry;
-                // Если мы на крыше или на полу, обязаны вернуться на экватор (чтобы избежать переворачиваний)
+                
+                // Если мы на крыше или на полу, обязаны вернуться на экватор
                 if (crx === 90 || crx === -90) {
                     nrx = 0; 
                 } else {
@@ -325,13 +370,13 @@
                         { rx: 0, ry: cry + 90 }  // Влево
                     ];
                     
-                    // На крышу и на пол пускаем только с "передней" или "задней" сторон (чтобы ось Y не ломала восприятие)
+                    // На крышу и на пол пускаем только с передней/задней стенки
                     if (cry % 180 === 0) {
                         choices.push({ rx: 90, ry: cry });  // Наверх
                         choices.push({ rx: -90, ry: cry }); // Вниз
                     }
                     
-                    // Запрещаем крутиться туда-сюда (шаг назад)
+                    // Запрещаем крутиться назад
                     if (stops.length > 1) {
                         let prev = stops[stops.length - 2];
                         choices = choices.filter(c => !(c.rx === prev.rx && c.ry === prev.ry));
@@ -343,8 +388,8 @@
                         let p2 = stops[stops.length - 2];
                         let p3 = stops[stops.length - 3];
                         if (p1.rx === 0 && p2.rx === 0 && p3.rx === 0) {
-                            if (p1.ry < p2.ry && p2.ry < p3.ry) choices = choices.filter(c => c.ry >= cry); // блок вправо
-                            else if (p1.ry > p2.ry && p2.ry > p3.ry) choices = choices.filter(c => c.ry <= cry); // блок влево
+                            if (p1.ry < p2.ry && p2.ry < p3.ry) choices = choices.filter(c => c.ry >= cry); 
+                            else if (p1.ry > p2.ry && p2.ry > p3.ry) choices = choices.filter(c => c.ry <= cry); 
                         }
                     }
                     
@@ -357,7 +402,6 @@
             return stops;
         }
 
-        // Определение, какая грань куба сейчас перед нами
         function faceAtStop(stopIndex) {
             const stop = STOPS[stopIndex];
             if (!stop) return 'front';
@@ -387,11 +431,11 @@
 
             for(let i = 1; i < portfolioImages.length; i++) {
                 const img = portfolioImages[i];
-                const saved = customData.photos[img.sha] || null;
+                const saved = customData.photos[img.sha] || {};
                 
-                const tWord = saved?.title || TITLES[i % TITLES.length];
-                const qText = saved?.quote || QUOTES[i % QUOTES.length].text;
-                const qAuthor = saved?.author || QUOTES[i % QUOTES.length].author;
+                const tWord = saved.title || TITLES[i % TITLES.length];
+                const qText = saved.quote || QUOTES[i % QUOTES.length].text;
+                const qAuthor = saved.author || QUOTES[i % QUOTES.length].author;
                 
                 const alignmentClass = (i % 2 !== 0) ? 'right' : ''; 
                 html += `
@@ -443,11 +487,64 @@
             const sections = document.querySelectorAll("section");
             sectionTops = Array.from(sections).map(s => s.getBoundingClientRect().top + window.scrollY);
         }
-
         window.addEventListener("resize", recalcScroll);
 
-        const easeIO = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+        function scrollToSection(index) {
+            if(index < 0 || index >= portfolioImages.length) return;
+            window.scrollTo({ top: sectionTops[index], behavior: 'smooth' });
+        }
+        
+        // КНОПКИ ВПЕРЕД/НАЗАД
+        dom.btnPrev.addEventListener('click', () => {
+            let currentIndex = Math.round(smoothScroll * (portfolioImages.length - 1));
+            scrollToSection(currentIndex - 1);
+        });
+        
+        dom.btnNext.addEventListener('click', () => {
+            let currentIndex = Math.round(smoothScroll * (portfolioImages.length - 1));
+            scrollToSection(currentIndex + 1);
+        });
 
+        // СВАЙП И МЫШКА (DRAG)
+        let startX = 0, startY = 0;
+        
+        window.addEventListener('touchstart', e => {
+            if(isEditMode) return;
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, {passive: true});
+        
+        window.addEventListener('touchmove', e => {
+            if(isEditMode || startX === 0) return;
+            let dx = e.touches[0].clientX - startX;
+            let dy = e.touches[0].clientY - startY;
+            
+            // Если свайп влево/вправо сильнее чем вверх/вниз - листаем галерею
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+                e.preventDefault(); 
+                let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
+                if (dx < 0) scrollToSection(currentIdx + 1); // Влево -> вперед
+                else scrollToSection(currentIdx - 1); // Вправо -> назад
+                startX = 0; 
+            }
+        }, {passive: false});
+
+        let isMouseDragging = false;
+        dom.cube.addEventListener('mousedown', e => { if(!isEditMode){ isMouseDragging = true; startX = e.clientX; } });
+        window.addEventListener('mousemove', e => {
+            if(!isMouseDragging || isEditMode) return;
+            let dx = e.clientX - startX;
+            if(Math.abs(dx) > 50) {
+                let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
+                if (dx < 0) scrollToSection(currentIdx + 1);
+                else scrollToSection(currentIdx - 1);
+                isMouseDragging = false;
+            }
+        });
+        window.addEventListener('mouseup', () => isMouseDragging = false);
+
+        // ПЛАВНАЯ АНИМАЦИЯ
+        const easeIO = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
         let currentActiveIndex = -1;
         
         function init3DScroll() {
@@ -479,12 +576,12 @@
                 if (activeIndex !== currentActiveIndex) {
                     currentActiveIndex = activeIndex;
                     
-                    const title = activeIndex === 0 ? "ВВЕДЕНИЕ" : document.getElementById(`title-${portfolioImages[activeIndex].sha}`)?.innerText || "ЭКСПРЕССИЯ";
+                    const title = activeIndex === 0 ? "ВВЕДЕНИЕ" : document.getElementById(`title-${portfolioImages[activeIndex].sha}`)?.innerText || TITLES[activeIndex % TITLES.length];
+                    
                     dom.sceneName.textContent = title;
                     dom.captionNum.textContent = String(activeIndex + 1).padStart(2, "0");
                     dom.captionName.textContent = title;
                     
-                    // Обновляем фото на гранях
                     updateFaceImage(activeIndex);
                     if(activeIndex + 1 < N) updateFaceImage(activeIndex + 1);
                     if(activeIndex - 1 >= 0) updateFaceImage(activeIndex - 1);
@@ -498,6 +595,7 @@
             isEditMode = true;
             document.getElementById('edit-btn').style.display = 'none';
             document.getElementById('save-btn').style.display = 'block';
+            dom.cube.style.pointerEvents = 'none'; // Отключаем драг, чтобы выделять текст
             
             document.querySelectorAll('h1, h2, .body-text, .author span').forEach(el => {
                 el.contentEditable = "true";
