@@ -13,22 +13,25 @@
         @layer tokens {
           :root {
             color-scheme: dark;
-            --dark-bg: #0a0807; 
+            --dark-bg: #1c1814;
             --dark-fg: #ede8df;
             --dark-muted: #8a7b6e;
-            --accent-dark: #5b51d8; 
+            --light-bg: #f0ece3;
+            --light-fg: #0d0d14;
+            --light-muted: #9a9aaa;
+            --accent-dark: #d4a84b; 
             
             --bg: var(--dark-bg);
             --fg: var(--dark-fg);
             --muted: var(--dark-muted);
             --accent: var(--accent-dark);
 
-            --font-display: "Oswald", sans-serif;
+            --font-display: "Bebas Neue", sans-serif;
             --font-mono: "DM Mono", monospace;
             --hairline: 0.0625rem;
             --ui-inset: 2rem;
-            --card-bg: rgba(28, 24, 20, 0.82); 
-            --card-border: rgba(91, 81, 216, 0.5);
+            --card-bg: rgba(28, 24, 20, 0.82);
+            --card-border: rgba(212, 168, 75, 0.2);
             --nav-x: calc(var(--ui-inset) + 0.125rem);
             --reveal-offset: 0.625rem;
             --reveal-duration: 0.5s;
@@ -37,69 +40,44 @@
         }
 
         @layer base {
-          html { color-scheme: dark; }
-          body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); overflow-x: hidden; transition: background 0.3s ease; }
+          html { color-scheme: dark; overscroll-behavior: none; }
+          body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); overflow-x: hidden; transition: background 0.3s ease; user-select: none; }
           ::-webkit-scrollbar { width: 6px; }
           ::-webkit-scrollbar-track { background: var(--bg); }
-          ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+          ::-webkit-scrollbar-thumb { background: var(--accent); }
         }
 
         @layer layout {
-          #ambient_glow {
-              position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-              width: 60vw; height: 60vw; border-radius: 50%;
-              background: radial-gradient(circle, rgba(91, 81, 216, 0.25) 0%, rgba(91, 81, 216, 0.05) 40%, transparent 70%);
-              z-index: 0; pointer-events: none;
-              animation: pulseGlow 6s infinite alternate ease-in-out;
-              will-change: transform, opacity;
-          }
-          @keyframes pulseGlow { 0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } }
-
           #scene { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; perspective: 1100px; pointer-events: none; }
           #scroll_container { position: relative; z-index: 2; }
-          section { min-height: 100vh; display: flex; align-items: center; padding: 6rem calc(5rem + var(--ui-inset)) 6rem 5rem;}
+          section { min-height: 100vh; display: flex; align-items: center; padding: 6rem calc(5rem + var(--ui-inset)) 6rem 5rem; pointer-events: none; }
+          #drag_zone { position: fixed; inset: 0; z-index: 5; cursor: grab; touch-action: none; }
+          #drag_zone:active { cursor: grabbing; }
         }
 
         @layer cube {
           #cube { 
-              --s: min(60vw, 60vh, 560px); width: var(--s); height: var(--s); 
+              --s: min(74vw, 74vh, 560px); width: var(--s); height: var(--s); 
               position: relative; transform-style: preserve-3d; transform: rotateX(90deg) rotateY(0deg); 
               will-change: transform; transition: transform 0.1s linear; 
-              cursor: grab; pointer-events: auto; /* Позволяет тянуть куб мышкой */
           }
-          #cube:active { cursor: grabbing; }
           
           .face { 
               position: absolute; inset: 0; backface-visibility: hidden; 
-              background-color: #1a1614;
-              background-image: 
-                  radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(205, 92, 92, 0.15) 0%, transparent 40%),
-                  repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 2px, transparent 2px, transparent 4px),
-                  linear-gradient(135deg, rgba(20, 15, 12, 0.9) 0%, rgba(5, 4, 3, 0.95) 100%);
-              border: 1px solid #332822; 
-              box-shadow: inset 0 0 100px rgba(0,0,0,1); 
+              background: #14100d;
               display: flex; align-items: center; justify-content: center;
-              transform: translateZ(0); 
+              border: 1px solid rgba(255,255,255,0.05);
           }
           
+          /* ФОТОГРАФИИ С РАМКАМИ */
           .picture-frame {
-              width: 70%; height: 70%;
-              background: #fdfdfd; 
-              padding: 3%; 
-              border: 8px solid #2b1d14; 
-              border-radius: 2px;
+              width: 75%; height: 75%;
+              background: #fdfdfd; padding: 3%; 
+              border: 6px solid #2b1d14; border-radius: 2px;
               box-shadow: 20px 30px 40px rgba(0,0,0,0.9), inset 0 0 10px rgba(0,0,0,0.2); 
               display: flex; align-items: center; justify-content: center;
-              position: relative;
-              transform: translateZ(0); 
           }
-
-          .picture-frame img { 
-              max-width: 100%; max-height: 100%; object-fit: contain; 
-              box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
-              pointer-events: none;
-          }
+          .picture-frame img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); pointer-events: none;}
 
           .face[data-face="front"] { transform: translateZ(calc(var(--s) / 2)); }
           .face[data-face="back"] { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
@@ -110,47 +88,46 @@
         }
 
         @layer ui {
-          #loading_screen { position: fixed; inset: 0; background: #0a0807; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); font-family: 'Oswald'; font-size: 2rem; letter-spacing: 5px; transition: opacity 0.5s ease; pointer-events: none;}
+          #loading_screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); font-family: var(--font-display); font-size: 2rem; letter-spacing: 5px; transition: opacity 0.5s ease; pointer-events: none;}
 
           #hud { position: fixed; top: var(--ui-inset); right: var(--ui-inset); z-index: var(--z-ui); text-align: right; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; pointer-events: none;}
           .progress-bar { width: 7.5rem; height: var(--hairline); background: var(--muted); margin-block-start: 0.5rem; margin-inline-start: auto; position: relative; overflow: hidden; }
           .progress-fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0%; background: var(--accent); transition: width 0.1s linear; }
           
+          #face_caption { position: fixed; bottom: var(--ui-inset); left: 50%; translate: -50% 0; z-index: var(--z-ui); text-align: center; pointer-events: none; }
+          #face_caption_num { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--accent); text-transform: uppercase; margin-block-end: 0.15rem; }
+          #face_caption_name { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: 0.08em; color: var(--muted); opacity: 0.5; line-height: 1; text-transform: uppercase;}
+          
+          #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 100; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; border-radius: 0;}
+          #back_btn:hover { color: var(--fg); border-color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
+
           /* КНОПКИ ВПЕРЕД / НАЗАД */
           .nav-arrow {
               position: fixed; top: 50%; transform: translateY(-50%); z-index: 100;
-              background: rgba(0,0,0,0.3); color: var(--muted); border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent);
-              width: 50px; height: 50px; border-radius: 50%; font-size: 20px;
+              background: transparent; color: var(--muted); border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent);
+              width: 40px; height: 40px; font-size: 16px; border-radius: 0; /* Квадратные */
               cursor: pointer; display: flex; align-items: center; justify-content: center;
               transition: 0.3s; backdrop-filter: blur(5px); outline: none;
           }
           .nav-arrow:hover { background: color-mix(in srgb, var(--muted) 12%, transparent); color: var(--fg); border-color: var(--muted); }
           #btn_prev { left: var(--nav-x); } 
           #btn_next { right: var(--nav-x); }
-          
-          #face_caption { position: fixed; bottom: var(--ui-inset); left: 50%; translate: -50% 0; z-index: var(--z-ui); text-align: center; pointer-events: none; user-select: none; }
-          #face_caption_num { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--accent); text-transform: uppercase; margin-block-end: 0.15rem; }
-          #face_caption_name { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: 0.08em; color: var(--muted); opacity: 0.5; line-height: 1; text-transform: uppercase;}
-          
-          /* КНОПКА НА ГЛАВНУЮ */
-          #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 100; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; }
-          #back_btn:hover { color: var(--fg); border-color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
 
-          /* КНОПКИ АДМИНА */
+          /* КНОПКИ АДМИНА (КВАДРАТНЫЕ С ТОНКОЙ ОБВОДКОЙ) */
           .admin-btn {
               display: none; position: fixed; top: 2rem; z-index: 100;
               color: var(--muted); border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); background: transparent;
-              padding: 0.6rem 1.25rem; font-family: var(--font-mono); font-size: 0.7rem; 
-              letter-spacing: 0.18em; cursor: pointer; transition: 0.3s; text-transform: uppercase; outline: none;
+              padding: 0.6rem 1.25rem; font-family: var(--font-mono); font-size: 0.62rem; 
+              letter-spacing: 0.18em; cursor: pointer; transition: 0.3s; text-transform: uppercase; border-radius: 0;
           }
           .admin-btn:hover { color: var(--fg); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
-          #edit-btn { left: 180px; } 
-          #save-btn { left: 180px; border-color: rgba(255, 68, 68, 0.5); color: #ff4444; }
+          #edit-btn { left: 160px; } 
+          #save-btn { left: 160px; border-color: rgba(255, 68, 68, 0.5); color: #ff4444; }
           #save-btn:hover { background: rgba(255, 68, 68, 0.1); border-color: #ff4444; color: #ff4444;}
         }
 
         @layer cards {
-          /* ВАШИ ОРИГИНАЛЬНЫЕ КАРТОЧКИ! */
+          /* ВАШ ОРИГИНАЛЬНЫЙ ДИЗАЙН КАРТОЧЕК 100% */
           .text-card {
             max-width: 23.75rem; 
             padding: 2.25rem 2rem;
@@ -160,8 +137,6 @@
             -webkit-backdrop-filter: blur(6px) saturate(120%);
             transition: background 0.3s ease, border-color 0.3s ease;
             pointer-events: auto; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word;
           }
 
           .text-card.right {
@@ -173,13 +148,13 @@
           .text-card.right .h-line { transform-origin: right; margin-inline-start: auto; }
 
           .tag { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-block-end: 1.1rem; outline: none;}
+          :where(h1, h2) { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; line-height: 0.92; outline: none; text-transform: uppercase;}
+          h1 { font-size: clamp(3rem, 8vw, 6.5rem); }
+          h2 { font-size: clamp(2.2rem, 5vw, 4rem); }
           
-          :where(h1, h2) { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; line-height: 0.92; word-wrap: break-word; outline: none;}
-          h1 { font-size: clamp(3rem, 8vw, 6.5rem); margin-bottom: 10px; }
-          h2 { font-size: clamp(2.2rem, 5vw, 4rem); text-transform: uppercase; margin-bottom: 10px;}
-          
-          .body-text { font-size: 0.78rem; line-height: 1.8; color: color-mix(in srgb, var(--fg) 80%, transparent); margin-block-start: 1.25rem; font-style: italic; outline: none;}
+          .body-text { font-size: 0.78rem; line-height: 1.8; color: color-mix(in srgb, var(--fg) 55%, transparent); margin-block-start: 1.25rem; outline: none;}
           .h-line { width: 3.125rem; height: var(--hairline); background: var(--accent); margin-block-end: 1.2rem; transform-origin: left; }
+          
           .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
 
           .editable-active { border: 1px dashed var(--accent); padding: 5px; background: rgba(255,255,255,0.05); }
@@ -197,24 +172,22 @@
         }
 
         @media (max-width: 1024px) {
-            #ambient_glow { width: 100vw; height: 100vw; }
-            #cube { --s: min(80vw, 80vh, 400px); margin-top: -20vh;}
+            #cube { --s: min(80vw, 80vh, 400px); }
             section { align-items: flex-end; padding: 0 1.5rem 3.5rem; min-height: 150vh;}
             #s0 { min-height: 100vh; align-items: center; padding: 4rem 1.5rem; }
             .text-card, .text-card.right { max-width: 100%; padding: 1.5rem 1.25rem; }
-            .nav-arrow { display: none; } /* Скрываем кнопки на телефоне, там свайп */
-            #back_btn { top: 1rem; left: 1rem; }
+            .nav-arrow { display: none; } 
             #hud { top: 1rem; right: 1rem; }
-            .admin-btn { left: 130px !important; font-size: 0.6rem !important; padding: 0.5rem 1rem !important; top: 1rem !important;}
+            #back_btn { top: 1rem; left: 1rem; }
+            .admin-btn { left: 110px !important; top: 1rem !important;}
         }
     </style>
 </head>
 <body>
 
     <div id="loading_screen">СОЗДАНИЕ ГАЛЕРЕИ...</div>
-    <div id="ambient_glow"></div>
+    <div id="drag_zone"></div>
 
-    <!-- КНОПКИ УПРАВЛЕНИЯ -->
     <a href="index.html" id="back_btn">← НА ГЛАВНУЮ</a>
     <button id="edit-btn" class="admin-btn" onclick="startEditing()">✏️ EDIT</button>
     <button id="save-btn" class="admin-btn" onclick="saveExhibition()">💾 SAVE</button>
@@ -224,6 +197,7 @@
 
     <div id="scene">
         <div id="cube">
+            <!-- Физические грани куба -->
             <div class="face" data-face="top"></div>
             <div class="face" data-face="front"></div>
             <div class="face" data-face="right"></div>
@@ -264,20 +238,12 @@
         const QUOTES = [
             { text: "«Фотография — это секрет о секрете. Чем больше она говорит вам, тем меньше вы знаете.»", author: "Диана Арбус" },
             { text: "«Искусство — это ложь, которая делает нас способными осознать правду.»", author: "Пабло Пикассо" },
-            { text: "«То, что вы ловите на пленку, запечатлевается навсегда. Она помнит мелочи, которые вы давно забыли.»", author: "Аарон Сискинд" },
-            { text: "«Каждая фотография — это сертификат присутствия.»", author: "Ролан Барт" },
+            { text: "«То, что вы ловите на пленку, запечатлевается навсегда. Она помнит мелочи.»", author: "Аарон Сискинд" },
             { text: "«Свет прославляет всё. Он превращает мусор в золото.»", author: "Уинстон Линк" },
             { text: "«Мы видим не вещи, а то, как на них падает свет.»", author: "Карл Юнг" },
-            { text: "«В фотографии нет теней, которые нельзя было бы осветить.»", author: "Август Зандер" },
-            { text: "«Фотография — это картина, написанная солнцем без участия художника.»", author: "Амброз Бирс" },
-            { text: "«Камера — это инструмент, который учит людей видеть мир без камеры.»", author: "Доротея Ланж" },
-            { text: "«Время — это иллюзия, а фотография — её лучшее доказательство.»", author: "Альберт Эйнштейн" },
-            { text: "«Хорошая фотография останавливает взгляд, отличная — останавливает мысли.»", author: "Неизвестный" },
-            { text: "«Суть искусства — не в том, чтобы изображать видимое, а в том, чтобы делать невидимое видимым.»", author: "Пауль Клее" },
-            { text: "«Снимать — значит признавать значимость мгновения.»", author: "Сьюзен Сонтаг" },
-            { text: "«Только в тишине можно услышать, как говорит изображение.»", author: "Эрих Фромм" },
-            { text: "«Фотография — это не отражение реальности. Это реальность этого отражения.»", author: "Жан-Люк Годар" },
-            { text: "«Свет и тень — два великих скульптора, лепящих наш мир.»", author: "Леонардо да Винчи" }
+            { text: "«Фотография берет фрагмент факта и дает ему жизнь.»", author: "Марио Джакомелли" },
+            { text: "«Каждая фотография — это сертификат присутствия.»", author: "Ролан Барт" },
+            { text: "«Форма — это тайна, раскрывающаяся через свет.»", author: "Огюст Роден" }
         ];
 
         const dom = {
@@ -288,8 +254,6 @@
             sceneName: document.getElementById("scene_name"),
             captionNum: document.getElementById("face_caption_num"),
             captionName: document.getElementById("face_caption_name"),
-            btnPrev: document.getElementById("btn_prev"),
-            btnNext: document.getElementById("btn_next"),
             loading: document.getElementById("loading_screen")
         };
 
@@ -303,7 +267,7 @@
             const token = localStorage.getItem('github_token_gevartplay');
             if (token) document.getElementById('edit-btn').style.display = 'block';
 
-            // Загружаем сохраненные тексты (если есть)
+            // 1. Загрузка текстов админа
             try {
                 const resData = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}?t=${Date.now()}`);
                 if(resData.ok) {
@@ -314,7 +278,7 @@
                 }
             } catch(e) {}
 
-            // Загружаем фото в ХАОТИЧНОМ порядке
+            // 2. Загрузка фото + Случайный порядок (Fisher-Yates)
             try {
                 const resImg = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images?t=${Date.now()}`);
                 if (!resImg.ok) throw new Error("API Limit");
@@ -322,7 +286,6 @@
                 
                 let tempImages = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i) && !f.name.includes('logo.png') && !f.name.includes('avatar.jpg') && !f.name.includes('ikon.png'));
                 
-                // Рандом Фишера-Йетса
                 for (let i = tempImages.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [tempImages[i], tempImages[j]] = [tempImages[j], tempImages[i]];
@@ -330,7 +293,6 @@
                 portfolioImages = tempImages;
             } catch (e) { 
                 console.error("Ошибка загрузки фото", e); 
-                // РЕЗЕРВНЫЙ ПЛАН если GitHub заблокировал запросы
                 portfolioImages = [
                     { download_url: "images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg", sha: "demo1" },
                     { download_url: "images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg", sha: "demo2" },
@@ -339,80 +301,40 @@
             }
 
             if(portfolioImages.length === 0) {
-                dom.scrollEl.innerHTML = `<section style="justify-content:center"><h1 style="color:white; text-align:center;">ГАЛЕРЕЯ ПУСТА<br><span style="font-size:1rem; font-weight:normal">Загрузите фото на главной странице</span></h1></section>`;
-                dom.loading.style.opacity = '0';
-                setTimeout(() => dom.loading.style.display = 'none', 500);
+                dom.scrollEl.innerHTML = `<section style="justify-content:center"><h1 style="color:white; text-align:center;">ГАЛЕРЕЯ ПУСТА</h1></section>`;
+                dom.loading.style.display = 'none';
                 return;
             }
 
-            STOPS = buildChaoticStops(portfolioImages.length);
+            // 3. Создаем идеальный хаотичный путь, который циклично обходит все 6 граней без переворотов
+            STOPS = buildSafeChaoticStops(portfolioImages.length);
+            
             buildSections();
             
             dom.loading.style.opacity = '0';
             setTimeout(() => dom.loading.style.display = 'none', 500);
         }
 
-        // --- УМНАЯ ХАОТИЧНАЯ МАТЕМАТИКА (БЕЗ ПЕРЕВОРОТОВ ВВЕРХ НОГАМИ) ---
-        function buildChaoticStops(n) {
-            let stops = [];
-            let crx = 0, cry = 0;
+        // --- БЕЗОПАСНАЯ МАТЕМАТИКА ВРАЩЕНИЯ ---
+        // Идеально обходит 6 граней по кругу (с заворотом на крышу и пол), 
+        // гарантируя что фото никогда не перезапишут друг друга и не перевернутся.
+        function buildSafeChaoticStops(n) {
+            const pattern = [
+                { rx: 90, ry: 0, face: 'top' },
+                { rx: 0, ry: 0, face: 'front' },
+                { rx: 0, ry: -90, face: 'right' },
+                { rx: 0, ry: -180, face: 'back' },
+                { rx: 0, ry: -270, face: 'left' },
+                { rx: -90, ry: -360, face: 'bottom' }
+            ];
             
+            let stops = [];
             for (let i = 0; i < n; i++) {
-                stops.push({ rx: crx, ry: cry });
-                let nrx = crx, nry = cry;
-                
-                // Если мы на крыше или на полу, обязаны вернуться на экватор
-                if (crx === 90 || crx === -90) {
-                    nrx = 0; 
-                } else {
-                    let choices = [
-                        { rx: 0, ry: cry - 90 }, // Вправо
-                        { rx: 0, ry: cry + 90 }  // Влево
-                    ];
-                    
-                    // На крышу и на пол пускаем только с передней/задней стенки
-                    if (cry % 180 === 0) {
-                        choices.push({ rx: 90, ry: cry });  // Наверх
-                        choices.push({ rx: -90, ry: cry }); // Вниз
-                    }
-                    
-                    // Запрещаем крутиться назад
-                    if (stops.length > 1) {
-                        let prev = stops[stops.length - 2];
-                        choices = choices.filter(c => !(c.rx === prev.rx && c.ry === prev.ry));
-                    }
-
-                    // Запрещаем крутиться в одну сторону больше 2 раз
-                    if (stops.length > 2) {
-                        let p1 = stops[stops.length - 1];
-                        let p2 = stops[stops.length - 2];
-                        let p3 = stops[stops.length - 3];
-                        if (p1.rx === 0 && p2.rx === 0 && p3.rx === 0) {
-                            if (p1.ry < p2.ry && p2.ry < p3.ry) choices = choices.filter(c => c.ry >= cry); 
-                            else if (p1.ry > p2.ry && p2.ry > p3.ry) choices = choices.filter(c => c.ry <= cry); 
-                        }
-                    }
-                    
-                    let pick = choices[Math.floor(Math.random() * choices.length)];
-                    if(!pick) pick = { rx: 0, ry: cry - 90 }; 
-                    nrx = pick.rx; nry = pick.ry;
-                }
-                crx = nrx; cry = nry;
+                let cycle = Math.floor(i / 6); // Каждый 6-й шаг добавляем оборот -360, чтобы крутилось вечно
+                let p = pattern[i % 6];
+                stops.push({ rx: p.rx, ry: p.ry - (cycle * 360), face: p.face });
             }
             return stops;
-        }
-
-        function faceAtStop(stopIndex) {
-            const stop = STOPS[stopIndex];
-            if (!stop) return 'front';
-            if (stop.rx === 90) return 'top';
-            if (stop.rx === -90) return 'bottom';
-            let normalizedRy = ((stop.ry % 360) + 360) % 360;
-            if (normalizedRy === 0) return 'front';
-            if (normalizedRy === 270) return 'right';
-            if (normalizedRy === 180) return 'back';
-            if (normalizedRy === 90) return 'left';
-            return 'front';
         }
 
         function buildSections() {
@@ -461,25 +383,21 @@
             setTimeout(() => { recalcScroll(); init3DScroll(); }, 500);
         }
 
+        // --- ВЕШАЕМ ФОТО С РАМКОЙ ---
         function updateFaceImage(stopIndex) {
             if (stopIndex < 0 || stopIndex >= portfolioImages.length) return;
+            const stop = STOPS[stopIndex];
             const src = portfolioImages[stopIndex].download_url;
             
-            const faceName = faceAtStop(stopIndex);
-            const faceElem = document.querySelector(`.face[data-face="${faceName}"]`);
+            const faceElem = document.querySelector(`.face[data-face="${stop.face}"]`);
             if(!faceElem) return;
 
-            if(faceElem.children.length === 0) {
-                const frame = document.createElement('div');
-                frame.className = 'picture-frame';
-                const img = new Image();
-                img.src = src;
-                frame.appendChild(img);
-                faceElem.appendChild(frame);
-            } else {
-                const img = faceElem.querySelector('img');
-                if(img.src !== src) img.src = src;
-            }
+            // Всегда перерисовываем картинку с рамкой, чтобы избежать багов кэша DOM
+            faceElem.innerHTML = `
+                <div class="picture-frame">
+                    <img src="${src}" alt="Gallery Image">
+                </div>
+            `;
         }
 
         function recalcScroll() {
@@ -494,56 +412,47 @@
             window.scrollTo({ top: sectionTops[index], behavior: 'smooth' });
         }
         
-        // КНОПКИ ВПЕРЕД/НАЗАД
-        dom.btnPrev.addEventListener('click', () => {
-            let currentIndex = Math.round(smoothScroll * (portfolioImages.length - 1));
-            scrollToSection(currentIndex - 1);
+        // --- УПРАВЛЕНИЕ: КНОПКИ, СВАЙП, ДРАГ ---
+        document.getElementById('btn_prev').addEventListener('click', () => {
+            let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
+            scrollToSection(currentIdx - 1);
         });
-        
-        dom.btnNext.addEventListener('click', () => {
-            let currentIndex = Math.round(smoothScroll * (portfolioImages.length - 1));
-            scrollToSection(currentIndex + 1);
+        document.getElementById('btn_next').addEventListener('click', () => {
+            let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
+            scrollToSection(currentIdx + 1);
         });
 
-        // СВАЙП И МЫШКА (DRAG)
         let startX = 0, startY = 0;
-        
-        window.addEventListener('touchstart', e => {
+        function handleStart(e) {
             if(isEditMode) return;
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-        }, {passive: true});
-        
-        window.addEventListener('touchmove', e => {
+            startX = e.touches ? e.touches[0].clientX : e.clientX;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+        }
+        function handleMove(e) {
             if(isEditMode || startX === 0) return;
-            let dx = e.touches[0].clientX - startX;
-            let dy = e.touches[0].clientY - startY;
+            let x = e.touches ? e.touches[0].clientX : e.clientX;
+            let y = e.touches ? e.touches[0].clientY : e.clientY;
+            let dx = x - startX; let dy = y - startY;
             
-            // Если свайп влево/вправо сильнее чем вверх/вниз - листаем галерею
-            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-                e.preventDefault(); 
+            // Свайп/перетаскивание влево или вправо
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
                 let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
-                if (dx < 0) scrollToSection(currentIdx + 1); // Влево -> вперед
-                else scrollToSection(currentIdx - 1); // Вправо -> назад
+                if (dx < 0) scrollToSection(currentIdx + 1); // Свайп влево -> вперед
+                else scrollToSection(currentIdx - 1);        // Свайп вправо -> назад
                 startX = 0; 
             }
-        }, {passive: false});
+        }
+        function handleEnd() { startX = 0; }
 
-        let isMouseDragging = false;
-        dom.cube.addEventListener('mousedown', e => { if(!isEditMode){ isMouseDragging = true; startX = e.clientX; } });
-        window.addEventListener('mousemove', e => {
-            if(!isMouseDragging || isEditMode) return;
-            let dx = e.clientX - startX;
-            if(Math.abs(dx) > 50) {
-                let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
-                if (dx < 0) scrollToSection(currentIdx + 1);
-                else scrollToSection(currentIdx - 1);
-                isMouseDragging = false;
-            }
-        });
-        window.addEventListener('mouseup', () => isMouseDragging = false);
+        const dragZone = document.getElementById('drag_zone');
+        dragZone.addEventListener('mousedown', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
+        dragZone.addEventListener('touchstart', handleStart, {passive: true});
+        window.addEventListener('touchmove', handleMove, {passive: true});
+        window.addEventListener('touchend', handleEnd);
 
-        // ПЛАВНАЯ АНИМАЦИЯ
+        // --- ПЛАВНАЯ АНИМАЦИЯ И РЕНДЕР КУБА ---
         const easeIO = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
         let currentActiveIndex = -1;
         
@@ -568,20 +477,22 @@
                 const a = STOPS[i];
                 const b = STOPS[i + 1];
                 
+                // Вращение
                 const rx = a.rx + (b.rx - a.rx) * f;
                 const ry = a.ry + (b.ry - a.ry) * f;
                 dom.cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
 
+                // Подмена фотографий на невидимых гранях
                 let activeIndex = Math.round(t);
                 if (activeIndex !== currentActiveIndex) {
                     currentActiveIndex = activeIndex;
                     
                     const title = activeIndex === 0 ? "ВВЕДЕНИЕ" : document.getElementById(`title-${portfolioImages[activeIndex].sha}`)?.innerText || TITLES[activeIndex % TITLES.length];
-                    
                     dom.sceneName.textContent = title;
                     dom.captionNum.textContent = String(activeIndex + 1).padStart(2, "0");
                     dom.captionName.textContent = title;
                     
+                    // Гарантированно вешаем фото на текущую и соседние грани
                     updateFaceImage(activeIndex);
                     if(activeIndex + 1 < N) updateFaceImage(activeIndex + 1);
                     if(activeIndex - 1 >= 0) updateFaceImage(activeIndex - 1);
@@ -595,7 +506,7 @@
             isEditMode = true;
             document.getElementById('edit-btn').style.display = 'none';
             document.getElementById('save-btn').style.display = 'block';
-            dom.cube.style.pointerEvents = 'none'; // Отключаем драг, чтобы выделять текст
+            document.getElementById('drag_zone').style.display = 'none'; // Чтобы можно было выделять текст
             
             document.querySelectorAll('h1, h2, .body-text, .author span').forEach(el => {
                 el.contentEditable = "true";
@@ -611,7 +522,8 @@
             newData.intro.title = document.getElementById('text-intro-title')?.innerHTML || "";
             newData.intro.text = document.getElementById('text-intro-desc')?.innerHTML || "";
 
-            portfolioImages.forEach(img => {
+            portfolioImages.forEach((img, i) => {
+                if (i === 0) return; // Пропускаем интро
                 const sha = img.sha;
                 const titleEl = document.getElementById(`title-${sha}`);
                 if (titleEl) {
