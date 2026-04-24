@@ -2,7 +2,7 @@
 <html lang="ru" data-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GevArtPlay | 3D Выставка</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -27,7 +27,7 @@
             --font-mono: "DM Mono", monospace;
             --hairline: 0.0625rem;
             --ui-inset: 2rem;
-            --card-bg: rgba(20, 18, 16, 0.85); 
+            --card-bg: rgba(28, 24, 20, 0.82); 
             --card-border: rgba(91, 81, 216, 0.5);
             --nav-x: calc(var(--ui-inset) + 0.125rem);
             --reveal-offset: 0.625rem;
@@ -37,11 +37,11 @@
         }
 
         @layer base {
-          html { color-scheme: dark; }
-          body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); overflow-x: hidden; transition: background 0.3s ease; }
+          html { color-scheme: dark; overscroll-behavior: none; }
+          body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); overflow-x: hidden; transition: background 0.3s ease; user-select: none; }
           ::-webkit-scrollbar { width: 6px; }
           ::-webkit-scrollbar-track { background: var(--bg); }
-          ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+          ::-webkit-scrollbar-thumb { background: var(--accent); }
         }
 
         @layer layout {
@@ -57,7 +57,11 @@
 
           #scene { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; perspective: 1100px; pointer-events: none; }
           #scroll_container { position: relative; z-index: 2; }
-          section { min-height: 100vh; display: flex; align-items: center; padding: 6rem calc(3rem + var(--ui-inset)) 6rem 3rem; pointer-events: none;}
+          section { min-height: 100vh; display: flex; align-items: center; padding: 6rem calc(5rem + var(--ui-inset)) 6rem 5rem; pointer-events: none; }
+          
+          /* Зона для свайпа и мышки */
+          #drag_zone { position: fixed; inset: 0; z-index: 5; cursor: grab; touch-action: none; }
+          #drag_zone:active { cursor: grabbing; }
         }
 
         @layer cube {
@@ -82,21 +86,14 @@
           }
           
           .picture-frame {
-              width: 70%; height: 70%;
-              background: #fdfdfd; 
-              padding: 3%; 
-              border: 8px solid #2b1d14; 
-              border-radius: 2px;
+              width: 70%; height: 70%; background: #fdfdfd; padding: 3%; 
+              border: 8px solid #2b1d14; border-radius: 2px;
               box-shadow: 20px 30px 40px rgba(0,0,0,0.9), inset 0 0 10px rgba(0,0,0,0.2); 
               display: flex; align-items: center; justify-content: center;
-              position: relative;
-              transform: translateZ(0); 
+              position: relative; transform: translateZ(0); 
           }
 
-          .picture-frame img { 
-              max-width: 100%; max-height: 100%; object-fit: contain; 
-              box-shadow: inset 0 0 10px rgba(0,0,0,0.5); 
-          }
+          .picture-frame img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); pointer-events: none;}
 
           .face[data-face="front"] { transform: translateZ(calc(var(--s) / 2)); }
           .face[data-face="back"] { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
@@ -107,64 +104,72 @@
         }
 
         @layer ui {
-          #hud { position: fixed; top: var(--ui-inset); right: var(--ui-inset); z-index: var(--z-ui); text-align: right; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+          #loading_screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); font-family: var(--font-display); font-size: 2rem; letter-spacing: 5px; transition: opacity 0.4s ease; }
+
+          #hud { position: fixed; top: var(--ui-inset); right: var(--ui-inset); z-index: var(--z-ui); text-align: right; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; pointer-events: none;}
           .progress-bar { width: 7.5rem; height: var(--hairline); background: var(--muted); margin-block-start: 0.5rem; margin-inline-start: auto; position: relative; overflow: hidden; }
           .progress-fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0%; background: var(--accent); transition: width 0.1s linear; }
           
-          #face_caption { position: fixed; bottom: var(--ui-inset); left: 50%; translate: -50% 0; z-index: var(--z-ui); text-align: center; pointer-events: auto; }
-          #face_caption_num { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--accent); text-transform: uppercase; margin-block-end: 0.15rem; outline: none; }
-          #face_caption_name { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: 0.08em; color: var(--muted); opacity: 0.5; line-height: 1; text-transform: uppercase; outline: none; }
+          /* ОГРОМНЫЙ ФОНОВЫЙ ТЕКСТ */
+          #face_caption { position: fixed; bottom: var(--ui-inset); left: 50%; translate: -50% 0; z-index: var(--z-ui); text-align: center; pointer-events: none; }
+          #face_caption_num { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--accent); text-transform: uppercase; margin-block-end: 0.15rem; }
+          #face_caption_name { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: 0.08em; color: var(--muted); opacity: 0.5; line-height: 1; text-transform: uppercase;}
           
-          /* ТОНКИЕ КНОПКИ УПРАВЛЕНИЯ В СТИЛЕ САЙТА */
-          #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 100; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; }
+          /* КНОПКА НАЗАД */
+          #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 100; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; border-radius: 0;}
           #back_btn:hover { color: var(--fg); border-color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
 
+          /* КНОПКИ ВПЕРЕД / НАЗАД */
+          .nav-arrow {
+              position: fixed; top: 50%; transform: translateY(-50%); z-index: 100;
+              background: transparent; color: var(--muted); border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent);
+              width: 40px; height: 40px; font-size: 16px; border-radius: 0; 
+              cursor: pointer; display: flex; align-items: center; justify-content: center;
+              transition: 0.3s; backdrop-filter: blur(5px); outline: none;
+          }
+          .nav-arrow:hover { background: color-mix(in srgb, var(--muted) 12%, transparent); color: var(--fg); border-color: var(--muted); }
+          #btn_prev { left: var(--nav-x); } 
+          #btn_next { right: var(--nav-x); }
+
+          /* КНОПКИ АДМИНА */
           .admin-btn {
               display: none; position: fixed; top: 2rem; z-index: 100;
               color: var(--muted); border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); background: transparent;
-              padding: 0.6rem 1.25rem; font-family: var(--font-mono); font-size: 0.7rem; 
-              letter-spacing: 0.18em; cursor: pointer; transition: 0.3s; text-transform: uppercase; outline: none;
+              padding: 0.6rem 1.25rem; font-family: var(--font-mono); font-size: 0.62rem; 
+              letter-spacing: 0.18em; cursor: pointer; transition: 0.3s; text-transform: uppercase; border-radius: 0;
           }
           .admin-btn:hover { color: var(--fg); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
-          #edit-btn { left: 180px; } 
-          #save-btn { left: 180px; border-color: rgba(255, 68, 68, 0.5); color: #ff4444; }
+          #edit-btn { left: 160px; } 
+          #save-btn { left: 160px; border-color: rgba(255, 68, 68, 0.5); color: #ff4444; }
           #save-btn:hover { background: rgba(255, 68, 68, 0.1); border-color: #ff4444; color: #ff4444;}
         }
 
         @layer cards {
           .text-card {
-            width: 100%;
-            max-width: 28rem; 
-            padding: 2rem 2.25rem;
+            max-width: 23.75rem; 
+            padding: 2.25rem 2rem;
             background: var(--card-bg);
             border-left: var(--hairline) solid var(--card-border);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
             transition: background 0.3s ease, border-color 0.3s ease;
             pointer-events: auto; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word;
+            position: relative; z-index: 10;
           }
 
-          .text-card.right {
-            margin-inline-start: auto;
-            border-left: none;
-            border-right: var(--hairline) solid var(--card-border);
-            text-align: right;
-          }
+          .text-card.right { margin-inline-start: auto; border-left: none; border-right: var(--hairline) solid var(--card-border); text-align: right; }
           .text-card.right .h-line { transform-origin: right; margin-inline-start: auto; }
 
-          .tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-block-end: 1rem; outline: none; }
+          .tag { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-block-end: 1.1rem; outline: none;}
+          :where(h1, h2) { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; line-height: 0.92; outline: none; text-transform: uppercase;}
+          h1 { font-size: clamp(3rem, 8vw, 6.5rem); }
+          h2 { font-size: clamp(2.2rem, 5vw, 4rem); }
           
-          :where(h1, h2) { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.05em; line-height: 1.1; word-wrap: break-word; outline: none; }
-          h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); margin-bottom: 10px; }
-          h2 { font-size: clamp(2rem, 4vw, 3.5rem); text-transform: uppercase; margin-bottom: 10px;}
-          
-          .body-text { font-size: 0.85rem; line-height: 1.6; color: #ddd; margin-block-start: 1.25rem; font-style: italic; outline: none; }
-          .h-line { width: 3.125rem; height: var(--hairline); background: var(--accent); margin-block-end: 1rem; transform-origin: left; }
-          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-style: normal; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
+          .body-text { font-size: 0.78rem; line-height: 1.8; color: color-mix(in srgb, var(--fg) 55%, transparent); margin-block-start: 1.25rem; outline: none;}
+          .h-line { width: 3.125rem; height: var(--hairline); background: var(--accent); margin-block-end: 1.2rem; transform-origin: left; }
+          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
 
-          .editable-active { border: 1px dashed var(--accent); padding: 2px 5px; background: rgba(255,255,255,0.05); }
+          .editable-active { border: 1px dashed var(--accent); padding: 5px; background: rgba(255,255,255,0.05); }
         }
 
         @layer reveal {
@@ -179,27 +184,36 @@
         }
 
         @media (max-width: 1024px) {
-            #ambient_glow { width: 100vw; height: 100vw; }
-            #cube { --s: min(80vw, 80vh, 400px); margin-top: -20vh;}
+            #cube { --s: min(80vw, 80vh, 400px); }
             section { align-items: flex-end; padding: 0 1.5rem 3.5rem; min-height: 150vh;}
             #s0 { min-height: 100vh; align-items: center; padding: 4rem 1.5rem; }
             .text-card, .text-card.right { max-width: 100%; padding: 1.5rem 1.25rem; }
-            #back_btn { top: 1rem; left: 1rem; font-size: 0.6rem; padding: 0.4rem 0.8rem;}
-            .admin-btn { left: 120px !important; top: 1rem !important; font-size: 0.6rem !important; padding: 0.4rem 0.8rem !important;}
+            .nav-arrow { display: none; } /* На мобилках используем свайп */
             #hud { top: 1rem; right: 1rem; }
+            #back_btn { top: 1rem; left: 1rem; }
+            .admin-btn { left: 110px !important; top: 1rem !important;}
         }
     </style>
 </head>
 <body>
 
+    <!-- ЭКРАН ЗАГРУЗКИ -->
+    <div id="loading_screen">СОЗДАНИЕ ГАЛЕРЕИ...</div>
+
     <div id="ambient_glow"></div>
+    <div id="drag_zone"></div>
+
+    <!-- КНОПКИ УПРАВЛЕНИЯ И АДМИНКА -->
     <a href="index.html" id="back_btn">← НА ГЛАВНУЮ</a>
-    
-    <button id="edit-btn" class="admin-btn" onclick="startEditing()">✏️ РЕДАКТИРОВАТЬ</button>
-    <button id="save-btn" class="admin-btn" onclick="saveExhibition()">💾 СОХРАНИТЬ</button>
+    <button id="edit-btn" class="admin-btn" onclick="startEditing()">✏️ EDIT</button>
+    <button id="save-btn" class="admin-btn" onclick="saveExhibition()">💾 SAVE</button>
+
+    <button class="nav-arrow" id="btn_prev">❮</button>
+    <button class="nav-arrow" id="btn_next">❯</button>
 
     <div id="scene">
         <div id="cube">
+            <!-- 6 Физических Граней -->
             <div class="face" data-face="top"></div>
             <div class="face" data-face="front"></div>
             <div class="face" data-face="right"></div>
@@ -209,6 +223,7 @@
         </div>
     </div>
 
+    <!-- ИНТЕРФЕЙС -->
     <div id="hud">
         <div id="hud_pct">000%</div>
         <div class="progress-bar"><div class="progress-fill" id="prog_fill"></div></div>
@@ -227,7 +242,7 @@
         const DATA_FILE = 'exhibition_data.json';
         
         const TITLES = [
-            "ЭМОЦИЯ", "МГНОВЕНИЕ", "ВЕЧНОСТЬ", "ГЛУБИНА", 
+            "ЭКСПРЕССИЯ", "ЭМОЦИЯ", "МГНОВЕНИЕ", "ВЕЧНОСТЬ", "ГЛУБИНА", 
             "РАКУРС", "ОТРАЖЕНИЕ", "АТМОСФЕРА", "ИЛЛЮЗИЯ", 
             "МОМЕНТ", "СИЛУЭТ", "ФРАГМЕНТ", "ВДОХНОВЕНИЕ"
         ];
@@ -235,25 +250,13 @@
         const QUOTES = [
             { text: "«Фотография — это секрет о секрете. Чем больше она говорит вам, тем меньше вы знаете.»", author: "Диана Арбус" },
             { text: "«Искусство — это ложь, которая делает нас способными осознать правду.»", author: "Пабло Пикассо" },
-            { text: "«То, что вы ловите на пленку, запечатлевается навсегда. Она помнит мелочи, которые вы давно забыли.»", author: "Аарон Сискинд" },
-            { text: "«Каждая фотография — это сертификат присутствия.»", author: "Ролан Барт" },
+            { text: "«То, что вы ловите на пленку, запечатлевается навсегда. Она помнит мелочи.»", author: "Аарон Сискинд" },
             { text: "«Свет прославляет всё. Он превращает мусор в золото.»", author: "Уинстон Линк" },
             { text: "«Мы видим не вещи, а то, как на них падает свет.»", author: "Карл Юнг" },
-            { text: "«В фотографии нет теней, которые нельзя было бы осветить.»", author: "Август Зандер" },
-            { text: "«Фотография — это картина, написанная солнцем без участия художника.»", author: "Амброз Бирс" },
-            { text: "«Камера — это инструмент, который учит людей видеть мир без камеры.»", author: "Доротея Ланж" },
-            { text: "«Время — это иллюзия, а фотография — её лучшее доказательство.»", author: "Альберт Эйнштейн" },
-            { text: "«Хорошая фотография останавливает взгляд, отличная — останавливает мысли.»", author: "Неизвестный" },
-            { text: "«Суть искусства — не в том, чтобы изображать видимое, а в том, чтобы делать невидимое видимым.»", author: "Пауль Клее" },
-            { text: "«Снимать — значит признавать значимость мгновения.»", author: "Сьюзен Сонтаг" },
-            { text: "«Только в тишине можно услышать, как говорит изображение.»", author: "Эрих Фромм" },
-            { text: "«Фотография — это не отражение реальности. Это реальность этого отражения.»", author: "Жан-Люк Годар" },
-            { text: "«Свет и тень — два великих скульптора, лепящих наш мир.»", author: "Леонардо да Винчи" }
+            { text: "«Фотография берет фрагмент факта и дает ему жизнь.»", author: "Марио Джакомелли" },
+            { text: "«Каждая фотография — это сертификат присутствия.»", author: "Ролан Барт" },
+            { text: "«Форма — это тайна, раскрывающаяся через свет.»", author: "Огюст Роден" }
         ];
-
-        let portfolioImages = [];
-        let customData = { intro: {}, photos: {} };
-        let customDataSha = null;
 
         const dom = {
             cube: document.getElementById("cube"),
@@ -261,56 +264,78 @@
             hudPct: document.getElementById("hud_pct"),
             progFill: document.getElementById("prog_fill"),
             sceneName: document.getElementById("face_caption_name"),
-            captionNum: document.getElementById("face_caption_num")
+            captionNum: document.getElementById("face_caption_num"),
+            loading: document.getElementById("loading_screen"),
+            btnPrev: document.getElementById("btn_prev"),
+            btnNext: document.getElementById("btn_next")
         };
+
+        let portfolioImages = [];
+        let customData = { intro: {}, photos: {} };
+        let customDataSha = null;
+        let isEditMode = false;
+
+        let STOPS = [];
+        let sectionTops = [];
+        let maxScroll = 1;
+        let smoothScroll = 0;
+        let targetScroll = 0;
 
         async function initApp() {
             const token = localStorage.getItem('github_token_gevartplay');
             if (token) document.getElementById('edit-btn').style.display = 'block';
 
-            // 1. Загрузка ваших текстов
-            try {
-                const resData = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}?t=${Date.now()}`);
-                if(resData.ok) {
-                    const dataJson = await resData.json();
-                    customDataSha = dataJson.sha;
-                    customData = JSON.parse(decodeURIComponent(escape(atob(dataJson.content))));
-                    if(!customData.photos) customData.photos = {};
-                }
-            } catch(e) {}
+            // --- БЫСТРАЯ ПАРАЛЛЕЛЬНАЯ ЗАГРУЗКА ---
+            const headers = token ? { 'Authorization': `token ${token}` } : {};
+            
+            const dataTask = fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}?t=${Date.now()}`, { headers })
+                .then(r => r.ok ? r.json() : null).catch(() => null);
 
-            // 2. Загрузка фото + Перемешивание
-            try {
-                const resImg = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images?t=${Date.now()}`);
-                const files = await resImg.json();
+            const imgTask = fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images?t=${Date.now()}`, { headers })
+                .then(r => r.ok ? r.json() : null).catch(() => null);
+
+            const [dataJson, files] = await Promise.all([dataTask, imgTask]);
+
+            if (dataJson) {
+                customDataSha = dataJson.sha;
+                customData = JSON.parse(decodeURIComponent(escape(atob(dataJson.content))));
+                if(!customData.photos) customData.photos = {};
+            }
+
+            if (Array.isArray(files)) {
+                let tempImages = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i) && !f.name.includes('logo.png') && !f.name.includes('avatar.jpg') && !f.name.includes('ikon.png'));
                 
-                let tempImages = files.filter(file => 
-                    file.name.match(/\.(jpg|jpeg|png)$/i) && 
-                    !file.name.includes('logo.png') && 
-                    !file.name.includes('avatar.jpg') &&
-                    !file.name.includes('ikon.png')
-                );
-
+                // Тасование Фишера-Йетса (Рандом)
                 for (let i = tempImages.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [tempImages[i], tempImages[j]] = [tempImages[j], tempImages[i]];
                 }
                 portfolioImages = tempImages;
-            } catch (e) {
-                console.error("API error", e);
+            } else {
+                // Резерв при лимите GitHub API
+                portfolioImages = [
+                    { download_url: "images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg", sha: "demo1" },
+                    { download_url: "images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg", sha: "demo2" },
+                    { download_url: "images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg", sha: "demo3" }
+                ];
             }
 
             if(portfolioImages.length === 0) {
                 dom.scrollEl.innerHTML = `<section style="justify-content:center"><h1 style="color:white; text-align:center;">ГАЛЕРЕЯ ПУСТА<br><span style="font-size:1rem; font-weight:normal">Загрузите фото на главной странице</span></h1></section>`;
+                dom.loading.style.opacity = '0';
+                setTimeout(() => dom.loading.style.display = 'none', 400);
                 return;
             }
 
-            STOPS = buildChaoticStops(portfolioImages.length);
+            STOPS = buildSafeChaoticStops(portfolioImages.length);
             buildSections();
+            
+            dom.loading.style.opacity = '0';
+            setTimeout(() => dom.loading.style.display = 'none', 400);
         }
 
         // --- УМНАЯ ХАОТИЧНАЯ МАТЕМАТИКА (Защита от переворотов) ---
-        function buildChaoticStops(n) {
+        function buildSafeChaoticStops(n) {
             let stops = [];
             let crx = 0, cry = 0;
             
@@ -318,13 +343,9 @@
                 stops.push({ rx: crx, ry: cry });
                 let nrx = crx, nry = cry;
                 
-                if (crx === 90 || crx === -90) {
-                    nrx = 0; 
-                } else {
-                    let choices = [
-                        { rx: 0, ry: cry - 90 }, 
-                        { rx: 0, ry: cry + 90 }  
-                    ];
+                if (crx === 90 || crx === -90) { nrx = 0; } 
+                else {
+                    let choices = [ { rx: 0, ry: cry - 90 }, { rx: 0, ry: cry + 90 } ];
                     
                     if (cry % 180 === 0) {
                         choices.push({ rx: 90, ry: cry });  
@@ -337,9 +358,7 @@
                     }
 
                     if (stops.length > 2) {
-                        let p1 = stops[stops.length - 1];
-                        let p2 = stops[stops.length - 2];
-                        let p3 = stops[stops.length - 3];
+                        let p1 = stops[stops.length - 1], p2 = stops[stops.length - 2], p3 = stops[stops.length - 3];
                         if (p1.rx === 0 && p2.rx === 0 && p3.rx === 0) {
                             if (p1.ry < p2.ry && p2.ry < p3.ry) choices = choices.filter(c => c.ry >= cry); 
                             else if (p1.ry > p2.ry && p2.ry > p3.ry) choices = choices.filter(c => c.ry <= cry); 
@@ -368,23 +387,23 @@
             return 'front';
         }
 
-        let STOPS = [];
-
         function buildSections() {
+            const introTitle = customData.intro?.title || "ИСКУССТВО<br>ВИДЕТЬ";
+            const introText = customData.intro?.text || "Добро пожаловать в виртуальный выставочный зал. Каждая фотография здесь — это застывшая мысль.";
+
             let html = `
             <section id="s0">
                 <div class="text-card">
                     <div class="h-line"></div>
                     <div class="tag" id="intro-tag">${customData.intro?.tag || "GevArtPlay 3D Галерея"}</div>
-                    <h1 id="intro-title">${customData.intro?.title || "ИСКУССТВО<br>ВИДЕТЬ"}</h1>
-                    <p class="body-text" id="intro-desc">${customData.intro?.text || "Добро пожаловать в виртуальный выставочный зал. Каждая фотография здесь — это застывшая мысль."}</p>
+                    <h1 id="intro-title">${introTitle}</h1>
+                    <p class="body-text" id="intro-desc">${introText}</p>
                 </div>
             </section>`;
 
             for(let i = 1; i < portfolioImages.length; i++) {
                 const img = portfolioImages[i];
-                const sha = img.sha;
-                const saved = customData.photos[sha] || {};
+                const saved = customData.photos[img.sha] || {};
                 
                 const tWord = saved.title || TITLES[i % TITLES.length];
                 const qText = saved.quote || QUOTES[i % QUOTES.length].text;
@@ -396,10 +415,10 @@
                 <section id="s${i}">
                     <div class="text-card ${alignmentClass}">
                         <div class="h-line"></div>
-                        <div class="tag slide-tag" data-sha="${sha}">${tTag}</div>
-                        <h2 class="slide-title" data-sha="${sha}">${tWord}</h2>
-                        <p class="body-text slide-quote" data-sha="${sha}">${qText}</p>
-                        <span class="author">— <span class="slide-author" data-sha="${sha}">${qAuthor}</span></span>
+                        <div class="tag slide-tag" data-sha="${img.sha}">${tTag}</div>
+                        <h2 class="slide-title" data-sha="${img.sha}">${tWord}</h2>
+                        <p class="body-text slide-quote" data-sha="${img.sha}">${qText}</p>
+                        <span class="author">— <span class="slide-author" data-sha="${img.sha}">${qAuthor}</span></span>
                     </div>
                 </section>`;
             }
@@ -415,29 +434,22 @@
             setTimeout(() => { recalcScroll(); init3DScroll(); }, 500);
         }
 
+        // Обновляем грани (Только когда нужно)
         function updateFaceImage(stopIndex) {
             if (stopIndex < 0 || stopIndex >= portfolioImages.length) return;
+            const stop = STOPS[stopIndex];
             const src = portfolioImages[stopIndex].download_url;
             
-            const faceName = faceAtStop(stopIndex);
-            const faceElem = document.querySelector(`.face[data-face="${faceName}"]`);
+            const faceElem = document.querySelector(`.face[data-face="${stop.face}"]`);
             if(!faceElem) return;
 
-            if(faceElem.children.length === 0) {
-                const frame = document.createElement('div');
-                frame.className = 'picture-frame';
-                const img = new Image();
-                img.src = src;
-                frame.appendChild(img);
-                faceElem.appendChild(frame);
-            } else {
-                const img = faceElem.querySelector('img');
-                if(img.src !== src) img.src = src;
-            }
+            faceElem.innerHTML = `
+                <div class="picture-frame">
+                    <img src="${src}" alt="Gallery Image">
+                </div>
+            `;
         }
 
-        let sectionTops = [];
-        let maxScroll = 1;
         function recalcScroll() {
             maxScroll = Math.max(1, document.documentElement.scrollHeight - innerHeight);
             const sections = document.querySelectorAll("section");
@@ -445,10 +457,52 @@
         }
         window.addEventListener("resize", recalcScroll);
 
-        let smoothScroll = 0;
-        let targetScroll = 0;
-        const easeIO = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
+        function scrollToSection(index) {
+            if(index < 0 || index >= portfolioImages.length) return;
+            window.scrollTo({ top: sectionTops[index], behavior: 'smooth' });
+        }
+        
+        // --- УПРАВЛЕНИЕ: КНОПКИ, СВАЙП, МЫШКА ---
+        dom.btnPrev.addEventListener('click', () => {
+            let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
+            scrollToSection(currentIdx - 1);
+        });
+        dom.btnNext.addEventListener('click', () => {
+            let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
+            scrollToSection(currentIdx + 1);
+        });
 
+        let startX = 0, startY = 0;
+        function handleStart(e) {
+            if(isEditMode) return;
+            startX = e.touches ? e.touches[0].clientX : e.clientX;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+        }
+        function handleMove(e) {
+            if(isEditMode || startX === 0) return;
+            let x = e.touches ? e.touches[0].clientX : e.clientX;
+            let y = e.touches ? e.touches[0].clientY : e.clientY;
+            let dx = x - startX; let dy = y - startY;
+            
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+                let currentIdx = Math.round(smoothScroll * (portfolioImages.length - 1));
+                if (dx < 0) scrollToSection(currentIdx + 1); // Свайп влево
+                else scrollToSection(currentIdx - 1);        // Свайп вправо
+                startX = 0; 
+            }
+        }
+        function handleEnd() { startX = 0; }
+
+        const dragZone = document.getElementById('drag_zone');
+        dragZone.addEventListener('mousedown', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
+        dragZone.addEventListener('touchstart', handleStart, {passive: true});
+        window.addEventListener('touchmove', handleMove, {passive: true});
+        window.addEventListener('touchend', handleEnd);
+
+        // --- ПЛАВНАЯ АНИМАЦИЯ ---
+        const easeIO = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
         let currentActiveIndex = -1;
         
         function init3DScroll() {
@@ -459,8 +513,8 @@
                 smoothScroll += (targetScroll - smoothScroll) * 0.08;
                 
                 const p = Math.round(smoothScroll * 100);
-                document.getElementById("hud_pct").textContent = String(p).padStart(3, "0") + "%";
-                document.getElementById("prog_fill").style.width = `${p}%`;
+                dom.hudPct.textContent = String(p).padStart(3, "0") + "%";
+                dom.progFill.style.width = `${p}%`;
 
                 const N = portfolioImages.length;
                 if(N < 2) return;
@@ -472,15 +526,13 @@
                 const a = STOPS[i];
                 const b = STOPS[i + 1];
                 
-                const rx = a.rx + (b.rx - a.rx) * f;
-                const ry = a.ry + (b.ry - a.ry) * f;
-                dom.cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+                dom.cube.style.transform = `rotateX(${a.rx + (b.rx - a.rx) * f}deg) rotateY(${a.ry + (b.ry - a.ry) * f}deg)`;
 
                 let activeIndex = Math.round(t);
                 if (activeIndex !== currentActiveIndex) {
                     currentActiveIndex = activeIndex;
                     
-                    // Обновляем полупрозрачный фоновый текст
+                    // Динамическое обновление прозрачного текста на фоне
                     if (activeIndex === 0) {
                         dom.sceneName.textContent = document.getElementById('intro-title')?.innerText || "ВВЕДЕНИЕ";
                         dom.captionNum.textContent = "01";
@@ -490,6 +542,7 @@
                         dom.captionNum.textContent = String(activeIndex + 1).padStart(2, "0");
                     }
                     
+                    // Гарантированно вешаем фото на стены
                     updateFaceImage(activeIndex);
                     if(activeIndex + 1 < N) updateFaceImage(activeIndex + 1);
                     if(activeIndex - 1 >= 0) updateFaceImage(activeIndex - 1);
@@ -498,15 +551,26 @@
             requestAnimationFrame(frame);
         }
 
-        // --- РЕДАКТОР АДМИНА ---
+        // --- АДМИН ПАНЕЛЬ ---
         function startEditing() {
+            isEditMode = true;
             document.getElementById('edit-btn').style.display = 'none';
             document.getElementById('save-btn').style.display = 'block';
+            document.getElementById('drag_zone').style.display = 'none'; // Выключаем драг для выделения текста
             
-            // Делаем весь текст карточек + задний фон редактируемыми
-            document.querySelectorAll('#intro-tag, #intro-title, #intro-desc, .slide-tag, .slide-title, .slide-quote, .slide-author, #face_caption_name, #face_caption_num').forEach(el => {
+            document.querySelectorAll('#intro-tag, #intro-title, #intro-desc, .slide-tag, .slide-title, .slide-quote, .slide-author').forEach(el => {
                 el.contentEditable = "true";
                 el.classList.add('editable-active');
+                
+                // Чтобы фон сразу менялся при редактировании H2
+                if (el.classList.contains('slide-title')) {
+                    el.addEventListener('input', () => {
+                        const sha = el.getAttribute('data-sha');
+                        if (portfolioImages[currentActiveIndex]?.sha === sha) {
+                            dom.sceneName.textContent = el.innerText;
+                        }
+                    });
+                }
             });
         }
 
