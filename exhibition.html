@@ -45,7 +45,6 @@
         }
 
         @layer layout {
-          /* ОПТИМИЗАЦИЯ: Убран тяжелый filter: blur, заменен на легкий радиальный градиент */
           #ambient_glow {
               position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
               width: 60vw; height: 60vw; border-radius: 50%;
@@ -62,7 +61,6 @@
         }
 
         @layer cube {
-          /* ОПТИМИЗАЦИЯ: Аппаратное ускорение (translateZ(0)) */
           #cube { 
               --s: min(60vw, 60vh, 560px); width: var(--s); height: var(--s); 
               position: relative; transform-style: preserve-3d; transform: rotateX(90deg) rotateY(0deg); 
@@ -80,7 +78,7 @@
               border: 1px solid #332822; 
               box-shadow: inset 0 0 100px rgba(0,0,0,1); 
               display: flex; align-items: center; justify-content: center;
-              transform: translateZ(0); /* Оптимизация */
+              transform: translateZ(0); 
           }
           
           .picture-frame {
@@ -92,7 +90,7 @@
               box-shadow: 20px 30px 40px rgba(0,0,0,0.9), inset 0 0 10px rgba(0,0,0,0.2); 
               display: flex; align-items: center; justify-content: center;
               position: relative;
-              transform: translateZ(0); /* Оптимизация */
+              transform: translateZ(0); 
           }
 
           .picture-frame img { 
@@ -113,23 +111,24 @@
           .progress-bar { width: 7.5rem; height: var(--hairline); background: var(--muted); margin-block-start: 0.5rem; margin-inline-start: auto; position: relative; overflow: hidden; }
           .progress-fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0%; background: var(--accent); transition: width 0.1s linear; }
           
-          .nav-arrow {
-              position: fixed; top: 50%; transform: translateY(-50%); z-index: 100;
-              background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--accent);
-              width: 50px; height: 50px; border-radius: 50%; font-size: 20px;
-              cursor: pointer; display: flex; align-items: center; justify-content: center;
-              transition: 0.3s; backdrop-filter: blur(5px);
-          }
-          .nav-arrow:hover { background: var(--accent); transform: translateY(-50%) scale(1.1); box-shadow: 0 0 20px var(--accent); }
-          #btn_prev { left: var(--nav-x); } 
-          #btn_next { right: var(--nav-x); }
-
-          #face_caption { position: fixed; bottom: var(--ui-inset); left: 50%; translate: -50% 0; z-index: var(--z-ui); text-align: center; pointer-events: none; user-select: none; }
-          #face_caption_num { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--accent); text-transform: uppercase; margin-block-end: 0.15rem; }
-          #face_caption_name { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: 0.08em; color: var(--muted); opacity: 0.5; line-height: 1; text-transform: uppercase;}
+          #face_caption { position: fixed; bottom: var(--ui-inset); left: 50%; translate: -50% 0; z-index: var(--z-ui); text-align: center; pointer-events: auto; }
+          #face_caption_num { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--accent); text-transform: uppercase; margin-block-end: 0.15rem; outline: none; }
+          #face_caption_name { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 3.5rem); letter-spacing: 0.08em; color: var(--muted); opacity: 0.5; line-height: 1; text-transform: uppercase; outline: none; }
           
+          /* ТОНКИЕ КНОПКИ УПРАВЛЕНИЯ В СТИЛЕ САЙТА */
           #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 100; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; }
           #back_btn:hover { color: var(--fg); border-color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
+
+          .admin-btn {
+              display: none; position: fixed; top: 2rem; z-index: 100;
+              color: var(--muted); border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); background: transparent;
+              padding: 0.6rem 1.25rem; font-family: var(--font-mono); font-size: 0.7rem; 
+              letter-spacing: 0.18em; cursor: pointer; transition: 0.3s; text-transform: uppercase; outline: none;
+          }
+          .admin-btn:hover { color: var(--fg); border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+          #edit-btn { left: 180px; } 
+          #save-btn { left: 180px; border-color: rgba(255, 68, 68, 0.5); color: #ff4444; }
+          #save-btn:hover { background: rgba(255, 68, 68, 0.1); border-color: #ff4444; color: #ff4444;}
         }
 
         @layer cards {
@@ -138,33 +137,34 @@
             max-width: 28rem; 
             padding: 2rem 2.25rem;
             background: var(--card-bg);
-            border-left: 2px solid var(--card-border);
+            border-left: var(--hairline) solid var(--card-border);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             transition: background 0.3s ease, border-color 0.3s ease;
             pointer-events: auto; 
             word-wrap: break-word; 
             overflow-wrap: break-word;
-            will-change: transform, opacity; /* Оптимизация */
           }
 
           .text-card.right {
             margin-inline-start: auto;
             border-left: none;
-            border-right: 2px solid var(--card-border);
+            border-right: var(--hairline) solid var(--card-border);
             text-align: right;
           }
           .text-card.right .h-line { transform-origin: right; margin-inline-start: auto; }
 
-          .tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-block-end: 1rem; }
+          .tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-block-end: 1rem; outline: none; }
           
-          :where(h1, h2) { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.05em; line-height: 1.1; word-wrap: break-word; }
-          h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 10px; }
-          h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); text-transform: uppercase; margin-bottom: 10px;}
+          :where(h1, h2) { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.05em; line-height: 1.1; word-wrap: break-word; outline: none; }
+          h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); margin-bottom: 10px; }
+          h2 { font-size: clamp(2rem, 4vw, 3.5rem); text-transform: uppercase; margin-bottom: 10px;}
           
-          .body-text { font-size: 0.85rem; line-height: 1.6; color: #ddd; margin-block-start: 1.25rem; font-style: italic;}
-          .h-line { width: 3.125rem; height: 2px; background: var(--accent); margin-block-end: 1rem; transform-origin: left; }
-          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-style: normal; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;}
+          .body-text { font-size: 0.85rem; line-height: 1.6; color: #ddd; margin-block-start: 1.25rem; font-style: italic; outline: none; }
+          .h-line { width: 3.125rem; height: var(--hairline); background: var(--accent); margin-block-end: 1rem; transform-origin: left; }
+          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-style: normal; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
+
+          .editable-active { border: 1px dashed var(--accent); padding: 2px 5px; background: rgba(255,255,255,0.05); }
         }
 
         @layer reveal {
@@ -184,8 +184,8 @@
             section { align-items: flex-end; padding: 0 1.5rem 3.5rem; min-height: 150vh;}
             #s0 { min-height: 100vh; align-items: center; padding: 4rem 1.5rem; }
             .text-card, .text-card.right { max-width: 100%; padding: 1.5rem 1.25rem; }
-            .nav-arrow { display: none; }
-            #back_btn { top: 1rem; left: 1rem; }
+            #back_btn { top: 1rem; left: 1rem; font-size: 0.6rem; padding: 0.4rem 0.8rem;}
+            .admin-btn { left: 120px !important; top: 1rem !important; font-size: 0.6rem !important; padding: 0.4rem 0.8rem !important;}
             #hud { top: 1rem; right: 1rem; }
         }
     </style>
@@ -194,9 +194,9 @@
 
     <div id="ambient_glow"></div>
     <a href="index.html" id="back_btn">← НА ГЛАВНУЮ</a>
-
-    <button class="nav-arrow" id="btn_prev">❮</button>
-    <button class="nav-arrow" id="btn_next">❯</button>
+    
+    <button id="edit-btn" class="admin-btn" onclick="startEditing()">✏️ РЕДАКТИРОВАТЬ</button>
+    <button id="save-btn" class="admin-btn" onclick="saveExhibition()">💾 СОХРАНИТЬ</button>
 
     <div id="scene">
         <div id="cube">
@@ -212,7 +212,6 @@
     <div id="hud">
         <div id="hud_pct">000%</div>
         <div class="progress-bar"><div class="progress-fill" id="prog_fill"></div></div>
-        <div class="scene-label" id="scene_name">ГАЛЕРЕЯ</div>
     </div>
 
     <div id="face_caption">
@@ -225,15 +224,14 @@
     <script>
         const USERNAME = 'gevartplay';
         const REPO = 'gevartplay.github.io';
+        const DATA_FILE = 'exhibition_data.json';
         
-        // 12 КРАСИВЫХ СЛОВ ДЛЯ ЗАГОЛОВКОВ
         const TITLES = [
             "ЭМОЦИЯ", "МГНОВЕНИЕ", "ВЕЧНОСТЬ", "ГЛУБИНА", 
             "РАКУРС", "ОТРАЖЕНИЕ", "АТМОСФЕРА", "ИЛЛЮЗИЯ", 
             "МОМЕНТ", "СИЛУЭТ", "ФРАГМЕНТ", "ВДОХНОВЕНИЕ"
         ];
 
-        // 50 ЦИТАТ
         const QUOTES = [
             { text: "«Фотография — это секрет о секрете. Чем больше она говорит вам, тем меньше вы знаете.»", author: "Диана Арбус" },
             { text: "«Искусство — это ложь, которая делает нас способными осознать правду.»", author: "Пабло Пикассо" },
@@ -250,66 +248,41 @@
             { text: "«Снимать — значит признавать значимость мгновения.»", author: "Сьюзен Сонтаг" },
             { text: "«Только в тишине можно услышать, как говорит изображение.»", author: "Эрих Фромм" },
             { text: "«Фотография — это не отражение реальности. Это реальность этого отражения.»", author: "Жан-Люк Годар" },
-            { text: "«Свет и тень — два великих скульптора, лепящих наш мир.»", author: "Леонардо да Винчи" },
-            { text: "«Вы не делаете фотографию, вы создаете её из своей души.»", author: "Ансель Адамс" },
-            { text: "«Чтобы увидеть бесконечное, нужно пристально посмотреть на малое.»", author: "Артур Шопенгауэр" },
-            { text: "«Остановись, мгновенье, ты прекрасно!»", author: "Иоганн Гёте" },
-            { text: "«Самое трудное в фотографии — оставаться простым.»", author: "Анн Геддес" },
-            { text: "«Каждый кадр — это диалог между фотографом и вечностью.»", author: "Анри Картье-Брессон" },
-            { text: "«Глаз видит лишь то, что готов понять разум.»", author: "Анри Бергсон" },
-            { text: "«Искусство смывает с души пыль повседневности.»", author: "Пабло Пикассо" },
-            { text: "«Память — это художник, который рисует без кистей.»", author: "Марсель Пруст" },
-            { text: "«Камера обманывает смерть, заставляя мгновение жить вечно.»", author: "Неизвестный" },
-            { text: "«Лучшие вещи в жизни нельзя увидеть. Их можно только почувствовать.»", author: "Хелен Келлер" },
-            { text: "«Форма — это тайна, раскрывающаяся через свет.»", author: "Огюст Роден" },
-            { text: "«Фотография — это поэзия, написанная светом.»", author: "Тарковский" },
-            { text: "«Тьма — это холст, на котором свет пишет свою историю.»", author: "Стивен Кинг" },
-            { text: "«Секрет великого искусства в том, чтобы обнажить эмоцию.»", author: "Лев Толстой" },
-            { text: "«Всё, что мы видим, есть лишь отблеск того, что скрыто внутри.»", author: "Иммануил Кант" },
-            { text: "«Каждый портрет — это автопортрет фотографа, а не модели.»", author: "Ричард Аведон" },
-            { text: "«Реальность всегда превосходит вымысел, если уметь на неё смотреть.»", author: "Федор Достоевский" },
-            { text: "«Тень так же важна, как и свет. Без неё нет объема.»", author: "Рембрандт" },
-            { text: "«Настоящая красота живет в изъянах и трещинах реальности.»", author: "Леонард Коэн" },
-            { text: "«Фотография берет фрагмент факта и дает ему жизнь.»", author: "Марио Джакомелли" },
-            { text: "«Объектив не имеет души, душа должна быть у того, кто держит камеру.»", author: "Неизвестный" },
-            { text: "«Мы фотографируем то, что боимся потерять.»", author: "Бернар Вербер" },
-            { text: "«Самое прекрасное в мире — это тайна.»", author: "Альберт Эйнштейн" },
-            { text: "«Один кадр способен рассказать историю целого поколения.»", author: "Себастьян Сальгадо" },
-            { text: "«Искусство рождается из ограничения.»", author: "Жан Кокто" },
-            { text: "«Когда слова становятся неясными, я начинаю фотографировать.»", author: "Ансель Адамс" },
-            { text: "«Лицо человека — это пейзаж его жизни.»", author: "Симона де Бовуар" },
-            { text: "«Фотография — это иллюзия, которая помогает нам понять истину.»", author: "Сальвадор Дали" },
-            { text: "«В каждом мгновении скрыта вечность.»", author: "Омар Хайям" },
-            { text: "«Чувствовать, любить, страдать — вот истинное искусство.»", author: "Винсент Ван Гог" },
-            { text: "«Свет всегда побеждает тьму, достаточно одной вспышки.»", author: "Неизвестный" },
-            { text: "«Глаза — зеркало души, а фотография — зеркало мира.»", author: "Уильям Шекспир" },
-            { text: "«Фотография — это не копия, это новая реальность.»", author: "Майкл Кенна" },
-            { text: "«Мир принадлежит тому, кто умеет на него смотреть.»", author: "Антуан де Сент-Экзюпери" }
+            { text: "«Свет и тень — два великих скульптора, лепящих наш мир.»", author: "Леонардо да Винчи" }
         ];
 
         let portfolioImages = [];
-        let sectionTops = [];
-        let maxScroll = 1;
-        let smoothScroll = 0;
-        let targetScroll = 0;
+        let customData = { intro: {}, photos: {} };
+        let customDataSha = null;
 
         const dom = {
             cube: document.getElementById("cube"),
             scrollEl: document.getElementById("scroll_container"),
             hudPct: document.getElementById("hud_pct"),
             progFill: document.getElementById("prog_fill"),
-            sceneName: document.getElementById("scene_name"),
-            captionNum: document.getElementById("face_caption_num"),
-            captionName: document.getElementById("face_caption_name"),
-            btnPrev: document.getElementById("btn_prev"),
-            btnNext: document.getElementById("btn_next")
+            sceneName: document.getElementById("face_caption_name"),
+            captionNum: document.getElementById("face_caption_num")
         };
 
-        // Взломщик кэша (Date.now()) гарантирует загрузку только АКТУАЛЬНЫХ ФОТО
-        async function loadImages() {
+        async function initApp() {
+            const token = localStorage.getItem('github_token_gevartplay');
+            if (token) document.getElementById('edit-btn').style.display = 'block';
+
+            // 1. Загрузка ваших текстов
             try {
-                const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images?t=${Date.now()}`);
-                const files = await response.json();
+                const resData = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}?t=${Date.now()}`);
+                if(resData.ok) {
+                    const dataJson = await resData.json();
+                    customDataSha = dataJson.sha;
+                    customData = JSON.parse(decodeURIComponent(escape(atob(dataJson.content))));
+                    if(!customData.photos) customData.photos = {};
+                }
+            } catch(e) {}
+
+            // 2. Загрузка фото + Перемешивание
+            try {
+                const resImg = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images?t=${Date.now()}`);
+                const files = await resImg.json();
                 
                 let tempImages = files.filter(file => 
                     file.name.match(/\.(jpg|jpeg|png)$/i) && 
@@ -318,13 +291,11 @@
                     !file.name.includes('ikon.png')
                 );
 
-                // ХАОТИЧНЫЙ (СЛУЧАЙНЫЙ) ПОРЯДОК ФОТО
                 for (let i = tempImages.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [tempImages[i], tempImages[j]] = [tempImages[j], tempImages[i]];
                 }
                 portfolioImages = tempImages;
-
             } catch (e) {
                 console.error("API error", e);
             }
@@ -334,36 +305,67 @@
                 return;
             }
 
-            STOPS = buildStops(portfolioImages.length);
+            STOPS = buildChaoticStops(portfolioImages.length);
             buildSections();
         }
 
-        // ОРИГИНАЛЬНАЯ ЛОГИКА ОСЕЙ
-        function buildStops(n) {
-            const base = [
-                { rx: 90, ry: 0 },   // Top
-                { rx: 0, ry: 0 },    // Front
-                { rx: 0, ry: -90 },  // Right
-                { rx: 0, ry: -180 }, // Back
-                { rx: 0, ry: -270 }, // Left
-                { rx: -90, ry: -360 }// Bottom
-            ];
-            const out = base.slice(0, Math.min(n, 6));
-            for (let i = 6; i < n; i++) {
-                out.push({ rx: 0, ry: -360 - (i - 5) * 90 }); 
+        // --- УМНАЯ ХАОТИЧНАЯ МАТЕМАТИКА (Защита от переворотов) ---
+        function buildChaoticStops(n) {
+            let stops = [];
+            let crx = 0, cry = 0;
+            
+            for (let i = 0; i < n; i++) {
+                stops.push({ rx: crx, ry: cry });
+                let nrx = crx, nry = cry;
+                
+                if (crx === 90 || crx === -90) {
+                    nrx = 0; 
+                } else {
+                    let choices = [
+                        { rx: 0, ry: cry - 90 }, 
+                        { rx: 0, ry: cry + 90 }  
+                    ];
+                    
+                    if (cry % 180 === 0) {
+                        choices.push({ rx: 90, ry: cry });  
+                        choices.push({ rx: -90, ry: cry }); 
+                    }
+                    
+                    if (stops.length > 1) {
+                        let prev = stops[stops.length - 2];
+                        choices = choices.filter(c => !(c.rx === prev.rx && c.ry === prev.ry));
+                    }
+
+                    if (stops.length > 2) {
+                        let p1 = stops[stops.length - 1];
+                        let p2 = stops[stops.length - 2];
+                        let p3 = stops[stops.length - 3];
+                        if (p1.rx === 0 && p2.rx === 0 && p3.rx === 0) {
+                            if (p1.ry < p2.ry && p2.ry < p3.ry) choices = choices.filter(c => c.ry >= cry); 
+                            else if (p1.ry > p2.ry && p2.ry > p3.ry) choices = choices.filter(c => c.ry <= cry); 
+                        }
+                    }
+                    
+                    let pick = choices[Math.floor(Math.random() * choices.length)];
+                    if(!pick) pick = { rx: 0, ry: cry - 90 }; 
+                    nrx = pick.rx; nry = pick.ry;
+                }
+                crx = nrx; cry = nry;
             }
-            return out;
+            return stops;
         }
 
-        function faceAtStop(i) {
-            if (i === 0) return 'top';
-            if (i === 1) return 'front';
-            if (i === 2) return 'right';
-            if (i === 3) return 'back';
-            if (i === 4) return 'left';
-            if (i === 5) return 'bottom';
-            const sides = ['front', 'right', 'back', 'left'];
-            return sides[(i - 1) % 4];
+        function faceAtStop(stopIndex) {
+            const stop = STOPS[stopIndex];
+            if (!stop) return 'front';
+            if (stop.rx === 90) return 'top';
+            if (stop.rx === -90) return 'bottom';
+            let normalizedRy = ((stop.ry % 360) + 360) % 360;
+            if (normalizedRy === 0) return 'front';
+            if (normalizedRy === 270) return 'right';
+            if (normalizedRy === 180) return 'back';
+            if (normalizedRy === 90) return 'left';
+            return 'front';
         }
 
         let STOPS = [];
@@ -373,24 +375,31 @@
             <section id="s0">
                 <div class="text-card">
                     <div class="h-line"></div>
-                    <div class="tag">GevArtPlay 3D Галерея</div>
-                    <h1>ИСКУССТВО<br>ВИДЕТЬ</h1>
-                    <p class="body-text">Добро пожаловать в виртуальный выставочный зал. Каждая фотография здесь — это застывшая мысль.</p>
+                    <div class="tag" id="intro-tag">${customData.intro?.tag || "GevArtPlay 3D Галерея"}</div>
+                    <h1 id="intro-title">${customData.intro?.title || "ИСКУССТВО<br>ВИДЕТЬ"}</h1>
+                    <p class="body-text" id="intro-desc">${customData.intro?.text || "Добро пожаловать в виртуальный выставочный зал. Каждая фотография здесь — это застывшая мысль."}</p>
                 </div>
             </section>`;
 
             for(let i = 1; i < portfolioImages.length; i++) {
-                const quote = QUOTES[i % QUOTES.length]; 
-                const titleWord = TITLES[i % TITLES.length]; // РАЗНЫЕ КРАСИВЫЕ СЛОВА
+                const img = portfolioImages[i];
+                const sha = img.sha;
+                const saved = customData.photos[sha] || {};
+                
+                const tWord = saved.title || TITLES[i % TITLES.length];
+                const qText = saved.quote || QUOTES[i % QUOTES.length].text;
+                const qAuthor = saved.author || QUOTES[i % QUOTES.length].author;
+                const tTag = saved.tag || `ЭКСПОНАТ ${String(i).padStart(2, '0')}`;
+                
                 const alignmentClass = (i % 2 !== 0) ? 'right' : ''; 
                 html += `
                 <section id="s${i}">
                     <div class="text-card ${alignmentClass}">
                         <div class="h-line"></div>
-                        <div class="tag">ЭКСПОНАТ ${String(i).padStart(2, '0')}</div>
-                        <h2>${titleWord}</h2>
-                        <p class="body-text">${quote.text}</p>
-                        <span class="author">— ${quote.author}</span>
+                        <div class="tag slide-tag" data-sha="${sha}">${tTag}</div>
+                        <h2 class="slide-title" data-sha="${sha}">${tWord}</h2>
+                        <p class="body-text slide-quote" data-sha="${sha}">${qText}</p>
+                        <span class="author">— <span class="slide-author" data-sha="${sha}">${qAuthor}</span></span>
                     </div>
                 </section>`;
             }
@@ -406,7 +415,6 @@
             setTimeout(() => { recalcScroll(); init3DScroll(); }, 500);
         }
 
-        // ОПТИМИЗИРОВАННАЯ ФУНКЦИЯ ОБНОВЛЕНИЯ ФОТО
         function updateFaceImage(stopIndex) {
             if (stopIndex < 0 || stopIndex >= portfolioImages.length) return;
             const src = portfolioImages[stopIndex].download_url;
@@ -428,29 +436,17 @@
             }
         }
 
+        let sectionTops = [];
+        let maxScroll = 1;
         function recalcScroll() {
             maxScroll = Math.max(1, document.documentElement.scrollHeight - innerHeight);
             const sections = document.querySelectorAll("section");
             sectionTops = Array.from(sections).map(s => s.getBoundingClientRect().top + window.scrollY);
         }
-
         window.addEventListener("resize", recalcScroll);
 
-        function scrollToSection(index) {
-            if(index < 0 || index >= portfolioImages.length) return;
-            window.scrollTo({ top: sectionTops[index], behavior: 'smooth' });
-        }
-        
-        dom.btnPrev.addEventListener('click', () => {
-            let currentIndex = Math.round(smoothScroll * (portfolioImages.length - 1));
-            scrollToSection(currentIndex - 1);
-        });
-        
-        dom.btnNext.addEventListener('click', () => {
-            let currentIndex = Math.round(smoothScroll * (portfolioImages.length - 1));
-            scrollToSection(currentIndex + 1);
-        });
-
+        let smoothScroll = 0;
+        let targetScroll = 0;
         const easeIO = (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t);
 
         let currentActiveIndex = -1;
@@ -463,8 +459,8 @@
                 smoothScroll += (targetScroll - smoothScroll) * 0.08;
                 
                 const p = Math.round(smoothScroll * 100);
-                dom.hudPct.textContent = String(p).padStart(3, "0") + "%";
-                dom.progFill.style.width = `${p}%`;
+                document.getElementById("hud_pct").textContent = String(p).padStart(3, "0") + "%";
+                document.getElementById("prog_fill").style.width = `${p}%`;
 
                 const N = portfolioImages.length;
                 if(N < 2) return;
@@ -484,12 +480,16 @@
                 if (activeIndex !== currentActiveIndex) {
                     currentActiveIndex = activeIndex;
                     
-                    const title = activeIndex === 0 ? "ВВЕДЕНИЕ" : TITLES[activeIndex % TITLES.length];
-                    dom.sceneName.textContent = title;
-                    dom.captionNum.textContent = String(activeIndex + 1).padStart(2, "0");
-                    dom.captionName.textContent = title;
+                    // Обновляем полупрозрачный фоновый текст
+                    if (activeIndex === 0) {
+                        dom.sceneName.textContent = document.getElementById('intro-title')?.innerText || "ВВЕДЕНИЕ";
+                        dom.captionNum.textContent = "01";
+                    } else {
+                        const sha = portfolioImages[activeIndex].sha;
+                        dom.sceneName.textContent = document.querySelector(`.slide-title[data-sha="${sha}"]`)?.innerText || TITLES[activeIndex % TITLES.length];
+                        dom.captionNum.textContent = String(activeIndex + 1).padStart(2, "0");
+                    }
                     
-                    // Обновляем текущую грань и соседей
                     updateFaceImage(activeIndex);
                     if(activeIndex + 1 < N) updateFaceImage(activeIndex + 1);
                     if(activeIndex - 1 >= 0) updateFaceImage(activeIndex - 1);
@@ -498,7 +498,62 @@
             requestAnimationFrame(frame);
         }
 
-        loadImages();
+        // --- РЕДАКТОР АДМИНА ---
+        function startEditing() {
+            document.getElementById('edit-btn').style.display = 'none';
+            document.getElementById('save-btn').style.display = 'block';
+            
+            // Делаем весь текст карточек + задний фон редактируемыми
+            document.querySelectorAll('#intro-tag, #intro-title, #intro-desc, .slide-tag, .slide-title, .slide-quote, .slide-author, #face_caption_name, #face_caption_num').forEach(el => {
+                el.contentEditable = "true";
+                el.classList.add('editable-active');
+            });
+        }
+
+        async function saveExhibition() {
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "СОХРАНЕНИЕ...";
+
+            let newData = { intro: {}, photos: {} };
+            newData.intro.tag = document.getElementById('intro-tag').innerText;
+            newData.intro.title = document.getElementById('intro-title').innerHTML;
+            newData.intro.text = document.getElementById('intro-desc').innerHTML;
+
+            portfolioImages.forEach((img, index) => {
+                if (index === 0) return;
+                const sha = img.sha;
+                const titleEl = document.querySelector(`.slide-title[data-sha="${sha}"]`);
+                if (titleEl) {
+                    newData.photos[sha] = {
+                        tag: document.querySelector(`.slide-tag[data-sha="${sha}"]`).innerText,
+                        title: titleEl.innerHTML,
+                        quote: document.querySelector(`.slide-quote[data-sha="${sha}"]`).innerHTML,
+                        author: document.querySelector(`.slide-author[data-sha="${sha}"]`).innerHTML
+                    };
+                }
+            });
+
+            const token = localStorage.getItem('github_token_gevartplay');
+            const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(newData))));
+            
+            try {
+                const body = { message: "Update 3D exhibition texts", content: contentBase64 };
+                if (customDataSha) body.sha = customDataSha;
+                
+                const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}`, {
+                    method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                if (res.ok) {
+                    const ans = await res.json(); customDataSha = ans.content.sha;
+                    btn.innerText = "✅ СОХРАНЕНО!"; 
+                    setTimeout(() => location.reload(), 1000);
+                } else { btn.innerText = "ОШИБКА"; }
+            } catch(e) { alert("Ошибка: " + e); }
+        }
+
+        initApp();
     </script>
 </body>
 </html>
