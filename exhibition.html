@@ -6,7 +6,7 @@
     <title>GevArtPlay | 3D Выставка</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @layer reset, tokens, base, layout, cube, ui, cards, reveal, theme, responsive;
+        @layer reset, tokens, base, layout, cube, ui, cards, theme, responsive;
 
         @layer reset { *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; } }
 
@@ -27,7 +27,7 @@
             --font-mono: "DM Mono", monospace;
             --hairline: 0.0625rem;
             --ui-inset: 2rem;
-            --card-bg: rgba(20, 18, 16, 0.85); 
+            --card-bg: rgba(28, 24, 20, 0.82); 
             --card-border: rgba(91, 81, 216, 0.5);
             --nav-x: calc(var(--ui-inset) + 0.125rem);
             --z-ui: 10;
@@ -36,7 +36,7 @@
 
         @layer base {
           html { color-scheme: dark; overscroll-behavior: none; }
-          body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); overflow: hidden; user-select: none; } /* Отключаем скролл, управляем JS */
+          body { background: var(--bg); color: var(--fg); font-family: var(--font-mono); overflow: hidden; user-select: none; }
         }
 
         @layer layout {
@@ -57,7 +57,7 @@
           #scene { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; perspective: 1100px; pointer-events: none; }
           
           /* Контейнер для карточек (теперь карточки абсолютные и появляются по индексу) */
-          #cards_container { position: fixed; inset: 0; z-index: 2; pointer-events: none; display: flex; align-items: center; padding: 0 5vw; }
+          #cards_container { position: fixed; inset: 0; z-index: 6; pointer-events: none; display: flex; align-items: center; padding: 0 5vw; }
         }
 
         @layer cube {
@@ -91,7 +91,6 @@
 
           .picture-frame img { max-width: 100%; max-height: 100%; object-fit: contain; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
 
-          /* Грани привязываются динамически через JS, изначальная позиция: */
           .face[data-face="front"] { transform: translateZ(calc(var(--s) / 2)); }
           .face[data-face="back"] { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
           .face[data-face="right"] { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
@@ -101,12 +100,14 @@
         }
 
         @layer ui {
+          #loading_screen { position: fixed; inset: 0; background: #0a0807; z-index: 9999; display: flex; align-items: center; justify-content: center; color: var(--accent); font-family: 'Oswald'; font-size: 2rem; letter-spacing: 5px; transition: opacity 0.5s ease; }
+
           #hud { position: fixed; top: var(--ui-inset); right: var(--ui-inset); z-index: var(--z-ui); text-align: right; font-size: 0.65rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; pointer-events: none;}
           .progress-bar { width: 7.5rem; height: var(--hairline); background: var(--muted); margin-block-start: 0.5rem; margin-inline-start: auto; position: relative; overflow: hidden; }
           .progress-fill { position: absolute; inset-block: 0; inset-inline-start: 0; width: 0%; background: var(--accent); transition: width 0.1s linear; }
           
           .nav-arrow {
-              position: fixed; top: 50%; transform: translateY(-50%); z-index: 100;
+              position: fixed; top: 50%; transform: translateY(-50%); z-index: 10;
               background: rgba(0,0,0,0.5); color: white; border: 1px solid var(--accent);
               width: 50px; height: 50px; border-radius: 50%; font-size: 20px;
               cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -115,7 +116,7 @@
           .nav-arrow:hover { background: var(--accent); transform: translateY(-50%) scale(1.1); box-shadow: 0 0 20px var(--accent); }
           #btn_prev { left: var(--nav-x); } #btn_next { right: var(--nav-x); }
 
-          #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 100; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; }
+          #back_btn { position: fixed; top: 2rem; left: var(--nav-x); z-index: 10; color: var(--muted); text-decoration: none; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; border: var(--hairline) solid color-mix(in srgb, var(--muted) 45%, transparent); padding: 0.6rem 1.25rem; transition: 0.3s; }
           #back_btn:hover { color: var(--fg); border-color: var(--muted); background: color-mix(in srgb, var(--muted) 12%, transparent); }
 
           /* КНОПКИ АДМИНА */
@@ -132,42 +133,44 @@
 
         @layer cards {
           .text-card {
-            position: absolute; width: 100%; max-width: 28rem; padding: 2rem 2.25rem;
-            background: var(--card-bg); border-left: 2px solid var(--card-border);
-            backdrop-filter: blur(8px); transition: 0.5s ease;
+            position: absolute; width: 100%; max-width: 25rem; padding: 2.25rem 2rem;
+            background: var(--card-bg); border-left: var(--hairline) solid var(--card-border);
+            backdrop-filter: blur(6px) saturate(120%); -webkit-backdrop-filter: blur(6px) saturate(120%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
             pointer-events: auto; word-wrap: break-word; 
-            opacity: 0; transform: translateY(30px) scale(0.95); /* Изначально скрыто */
+            opacity: 0; transform: translateY(30px) scale(0.95);
             visibility: hidden;
           }
           .text-card.active { opacity: 1; transform: translateY(0) scale(1); visibility: visible; }
           
-          .text-card.right { right: 5vw; border-left: none; border-right: 2px solid var(--card-border); text-align: right; }
+          .text-card.right { right: 5vw; border-left: none; border-right: var(--hairline) solid var(--card-border); text-align: right; }
           .text-card.left { left: 5vw; }
           
           .text-card.right .h-line { transform-origin: right; margin-inline-start: auto; }
 
-          .tag { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-block-end: 1rem; outline: none; }
-          :where(h1, h2) { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.05em; line-height: 1.1; word-wrap: break-word; outline: none; }
-          h1 { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 10px; }
-          h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); text-transform: uppercase; margin-bottom: 10px;}
-          .body-text { font-size: 0.85rem; line-height: 1.6; color: #ddd; margin-block-start: 1.25rem; font-style: italic; outline: none;}
-          .h-line { width: 3.125rem; height: 2px; background: var(--accent); margin-block-end: 1rem; transform-origin: left; }
-          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
+          .tag { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-block-end: 1.1rem; outline: none; }
+          :where(h1, h2) { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.03em; line-height: 0.92; word-wrap: break-word; outline: none; }
+          h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); margin-bottom: 10px; }
+          h2 { font-size: clamp(2rem, 4vw, 3.5rem); text-transform: uppercase; margin-bottom: 10px;}
+          .body-text { font-size: 0.8rem; line-height: 1.8; color: color-mix(in srgb, var(--fg) 80%, transparent); margin-block-start: 1.25rem; font-style: italic; outline: none;}
+          .h-line { width: 3.125rem; height: var(--hairline); background: var(--accent); margin-block-end: 1.2rem; transform-origin: left; }
+          .author { display: block; margin-top: 15px; font-weight: bold; color: var(--accent); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; outline: none;}
 
           .editable-active { border: 1px dashed rgba(255,255,255,0.5); padding: 5px; background: rgba(255,255,255,0.05); }
         }
 
         @media (max-width: 1024px) {
-            #cube { --s: min(80vw, 80vh, 400px); transform-origin: center center;}
-            #cards_container { align-items: flex-end; padding: 0 1.5rem 3.5rem; }
-            .text-card { max-width: 100%; padding: 1.5rem; border: none !important; border-top: 2px solid var(--accent) !important; text-align: center !important; left: 1.5rem !important; right: 1.5rem !important; width: auto !important; }
+            #cube { --s: min(80vw, 80vh, 400px); transform-origin: center center; margin-top: -10vh;}
+            #cards_container { align-items: flex-end; padding: 0 1.5rem 2rem; }
+            .text-card { max-width: 100%; padding: 1.5rem; border: none !important; border-top: var(--hairline) solid var(--card-border) !important; text-align: center !important; left: 1.5rem !important; right: 1.5rem !important; width: auto !important; }
             .text-card .h-line { margin: 0 auto 1rem auto !important; }
-            .nav-arrow { display: none; } /* На мобилках только свайп */
+            .nav-arrow { display: none; } 
         }
     </style>
 </head>
 <body>
 
+    <div id="loading_screen">СОЗДАНИЕ ГАЛЕРЕИ...</div>
     <div id="ambient_glow"></div>
     <div id="drag_zone"></div>
 
@@ -180,7 +183,7 @@
 
     <div id="scene">
         <div id="cube">
-            <!-- Грани -->
+            <!-- 6 физических граней куба -->
             <div class="face" id="face-front" data-face="front"></div>
             <div class="face" id="face-right" data-face="right"></div>
             <div class="face" id="face-back" data-face="back"></div>
@@ -195,7 +198,6 @@
         <div class="progress-bar"><div class="progress-fill" id="prog_fill"></div></div>
     </div>
 
-    <!-- Здесь будут появляться карточки текста -->
     <div id="cards_container"></div>
 
     <script>
@@ -208,7 +210,7 @@
         let customDataSha = null;
         let isEditMode = false;
 
-        const TITLES = ["ЭМОЦИЯ", "МГНОВЕНИЕ", "ВЕЧНОСТЬ", "ГЛУБИНА", "РАКУРС", "ОТРАЖЕНИЕ", "АТМОСФЕРА", "ИЛЛЮЗИЯ"];
+        const TITLES = ["ЭМОЦИЯ", "МГНОВЕНИЕ", "ВЕЧНОСТЬ", "ГЛУБИНА", "РАКУРС", "ОТРАЖЕНИЕ", "АТМОСФЕРА", "ИЛЛЮЗИЯ", "СВЕТ", "ТЕНЬ", "СИЛУЭТ", "ИСТОРИЯ"];
         const QUOTES = [
             { text: "«Фотография — это секрет о секрете. Чем больше она говорит вам, тем меньше вы знаете.»", author: "Диана Арбус" },
             { text: "«Искусство — это ложь, которая делает нас способными осознать правду.»", author: "Пабло Пикассо" },
@@ -216,11 +218,13 @@
             { text: "«Свет прославляет всё. Он превращает мусор в золото.»", author: "Уинстон Линк" },
             { text: "«Мы видим не вещи, а то, как на них падает свет.»", author: "Карл Юнг" },
             { text: "«Фотография берет фрагмент факта и дает ему жизнь.»", author: "Марио Джакомелли" },
+            { text: "«Каждая фотография — это сертификат присутствия.»", author: "Ролан Барт" },
+            { text: "«Смотреть — значит забыть названия вещей, на которые ты смотришь.»", author: "Пол Валери" },
             { text: "«Форма — это тайна, раскрывающаяся через свет.»", author: "Огюст Роден" }
         ];
 
         let STOPS = [];
-        let currentStep = 0;
+        let smoothScroll = 0;
         let targetStep = 0;
 
         const dom = {
@@ -228,14 +232,15 @@
             dragZone: document.getElementById("drag_zone"),
             cardsContainer: document.getElementById("cards_container"),
             hudPct: document.getElementById("hud_pct"),
-            progFill: document.getElementById("prog_fill")
+            progFill: document.getElementById("prog_fill"),
+            loading: document.getElementById("loading_screen")
         };
 
         async function initApp() {
             const token = localStorage.getItem('github_token_gevartplay');
             if (token) document.getElementById('edit-btn').style.display = 'block';
 
-            // 1. Загружаем кастомные тексты (если есть)
+            // 1. Пытаемся загрузить тексты пользователя (если они есть)
             try {
                 const resData = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}?t=${Date.now()}`);
                 if(resData.ok) {
@@ -246,281 +251,11 @@
                 }
             } catch(e) { console.log("Файл текстов еще не создан, используем дефолт."); }
 
-            // 2. Загружаем картинки
+            // 2. Пытаемся загрузить фото с GitHub
             try {
                 const resImg = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/images?t=${Date.now()}`);
+                if (!resImg.ok) throw new Error("API Limit");
                 const files = await resImg.json();
-                let tempImages = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i) && !f.name.includes('logo.png') && !f.name.includes('avatar.jpg'));
-
-                // ХАОТИЧНЫЙ ПОРЯДОК
-                for (let i = tempImages.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [tempImages[i], tempImages[j]] = [tempImages[j], tempImages[i]];
-                }
-                portfolioImages = tempImages;
-            } catch (e) { console.error("API error", e); }
-
-            if(portfolioImages.length === 0) return;
-
-            generateSmartPath();
-            buildTextCards();
-            updateCubeVisuals(0);
-            renderLoop();
-        }
-
-        // ХАОТИЧНАЯ НО БЕЗОПАСНАЯ МАТЕМАТИКА ВРАЩЕНИЯ
-        function generateSmartPath() {
-            STOPS = [];
-            let rx = 0, ry = 0;
-            let lastMove = '';
-            let consecutive = 0;
-
-            for(let i = 0; i < portfolioImages.length + 1; i++) { // +1 для интро
-                STOPS.push({ rx, ry });
-
-                let possible = [];
-                if (rx === 0) possible = ['L', 'R', 'U', 'D']; // На экваторе можно в 4 стороны
-                else if (rx === -90) possible = ['D'];         // На крыше - только вниз
-                else if (rx === 90) possible = ['U'];          // На полу - только вверх
-
-                // Запрет крутиться в одну сторону больше 2 раз
-                if (consecutive >= 2) possible = possible.filter(m => m !== lastMove);
-
-                let move = possible[Math.floor(Math.random() * possible.length)];
                 
-                if (move === lastMove) consecutive++; else { consecutive = 1; lastMove = move; }
-
-                if (move === 'L') ry += 90;
-                if (move === 'R') ry -= 90;
-                if (move === 'U') rx -= 90;
-                if (move === 'D') rx += 90;
-            }
-        }
-
-        // Определение, какая грань сейчас перед нами
-        function getFaceName(rx, ry) {
-            let normalizedRx = ((rx % 360) + 360) % 360;
-            let normalizedRy = ((ry % 360) + 360) % 360;
-
-            if (normalizedRx === 90 || normalizedRx === 270) return 'bottom';
-            if (normalizedRx === 270 || normalizedRx === -90) return 'top';
-            
-            if (normalizedRy === 0) return 'front';
-            if (normalizedRy === 90) return 'left';
-            if (normalizedRy === 180) return 'back';
-            if (normalizedRy === 270) return 'right';
-            return 'front';
-        }
-
-        function buildTextCards() {
-            let html = '';
-            for(let i = 0; i <= portfolioImages.length; i++) {
-                const align = (i % 2 !== 0) ? 'right' : 'left';
-                let content = '';
-
-                if(i === 0) {
-                    const cTitle = customData.intro?.title || "ИСКУССТВО<br>ВИДЕТЬ";
-                    const cText = customData.intro?.text || "Добро пожаловать в виртуальный выставочный зал. Каждая фотография здесь — это застывшая мысль.<br><br>Тяните экран в любую сторону.";
-                    content = `
-                        <div class="h-line"></div>
-                        <div class="tag">GevArtPlay 3D Галерея</div>
-                        <h1 id="text-intro-title">${cTitle}</h1>
-                        <p class="body-text" id="text-intro-desc">${cText}</p>
-                    `;
-                } else {
-                    const img = portfolioImages[i-1];
-                    const sha = img.sha;
-                    const saved = customData.photos[sha] || {};
-                    
-                    const tTitle = saved.title || TITLES[i % TITLES.length];
-                    const tQuote = saved.quote || QUOTES[i % QUOTES.length].text;
-                    const tAuthor = saved.author || QUOTES[i % QUOTES.length].author;
-
-                    content = `
-                        <div class="h-line"></div>
-                        <div class="tag">ЭКСПОНАТ ${String(i).padStart(2, '0')}</div>
-                        <h2 id="title-${sha}">${tTitle}</h2>
-                        <p class="body-text" id="quote-${sha}">${tQuote}</p>
-                        <span class="author">— <span id="author-${sha}">${tAuthor}</span></span>
-                    `;
-                }
-
-                html += `<div class="text-card ${align}" id="card-${i}">${content}</div>`;
-            }
-            dom.cardsContainer.innerHTML = html;
-        }
-
-        // Обновление фото на гранях
-        function applyImageToFace(faceName, imageIndex) {
-            const faceElem = document.getElementById(`face-${faceName}`);
-            if(!faceElem) return;
-
-            if (imageIndex < 0 || imageIndex >= portfolioImages.length) {
-                faceElem.innerHTML = ''; // Пустая стена для интро
-                return;
-            }
-
-            const src = portfolioImages[imageIndex].download_url;
-            if(faceElem.children.length === 0) {
-                const frame = document.createElement('div');
-                frame.className = 'picture-frame';
-                const img = new Image(); img.src = src;
-                frame.appendChild(img);
-                faceElem.appendChild(frame);
-            } else {
-                const img = faceElem.querySelector('img');
-                if(img.src !== src) img.src = src;
-            }
-        }
-
-        let lastActiveIndex = -1;
-        function updateCubeVisuals(index) {
-            index = Math.max(0, Math.min(index, STOPS.length - 1));
-            targetStep = index;
-            
-            if (index !== lastActiveIndex) {
-                // Переключаем карточки текста
-                if(lastActiveIndex >= 0) document.getElementById(`card-${lastActiveIndex}`).classList.remove('active');
-                document.getElementById(`card-${index}`).classList.add('active');
-                
-                // Прогресс
-                const p = Math.round((index / (STOPS.length - 1)) * 100) || 0;
-                dom.hudPct.textContent = String(p).padStart(3, "0") + "%";
-                dom.progFill.style.width = `${p}%`;
-
-                // Вешаем фото (текущее, следующее, предыдущее)
-                if(index > 0) applyImageToFace(getFaceName(STOPS[index].rx, STOPS[index].ry), index - 1);
-                if(index + 1 < STOPS.length) applyImageToFace(getFaceName(STOPS[index+1].rx, STOPS[index+1].ry), index);
-                if(index - 1 > 0) applyImageToFace(getFaceName(STOPS[index-1].rx, STOPS[index-1].ry), index - 2);
-
-                lastActiveIndex = index;
-            }
-        }
-
-        // --- ЛОГИКА ДРАГА И СВАЙПА (Touch & Mouse) ---
-        let isDragging = false;
-        let startX = 0, startY = 0;
-        let accumulatedDelta = 0;
-
-        function handleStart(e) {
-            if(isEditMode) return;
-            isDragging = true;
-            startX = e.touches ? e.touches[0].clientX : e.clientX;
-            startY = e.touches ? e.touches[0].clientY : e.clientY;
-            accumulatedDelta = 0;
-        }
-
-        function handleMove(e) {
-            if(!isDragging || isEditMode) return;
-            let x = e.touches ? e.touches[0].clientX : e.clientX;
-            let y = e.touches ? e.touches[0].clientY : e.clientY;
-            
-            // Определяем, куда сильнее тянут
-            let dx = x - startX; let dy = y - startY;
-            let delta = (Math.abs(dx) > Math.abs(dy)) ? dx : dy;
-            
-            accumulatedDelta += delta;
-            startX = x; startY = y;
-
-            // Если протащили достаточно сильно - делаем шаг
-            if (accumulatedDelta < -50) { updateCubeVisuals(targetStep + 1); accumulatedDelta = 0; }
-            if (accumulatedDelta > 50) { updateCubeVisuals(targetStep - 1); accumulatedDelta = 0; }
-        }
-
-        function handleEnd() { isDragging = false; }
-
-        dom.dragZone.addEventListener('mousedown', handleStart);
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('mouseup', handleEnd);
-        
-        dom.dragZone.addEventListener('touchstart', handleStart, {passive: true});
-        window.addEventListener('touchmove', handleMove, {passive: true});
-        window.addEventListener('touchend', handleEnd);
-
-        // Кнопки и колесико мыши
-        dom.btnPrev.addEventListener('click', () => updateCubeVisuals(targetStep - 1));
-        dom.btnNext.addEventListener('click', () => updateCubeVisuals(targetStep + 1));
-        window.addEventListener('wheel', (e) => {
-            if(e.deltaY > 0) updateCubeVisuals(targetStep + 1);
-            else updateCubeVisuals(targetStep - 1);
-        }, {passive: true});
-
-
-        // ПЛАВНАЯ АНИМАЦИЯ КУБА
-        function renderLoop() {
-            requestAnimationFrame(renderLoop);
-            if(STOPS.length === 0) return;
-            
-            smoothScroll += (targetStep - smoothScroll) * 0.1;
-            
-            const i = Math.min(Math.floor(smoothScroll), STOPS.length - 2);
-            if (i < 0) return;
-            const f = smoothScroll - i;
-            
-            const a = STOPS[i]; const b = STOPS[i + 1];
-            const rx = a.rx + (b.rx - a.rx) * f;
-            const ry = a.ry + (b.ry - a.ry) * f;
-            
-            dom.cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
-        }
-
-        // --- АДМИН ПАНЕЛЬ ---
-        function startEditing() {
-            isEditMode = true;
-            document.getElementById('edit-btn').style.display = 'none';
-            document.getElementById('save-btn').style.display = 'block';
-            document.getElementById('drag_zone').style.display = 'none'; // Отключаем драг
-            
-            // Делаем все тексты редактируемыми
-            document.querySelectorAll('h1, h2, .body-text, .author span').forEach(el => {
-                el.contentEditable = "true";
-                el.classList.add('editable-active');
-            });
-        }
-
-        async function saveExhibition() {
-            const btn = document.getElementById('save-btn');
-            btn.innerText = "СОХРАНЕНИЕ...";
-
-            // Собираем интро
-            let newData = { intro: {}, photos: {} };
-            newData.intro.title = document.getElementById('text-intro-title')?.innerHTML || "";
-            newData.intro.text = document.getElementById('text-intro-desc')?.innerHTML || "";
-
-            // Собираем фото
-            portfolioImages.forEach(img => {
-                const sha = img.sha;
-                const titleEl = document.getElementById(`title-${sha}`);
-                if (titleEl) {
-                    newData.photos[sha] = {
-                        title: titleEl.innerHTML,
-                        quote: document.getElementById(`quote-${sha}`).innerHTML,
-                        author: document.getElementById(`author-${sha}`).innerHTML
-                    };
-                }
-            });
-
-            const token = localStorage.getItem('github_token_gevartplay');
-            const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(newData))));
-            
-            try {
-                const body = { message: "Update 3D exhibition texts", content: contentBase64 };
-                if (customDataSha) body.sha = customDataSha;
-                
-                const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}`, {
-                    method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                
-                if (res.ok) {
-                    const ans = await res.json(); customDataSha = ans.content.sha;
-                    btn.innerText = "✅ СОХРАНЕНО!"; 
-                    setTimeout(() => location.reload(), 1000);
-                } else { btn.innerText = "ОШИБКА"; }
-            } catch(e) { alert("Ошибка: " + e); }
-        }
-
-        initApp();
-    </script>
-</body>
-</html>
+                if (Array.isArray(files)) {
+                    let tempImages = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i) && !f.name.includes('logo.png') && !f.name.includes('avatar.jpg') && !
