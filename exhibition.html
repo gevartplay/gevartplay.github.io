@@ -258,4 +258,293 @@
                 const files = await resImg.json();
                 
                 if (Array.isArray(files)) {
-                    let tempImages = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i) && !f.name.includes('logo.png') && !f.name.includes('avatar.jpg') && !
+                    let tempImages = files.filter(f => f.name.match(/\.(jpg|jpeg|png)$/i) && !f.name.includes('logo.png') && !f.name.includes('avatar.jpg') && !f.name.includes('ikon.png'));
+                    
+                    // ХАОТИЧНЫЙ ПОРЯДОК: Тасование Фишера-Йетса
+                    for (let i = tempImages.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [tempImages[i], tempImages[j]] = [tempImages[j], tempImages[i]];
+                    }
+                    portfolioImages = tempImages;
+                }
+            } catch (e) { 
+                console.error("API error or Rate Limit. Using fallbacks."); 
+            }
+
+            // 3. ЕСЛИ ФОТО НЕ ЗАГРУЗИЛИСЬ (ЗАЩИТА ОТ ЧЕРНОГО ЭКРАНА)
+            if(portfolioImages.length === 0) {
+                portfolioImages = [
+                    { download_url: "images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg", sha: "demo1" },
+                    { download_url: "images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg", sha: "demo2" },
+                    { download_url: "images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg", sha: "demo3" },
+                    { download_url: "images/avatar.jpg", sha: "demo4" }
+                ];
+            }
+
+            // Скрываем загрузочный экран
+            dom.loading.style.opacity = '0';
+            setTimeout(() => dom.loading.style.display = 'none', 500);
+
+            generateSmartPath();
+            buildTextCards();
+            updateCubeVisuals(0);
+            renderLoop();
+        }
+
+        // --- УМНАЯ ХАОТИЧНАЯ МАТЕМАТИКА ---
+        // Исключает переворот вверх ногами и повторение поворотов больше 2 раз
+        function getFaceName(rx, ry) {
+            let x = ((rx % 360) + 360) % 360;
+            let y = ((ry % 360) + 360) % 360;
+            if (x === 90) return 'bottom';
+            if (x === 270) return 'top';
+            if (y === 0) return 'front';
+            if (y === 90) return 'left';
+            if (y === 180) return 'back';
+            if (y === 270) return 'right';
+            return 'front';
+        }
+
+        function generateSmartPath() {
+            STOPS = [];
+            let rx = 0, ry = 0;
+            let lastMove = '';
+            let consecutive = 0;
+
+            for(let i = 0; i < portfolioImages.length; i++) {
+                STOPS.push({ rx, ry, face: getFaceName(rx, ry) });
+
+                let possible = [];
+                if (rx === 0) possible = ['L', 'R', 'U', 'D']; // На экваторе можно во все стороны
+                else if (rx === 270 || rx === -90) possible = ['D']; // С крыши - только вниз
+                else if (rx === 90 || rx === -270) possible = ['U']; // С пола - только вверх
+
+                if (consecutive >= 2) possible = possible.filter(m => m !== lastMove);
+
+                let move = possible[Math.floor(Math.random() * possible.length)];
+                if (move === lastMove) consecutive++; else { consecutive = 1; lastMove = move; }
+
+                if (move === 'L') ry += 90;
+                if (move === 'R') ry -= 90;
+                if (move === 'U') rx -= 90;
+                if (move === 'D') rx += 90;
+            }
+        }
+
+        // --- СБОРКА ТЕКСТОВЫХ КАРТОЧЕК ---
+        function buildTextCards() {
+            let html = '';
+            for(let i = 0; i < portfolioImages.length; i++) {
+                const align = (i % 2 !== 0) ? 'right' : 'left';
+                const img = portfolioImages[i];
+                const sha = img.sha;
+                const saved = customData.photos[sha] || {};
+                
+                let content = '';
+
+                if(i === 0) {
+                    // ПЕРВЫЙ ШАГ = ИНТРО ТЕКСТ + ПЕРВОЕ ФОТО
+                    const cTitle = customData.intro?.title || "ИСКУССТВО<br>ВИДЕТЬ";
+                    const cText = customData.intro?.text || "Каждая фотография здесь — это застывшая мысль.<br><br>Тяните экран пальцем или мышкой в любую сторону.";
+                    content = `
+                        <div class="h-line"></div>
+                        <div class="tag">GevArtPlay 3D Галерея</div>
+                        <h1 id="text-intro-title">${cTitle}</h1>
+                        <p class="body-text" id="text-intro-desc">${cText}</p>
+                    `;
+                } else {
+                    // ОСТАЛЬНЫЕ ШАГИ
+                    const tTitle = saved.title || TITLES[i % TITLES.length];
+                    const tQuote = saved.quote || QUOTES[i % QUOTES.length].text;
+                    const tAuthor = saved.author || QUOTES[i % QUOTES.length].author;
+
+                    content = `
+                        <div class="h-line"></div>
+                        <div class="tag">ЭКСПОНАТ ${String(i).padStart(2, '0')}</div>
+                        <h2 id="title-${sha}">${tTitle}</h2>
+                        <p class="body-text" id="quote-${sha}">${tQuote}</p>
+                        <span class="author">— <span id="author-${sha}">${tAuthor}</span></span>
+                    `;
+                }
+
+                html += `<div class="text-card ${align}" id="card-${i}">${content}</div>`;
+            }
+            dom.cardsContainer.innerHTML = html;
+        }
+
+        // --- ЛОГИКА НАНЕСЕНИЯ ФОТО НА СТЕНЫ ---
+        function applyImageToFace(faceName, imageIndex) {
+            const faceElem = document.getElementById(`face-${faceName}`);
+            if(!faceElem) return;
+
+            if (imageIndex < 0 || imageIndex >= portfolioImages.length) return;
+
+            const src = portfolioImages[imageIndex].download_url;
+            if(faceElem.children.length === 0) {
+                const frame = document.createElement('div');
+                frame.className = 'picture-frame';
+                const img = new Image(); img.src = src;
+                frame.appendChild(img);
+                faceElem.appendChild(frame);
+            } else {
+                const img = faceElem.querySelector('img');
+                if(img.src !== src) img.src = src;
+            }
+        }
+
+        let lastActiveIndex = -1;
+        function updateCubeVisuals(index) {
+            index = Math.max(0, Math.min(index, STOPS.length - 1));
+            targetStep = index;
+            
+            if (index !== lastActiveIndex) {
+                // Переключаем карточки
+                if(lastActiveIndex >= 0) {
+                    let oldCard = document.getElementById(`card-${lastActiveIndex}`);
+                    if(oldCard) oldCard.classList.remove('active');
+                }
+                
+                let newCard = document.getElementById(`card-${index}`);
+                if(newCard) newCard.classList.add('active');
+                
+                // Прогресс
+                const p = Math.round((index / Math.max(1, STOPS.length - 1)) * 100) || 0;
+                dom.hudPct.textContent = String(p).padStart(3, "0") + "%";
+                dom.progFill.style.width = `${p}%`;
+
+                // Идеально вешаем фото (Текущее, Следующее, Предыдущее)
+                applyImageToFace(STOPS[index].face, index);
+                if (index + 1 < STOPS.length) applyImageToFace(STOPS[index+1].face, index + 1);
+                if (index - 1 >= 0) applyImageToFace(STOPS[index-1].face, index - 1);
+
+                lastActiveIndex = index;
+            }
+        }
+
+        // --- ЛОГИКА СВАЙПА / ПЕРЕТАСКИВАНИЯ ---
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let accumulatedDelta = 0;
+
+        function handleStart(e) {
+            if(isEditMode) return;
+            isDragging = true;
+            startX = e.touches ? e.touches[0].clientX : e.clientX;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            accumulatedDelta = 0;
+        }
+
+        function handleMove(e) {
+            if(!isDragging || isEditMode) return;
+            let x = e.touches ? e.touches[0].clientX : e.clientX;
+            let y = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            let dx = x - startX; let dy = y - startY;
+            let delta = (Math.abs(dx) > Math.abs(dy)) ? dx : dy; // Какая ось сдвинулась сильнее
+            
+            accumulatedDelta += delta;
+            startX = x; startY = y;
+
+            if (accumulatedDelta < -40) { 
+                updateCubeVisuals(targetStep + 1); 
+                accumulatedDelta = 0; 
+            }
+            if (accumulatedDelta > 40) { 
+                updateCubeVisuals(targetStep - 1); 
+                accumulatedDelta = 0; 
+            }
+        }
+
+        function handleEnd() { isDragging = false; }
+
+        dom.dragZone.addEventListener('mousedown', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
+        
+        dom.dragZone.addEventListener('touchstart', handleStart, {passive: true});
+        window.addEventListener('touchmove', handleMove, {passive: true});
+        window.addEventListener('touchend', handleEnd);
+
+        // Кнопки
+        document.getElementById("btn_prev").addEventListener('click', () => updateCubeVisuals(targetStep - 1));
+        document.getElementById("btn_next").addEventListener('click', () => updateCubeVisuals(targetStep + 1));
+        window.addEventListener('wheel', (e) => {
+            if(e.deltaY > 0) updateCubeVisuals(targetStep + 1);
+            else updateCubeVisuals(targetStep - 1);
+        }, {passive: true});
+
+        // --- ПЛАВНАЯ АНИМАЦИЯ КУБА ---
+        function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            if(STOPS.length === 0) return;
+            
+            smoothScroll += (targetStep - smoothScroll) * 0.1;
+            
+            const i = Math.min(Math.floor(smoothScroll), STOPS.length - 2);
+            if (i < 0) return;
+            const f = smoothScroll - i;
+            
+            const a = STOPS[i]; const b = STOPS[i + 1];
+            const rx = a.rx + (b.rx - a.rx) * f;
+            const ry = a.ry + (b.ry - a.ry) * f;
+            
+            dom.cube.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+        }
+
+        // --- АДМИН ПАНЕЛЬ ---
+        function startEditing() {
+            isEditMode = true;
+            document.getElementById('edit-btn').style.display = 'none';
+            document.getElementById('save-btn').style.display = 'block';
+            document.getElementById('drag_zone').style.display = 'none'; // Отключаем драг, чтобы выделять текст
+            
+            document.querySelectorAll('h1, h2, .body-text, .author span').forEach(el => {
+                el.contentEditable = "true";
+                el.classList.add('editable-active');
+            });
+        }
+
+        async function saveExhibition() {
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "СОХРАНЕНИЕ...";
+
+            let newData = { intro: {}, photos: {} };
+            newData.intro.title = document.getElementById('text-intro-title')?.innerHTML || "";
+            newData.intro.text = document.getElementById('text-intro-desc')?.innerHTML || "";
+
+            portfolioImages.forEach(img => {
+                const sha = img.sha;
+                const titleEl = document.getElementById(`title-${sha}`);
+                if (titleEl) {
+                    newData.photos[sha] = {
+                        title: titleEl.innerHTML,
+                        quote: document.getElementById(`quote-${sha}`).innerHTML,
+                        author: document.getElementById(`author-${sha}`).innerHTML
+                    };
+                }
+            });
+
+            const token = localStorage.getItem('github_token_gevartplay');
+            const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(newData))));
+            
+            try {
+                const body = { message: "Update 3D exhibition texts", content: contentBase64 };
+                if (customDataSha) body.sha = customDataSha;
+                
+                const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${DATA_FILE}`, {
+                    method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                if (res.ok) {
+                    const ans = await res.json(); customDataSha = ans.content.sha;
+                    btn.innerText = "✅ СОХРАНЕНО!"; 
+                    setTimeout(() => location.reload(), 1000);
+                } else { btn.innerText = "ОШИБКА"; }
+            } catch(e) { alert("Ошибка: " + e); }
+        }
+
+        initApp();
+    </script>
+</body>
+</html>
