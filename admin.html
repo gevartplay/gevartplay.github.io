@@ -8,24 +8,20 @@
     <style>
         body { background: #050505; color: white; font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; }
         h1 { font-family: 'Oswald', sans-serif; color: #5b51d8; letter-spacing: 2px; margin-top: 40px; }
-        
         .back-btn { position: absolute; top: 20px; left: 20px; text-decoration: none; color: #aaa; font-family: 'Oswald', sans-serif; font-size: 14px; border: 1px solid #333; padding: 10px 20px; border-radius: 30px; transition: 0.3s; background: rgba(255,255,255,0.05); }
         .back-btn:hover { color: white; border-color: #5b51d8; background: #5b51d8; }
-
         .box { background: #111; padding: 30px; border-radius: 10px; border: 1px solid #333; text-align: center; width: 100%; max-width: 500px; margin-bottom: 20px; }
         input, select { width: 90%; padding: 10px; margin-bottom: 20px; background: #222; border: 1px solid #444; color: white; border-radius: 5px; }
-        
         button { background: #5b51d8; color: white; border: none; padding: 12px 30px; width: 100%; font-family: 'Oswald', sans-serif; font-size: 1.2rem; cursor: pointer; transition: 0.3s; border-radius: 5px; margin-bottom: 10px; }
         button:hover { background: #fff; color: #000; }
-        
-        /* Лог загрузки */
-        .log-container { text-align: left; margin-top: 15px; max-height: 200px; overflow-y: auto; background: #000; padding: 10px; border-radius: 5px; border: 1px solid #333; }
-        .log-item { font-size: 12px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 2px; }
+        .log-container { text-align: left; margin-top: 15px; max-height: 250px; overflow-y: auto; background: #000; padding: 10px; border-radius: 5px; border: 1px solid #333; }
+        .log-item { font-size: 12px; margin-bottom: 5px; border-bottom: 1px solid #222; padding-bottom: 2px; word-break: break-word; }
         .success { color: #00ff00; }
         .error { color: #ff4444; }
-
         .hidden { display: none; }
         .logout-link { color: #555; font-size: 12px; cursor: pointer; text-decoration: underline; margin-top: 20px; }
+        .setting-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; font-size: 13px; color: #aaa; }
+        .setting-row input[type="checkbox"] { width: auto; margin: 0; }
     </style>
 </head>
 <body>
@@ -41,13 +37,19 @@
     </div>
 
     <div id="mainSection" class="hidden">
-        
+
         <div class="box">
             <h3>📸 ЗАГРУЗИТЬ ФОТО</h3>
             <p style="font-size: 12px; color: #aaa;">Совет: загружайте по 3-5 фото за раз.</p>
+
+            <div class="setting-row">
+                <input type="checkbox" id="compressToggle" checked>
+                <label for="compressToggle">Сжимать большие фото (рекомендуется)</label>
+            </div>
+
             <input type="file" id="fileInput" accept="image/*" multiple>
             <button onclick="uploadImages()">ЗАГРУЗИТЬ ФОТО</button>
-            
+
             <div id="uploadLog" class="log-container hidden"></div>
         </div>
 
@@ -68,14 +70,20 @@
     </div>
 
     <script>
-        const USERNAME = 'gevartplay'; 
+        const USERNAME = 'gevartplay';
         const REPO = 'gevartplay.github.io';
         const PHOTO_FOLDER = 'images';
-        const VIDEO_FILE = 'videos.json'; 
+        const VIDEO_FILE = 'videos.json';
+
+        // Максимальная сторона фото при сжатии (px). Качество остаётся высоким.
+        const MAX_DIMENSION = 2560;
+        const JPEG_QUALITY = 0.9;
+        // Порог, выше которого GitHub-загрузка через base64 начинает сбоить (~5 МБ)
+        const SIZE_WARN_BYTES = 5 * 1024 * 1024;
 
         let userToken = '';
         let currentVideos = [];
-        let videoFileSha = null; 
+        let videoFileSha = null;
 
         document.addEventListener("DOMContentLoaded", () => {
             const savedToken = localStorage.getItem('github_token_gevartplay');
@@ -84,27 +92,28 @@
 
         function saveTokenAndLogin() {
             const input = document.getElementById('tokenInput').value.trim();
-            if (input.startsWith('ghp_')) {
+            if (input.startsWith('ghp_') || input.startsWith('github_pat_')) {
                 localStorage.setItem('github_token_gevartplay', input);
                 userToken = input;
                 unlockAdmin();
-            } else alert('Токен должен начинаться на ghp_');
+            } else alert('Токен должен начинаться на ghp_ или github_pat_');
         }
 
         function unlockAdmin() {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('mainSection').classList.remove('hidden');
-            loadVideoList(); 
+            loadVideoList();
         }
 
         function logout() { localStorage.removeItem('github_token_gevartplay'); location.reload(); }
 
-        // --- НОВАЯ ФУНКЦИЯ ЗАГРУЗКИ С ОТЧЕТОМ ---
+        // --- ЗАГРУЗКА ФОТО С ПОДРОБНЫМ ОТЧЁТОМ ОБ ОШИБКАХ ---
         async function uploadImages() {
             const fileInput = document.getElementById('fileInput');
             const files = fileInput.files;
             const logDiv = document.getElementById('uploadLog');
-            
+            const doCompress = document.getElementById('compressToggle').checked;
+
             if (files.length === 0) return alert("Выберите файлы!");
 
             logDiv.classList.remove('hidden');
@@ -112,16 +121,30 @@
 
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                // Добавляем запись "Загружаю..."
                 const logItem = document.createElement('div');
                 logItem.className = 'log-item';
                 logItem.innerText = `⏳ ${file.name}...`;
                 logDiv.appendChild(logItem);
 
                 try {
-                    const base64 = await readFileAsBase64(file);
-                    // Имя с датой для правильной сортировки
-                    const safeName = file.name.replace(/\s+/g, '_');
+                    let base64;
+                    let finalSize;
+
+                    if (doCompress) {
+                        // Сжимаем/масштабируем большое фото (но сохраняем высокое качество)
+                        const result = await compressImage(file);
+                        base64 = result.base64;
+                        finalSize = result.size;
+                    } else {
+                        base64 = await readFileAsBase64(file);
+                        finalSize = file.size;
+                    }
+
+                    if (finalSize > SIZE_WARN_BYTES) {
+                        logItem.innerHTML = `⚠️ ${file.name} — файл большой (${(finalSize/1024/1024).toFixed(1)} МБ), пробую загрузить...`;
+                    }
+
+                    const safeName = file.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
                     const uniqueName = 'img_' + Date.now() + '_' + i + '_' + safeName;
 
                     const res = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${PHOTO_FOLDER}/${uniqueName}`, {
@@ -131,34 +154,91 @@
                     });
 
                     if (res.ok) {
-                        logItem.innerHTML = `✅ ${file.name} - <b>OK</b>`;
-                        logItem.classList.add('success');
+                        const note = doCompress ? ` (${(finalSize/1024/1024).toFixed(1)} МБ)` : '';
+                        logItem.innerHTML = `✅ ${file.name} - <b>OK</b>${note}`;
+                        logItem.className = 'log-item success';
                     } else {
-                        logItem.innerHTML = `❌ ${file.name} - Ошибка GitHub`;
-                        logItem.classList.add('error');
+                        // ВЫТАСКИВАЕМ ТОЧНУЮ ПРИЧИНУ ОТ GITHUB
+                        let reason = '';
+                        try {
+                            const errData = await res.json();
+                            reason = errData.message || JSON.stringify(errData);
+                        } catch (e) { reason = 'нет деталей'; }
+
+                        let human = '';
+                        if (res.status === 401) human = ' → ТОКЕН НЕВЕРНЫЙ ИЛИ ИСТЁК';
+                        else if (res.status === 403) human = ' → НЕТ ПРАВ (нужен scope "repo") или лимит запросов';
+                        else if (res.status === 404) human = ' → РЕПОЗИТОРИЙ/ВЕТКА НЕ НАЙДЕНЫ или у токена нет доступа';
+                        else if (res.status === 409) human = ' → КОНФЛИКТ (файл уже существует/изменился)';
+                        else if (res.status === 422) human = ' → ФАЙЛ СЛИШКОМ БОЛЬШОЙ для API';
+
+                        logItem.innerHTML = `❌ ${file.name} — Ошибка ${res.status}${human}<br><span style="color:#888">${reason}</span>`;
+                        logItem.className = 'log-item error';
                     }
 
                 } catch (e) {
                     console.error(e);
-                    logItem.innerHTML = `❌ ${file.name} - Сбой`;
-                    logItem.classList.add('error');
+                    logItem.innerHTML = `❌ ${file.name} — Сбой: ${e.message}`;
+                    logItem.className = 'log-item error';
                 }
             }
-            
+
             const doneMsg = document.createElement('div');
             doneMsg.style.marginTop = "10px";
-            doneMsg.innerText = "🏁 Готово! Обновите сайт через 2-3 минуты.";
+            doneMsg.innerText = "🏁 Готово! Обновите сайт через 1-2 минуты.";
             doneMsg.style.color = "white";
             logDiv.appendChild(doneMsg);
-            
-            fileInput.value = ""; 
+
+            fileInput.value = "";
         }
 
+        // Чтение файла как чистый base64 (без изменений)
         function readFileAsBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => resolve(reader.result.split(',')[1]);
                 reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Сжатие/масштабирование через canvas. Уменьшает только если фото огромное.
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let { width, height } = img;
+
+                        // Если фото меньше лимита по обеим сторонам — не уменьшаем размер,
+                        // только перекодируем в JPEG для надёжной загрузки.
+                        if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+                            if (width > height) {
+                                height = Math.round(height * (MAX_DIMENSION / width));
+                                width = MAX_DIMENSION;
+                            } else {
+                                width = Math.round(width * (MAX_DIMENSION / height));
+                                height = MAX_DIMENSION;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+                        const base64 = dataUrl.split(',')[1];
+                        // примерный размер итогового файла
+                        const size = Math.round((base64.length * 3) / 4);
+                        resolve({ base64, size });
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
                 reader.readAsDataURL(file);
             });
         }
@@ -180,7 +260,6 @@
             const category = document.getElementById('videoCategory').value;
             const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
             if (!match || match[2].length !== 11) return alert("Плохая ссылка!");
-            
             currentVideos.push({ id: match[2], category: category, date: Date.now() });
             await saveVideos();
             document.getElementById('videoUrl').value = "";
