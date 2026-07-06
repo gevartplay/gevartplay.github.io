@@ -192,48 +192,148 @@
         async function addVideo() {
             const url = document.getElementById('videoUrl').value.trim();
             const category = document.getElementById('videoCategory').value;
-            
-            // Улучшена регулярка: теперь понимает Shorts и другие мобильные форматы
-            const match = url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/);
-            if (!match || match[2].length !== 11) {
+
+            // Поддержка youtu.be, watch?v=, shorts, embed и live
+            const patterns = [
+                /youtu\.be\/([A-Za-z0-9_-]{11})/,
+                /[?&]v=([A-Za-z0-9_-]{11})/,
+                /youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/,
+                /youtube\.com\/embed\/([A-Za-z0-9_-]{11})/,
+                /youtube\.com\/live\/([A-Za-z0-9_-]{11})/
+            ];
+
+            let videoId = null;
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) {
+                    videoId = match[1];
+                    break;
+                }
+            }
+
+            if (!videoId) {
                 return alert("Плохая ссылка! Убедитесь, что это корректная ссылка на YouTube.");
             }
-            
-            // Добавляем видео в массив
-            currentVideos.push({ id: match[2], category: category, date: Date.now() });
-            
+
+            // Всегда загружаем свежую версию videos.json перед изменением
+            const fresh = await fetchFreshVideos();
+            if (!fresh) return;
+
+            if (currentVideos.some(v => v.id === videoId)) {
+                return alert("Это видео уже добавлено.");
+            }
+
+            currentVideos.push({
+                id: videoId,
+                category: category,
+                date: Date.now()
+            });
+
             const success = await saveVideos();
-            
+
             if (success) {
                 document.getElementById('videoUrl').value = "";
-                updateVideoCounter(); // Сразу показываем, что видео стало больше
-                alert("Видео сохранено на сервере! \nНа самом сайте оно появится через 2-3 минуты (особенность GitHub Pages).");
+                updateVideoCounter();
+                alert("Видео сохранено на сервере! На сайте оно может появиться с небольшой задержкой.");
             }
         }
 
-        async function saveVideos() {
+        async function fetchFreshVideos() {
             try {
-                const content = btoa(unescape(encodeURIComponent(JSON.stringify(currentVideos))));
-                const body = { message: "Upd video", content: content };
-                if (videoFileSha) body.sha = videoFileSha;
-                
-                const r = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
-                    method: 'PUT', 
-                    headers: { 'Authorization': `token ${userToken}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                });
-                
+                const r = await fetch(
+                    `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}?t=${Date.now()}`,
+                    {
+                        headers: {
+                            'Authorization': `token ${userToken}`,
+                            'Accept': 'application/vnd.github+json',
+                            'Cache-Control': 'no-cache'
+                        },
+                        cache: 'no-store'
+                    }
+                );
+
+                if (r.status === 404) {
+                    currentVideos = [];
+                    videoFileSha = null;
+                    return true;
+                }
+
                 if (!r.ok) {
-                    alert("Ошибка сохранения: проверьте права доступа токена!");
+                    const errorText = await r.text();
+                    console.error("GitHub GET error:", r.status, errorText);
+                    alert(`Не удалось получить свежий videos.json. Ошибка GitHub: ${r.status}`);
                     return false;
                 }
-                
-                const d = await r.json(); 
-                videoFileSha = d.content.sha;
+
+                const data = await r.json();
+                videoFileSha = data.sha;
+                currentVideos = JSON.parse(
+                    decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
+                );
                 return true;
             } catch (e) {
-                alert("Сетевая ошибка при сохранении!");
-                console.error(e);
+                console.error("Ошибка получения videos.json:", e);
+                alert("Сетевая ошибка при получении videos.json.");
+                return false;
+            }
+        }
+
+        async function saveVideos(retry = true) {
+            try {
+                const content = btoa(
+                    unescape(encodeURIComponent(JSON.stringify(currentVideos)))
+                );
+
+                const body = {
+                    message: "Update videos",
+                    content: content
+                };
+
+                if (videoFileSha) body.sha = videoFileSha;
+
+                const r = await fetch(
+                    `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${userToken}`,
+                            'Accept': 'application/vnd.github+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(body)
+                    }
+                );
+
+                if (r.status === 409 && retry) {
+                    console.warn("SHA conflict. Reloading videos.json and retrying...");
+
+                    // Сохраняем видео, которое пользователь хотел добавить
+                    const pendingVideo = currentVideos[currentVideos.length - 1];
+
+                    const fresh = await fetchFreshVideos();
+                    if (!fresh) return false;
+
+                    if (!currentVideos.some(v => v.id === pendingVideo.id)) {
+                        currentVideos.push(pendingVideo);
+                    }
+
+                    return await saveVideos(false);
+                }
+
+                if (!r.ok) {
+                    const errorText = await r.text();
+                    console.error("GitHub PUT error:", r.status, errorText);
+                    alert(`Ошибка сохранения GitHub: ${r.status}. Подробности смотрите в F12 → Console.`);
+                    return false;
+                }
+
+                const d = await r.json();
+                videoFileSha = d.content.sha;
+                return true;
+
+            } catch (e) {
+                console.error("Ошибка saveVideos:", e);
+                alert("Сетевая ошибка при сохранении видео.");
                 return false;
             }
         }
