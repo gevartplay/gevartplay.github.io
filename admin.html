@@ -316,16 +316,17 @@
                     }
                 );
 
+                // При конфликте SHA перечитываем файл и повторяем сохранение
                 if (r.status === 409 && retry) {
-                    console.warn("SHA conflict. Reloading videos.json and retrying...");
-
-                    // Сохраняем видео, которое пользователь хотел добавить
                     const pendingVideo = currentVideos[currentVideos.length - 1];
 
                     const fresh = await fetchFreshVideos();
                     if (!fresh) return false;
 
-                    if (!currentVideos.some(v => v.id === pendingVideo.id)) {
+                    if (!currentVideos.some(v =>
+                        v.id === pendingVideo.id &&
+                        v.category === pendingVideo.category
+                    )) {
                         currentVideos.push(pendingVideo);
                     }
 
@@ -335,12 +336,15 @@
                 if (!r.ok) {
                     const errorText = await r.text();
                     console.error("GitHub PUT error:", r.status, errorText);
-                    alert(`Ошибка сохранения GitHub: ${r.status}. Подробности смотрите в F12 → Console.`);
+                    alert(`Ошибка сохранения GitHub: ${r.status}`);
                     return false;
                 }
 
                 const d = await r.json();
                 videoFileSha = d.content.sha;
+
+                // Проверяем, что GitHub действительно принял изменение
+                await loadVideoList();
                 return true;
 
             } catch (e) {
