@@ -822,21 +822,15 @@
 
         async function loadVideos() {
             try {
-                const r = await fetch(`https://gevartplay.github.io/videos.json?t=${Date.now()}`, { cache: 'no-store' });
-                if (r.ok) {
-                    const rawVideos = await r.json();
-
-                    // Убираем дубликаты по связке ID + категория.
-                    const seen = new Set();
-                    allVideos = rawVideos.filter(v => {
-                        const key = `${v.id}|${v.category}`;
-                        if (seen.has(key)) return false;
-                        seen.add(key);
-                        return true;
-                    });
-                }
+                const r = await fetch(`videos.json?t=${Date.now()}`, { cache: 'no-store' });
+                if (!r.ok) throw new Error(`videos.json ${r.status}`);
+                const list = await r.json();
+                const map = new Map();
+                list.forEach(v => map.set(v.id, v));
+                allVideos = Array.from(map.values());
             } catch (e) {
                 console.error("Ошибка загрузки видео:", e);
+                allVideos = [];
             }
         }
 
@@ -868,82 +862,46 @@
             if (retry && !confirm("Удалить это видео?")) return;
 
             const token = localStorage.getItem('github_token_gevartplay');
-            if (!token) {
-                alert("Токен GitHub не найден. Войдите через ADMIN.");
-                return;
-            }
+            if (!token) return alert("Сначала войдите через ADMIN.");
 
             try {
-                const getRes = await fetch(
-                    `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}?t=${Date.now()}`,
-                    {
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Accept': 'application/vnd.github+json'
-                        }
+                const getRes = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}?t=${Date.now()}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github+json'
                     }
-                );
+                });
 
-                if (!getRes.ok) {
-                    const err = await getRes.text();
-                    console.error("GitHub GET error:", getRes.status, err);
-                    throw new Error(`Не удалось получить videos.json: ${getRes.status}`);
-                }
+                if (!getRes.ok) throw new Error(`GitHub GET ${getRes.status}`);
 
                 const data = await getRes.json();
-                const currentList = JSON.parse(
-                    decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
-                );
+                const list = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+                const nextList = list.filter(v => v.id !== id);
+                const content = btoa(unescape(encodeURIComponent(JSON.stringify(nextList))));
 
-                // Удаляем выбранное видео и все его дубликаты из единого videos.json
-                const newList = currentList.filter(v => v.id !== id);
+                const putRes = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Delete video ${id}`,
+                        content,
+                        sha: data.sha
+                    })
+                });
 
-                if (newList.length === currentList.length) {
-                    allVideos = allVideos.filter(v => v.id !== id);
-                    alert("Видео уже удалено.");
-                    location.reload();
-                    return;
-                }
+                if (putRes.status === 409 && retry) return deleteVideo(id, false);
+                if (!putRes.ok) throw new Error(`GitHub PUT ${putRes.status}`);
 
-                const content = btoa(
-                    unescape(encodeURIComponent(JSON.stringify(newList)))
-                );
-
-                const putRes = await fetch(
-                    `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Accept': 'application/vnd.github+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `Delete video ${id}`,
-                            content: content,
-                            sha: data.sha
-                        })
-                    }
-                );
-
-                // Если файл успел измениться, получаем новый SHA и повторяем один раз
-                if (putRes.status === 409 && retry) {
-                    return await deleteVideo(id, false);
-                }
-
-                if (!putRes.ok) {
-                    const err = await putRes.text();
-                    console.error("GitHub PUT error:", putRes.status, err);
-                    throw new Error(`Ошибка сохранения GitHub: ${putRes.status}`);
-                }
-
-                allVideos = newList;
-                alert("Видео удалено. Админка автоматически увидит изменение.");
+                allVideos = nextList;
+                alert("Видео удалено.");
                 location.reload();
-
             } catch (e) {
-                console.error("Ошибка удаления видео:", e);
-                alert(e.message || "Ошибка удаления видео.");
+                console.error(e);
+                alert("Ошибка удаления: " + e.message);
             }
         }
 
