@@ -99,6 +99,15 @@
 
         function logout() { localStorage.removeItem('github_token_gevartplay'); location.reload(); }
 
+        // Синхронизация админки с videos.json после возврата на вкладку
+        window.addEventListener('focus', () => {
+            if (userToken) loadVideoList();
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && userToken) loadVideoList();
+        });
+
         async function uploadImages() {
             const fileInput = document.getElementById('fileInput');
             const files = fileInput.files;
@@ -164,8 +173,11 @@
         async function loadVideoList() {
             try {
                 // Добавлен параметр ?t=${Date.now()} для обхода жесткого кэша
-                const r = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}?t=${Date.now()}`, { 
-                    headers: { 'Authorization': `token ${userToken}` } 
+                const r = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
+                    headers: {
+                        'Authorization': `token ${userToken}`,
+                        'Accept': 'application/vnd.github+json'
+                    }
                 });
                 
                 if (r.status === 404) { 
@@ -186,7 +198,9 @@
 
         // Новая функция для обновления текста в админке
         function updateVideoCounter() {
-            document.getElementById('videoList').innerHTML = `<p style="color:#00ff00">Загружено ${currentVideos.length} видео</p>`;
+            const uniqueCount = new Set(currentVideos.map(v => `${v.id}|${v.category}`)).size;
+            document.getElementById('videoList').innerHTML =
+                `<p style="color:#00ff00">Загружено ${uniqueCount} видео</p>`;
         }
 
         async function addVideo() {
@@ -245,10 +259,8 @@
                     {
                         headers: {
                             'Authorization': `token ${userToken}`,
-                            'Accept': 'application/vnd.github+json',
-                            'Cache-Control': 'no-cache'
-                        },
-                        cache: 'no-store'
+                            'Accept': 'application/vnd.github+json'
+                        }
                     }
                 );
 
