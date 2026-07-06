@@ -401,9 +401,7 @@
         <div class="section-header reveal"><span>SERVICES</span><h2 id="services-title">НАПРАВЛЕНИЯ</h2></div>
         <div class="services-grid">
             <div class="tilt-card reveal clickable-service" onclick="openVideoModal('events')"><div class="service-card tilt-inner"><div class="layer-icon"></div><img id="serv-img-1" src="images/imgi_5_1362ba95d769a188f22cec6d95d52685.jpg" class="service-bg" alt="Event"><div class="service-content"><h3 id="serv-title-1">Events</h3><p id="serv-desc-1">Репортажная съемка мероприятий. Живые эмоции, отсутствие постановки.</p></div></div></div>
-            
-            <div class="tilt-card reveal clickable-service" onclick="openVideoModal('wedding')"><div class="service-card tilt-inner"><div class="layer-icon"></div><img id="serv-img-2" src="images/0bca1774-b9f8-4fcd-9945-98311c62534a.png" class="service-bg" alt="Wedding Stories"><div class="service-content"><h3 id="serv-title-2">Wedding Stories</h3><p id="serv-desc-2">Сохраняю самые трогательные моменты вашего дня. Кинематографичный стиль, искренние эмоции.</p></div></div></div>
-            
+            <div class="tilt-card reveal clickable-service" onclick="openVideoModal('fashion')"><div class="service-card tilt-inner"><div class="layer-icon"></div><img id="serv-img-2" src="images/imgi_3_964ff10fab66bfd241a5c7ce2452d701.jpg" class="service-bg" alt="Fashion"><div class="service-content"><h3 id="serv-title-2">Fashion & Model</h3><p id="serv-desc-2">Студийная и уличная съемка. Работа с позированием и светом.</p></div></div></div>
             <div class="tilt-card reveal clickable-service" onclick="openVideoModal('music')"><div class="service-card tilt-inner"><div class="layer-icon"></div><img id="serv-img-3" src="images/imgi_9_d2b9af8f4167ac9c9c065d864be3ab83.jpg" class="service-bg" alt="Music"><div class="service-content"><h3 id="serv-title-3">Music Video</h3><p id="serv-desc-3">Создание клипов. Кинематографичный подход и монтаж.</p></div></div></div>
         </div>
     </div>
@@ -822,7 +820,25 @@
         document.addEventListener('click', (e) => { if (!e.target.closest('#custom-context-menu')) menu.style.display = 'none'; });
         function changeHeroBg() { const newName = prompt("Введите имя файла для фона:"); if (newName) document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(to right, rgba(0,0,0,0.8), rgba(0,0,0,0.4)), url('images/${newName}')`; }
 
-        async function loadVideos() { try { const r = await fetch(`https://gevartplay.github.io/videos.json?t=${Date.now()}`); if (r.ok) allVideos = await r.json(); } catch (e) {} }
+        async function loadVideos() {
+            try {
+                const r = await fetch(`https://gevartplay.github.io/videos.json?t=${Date.now()}`, { cache: 'no-store' });
+                if (r.ok) {
+                    const rawVideos = await r.json();
+
+                    // Убираем дубликаты по связке ID + категория.
+                    const seen = new Set();
+                    allVideos = rawVideos.filter(v => {
+                        const key = `${v.id}|${v.category}`;
+                        if (seen.has(key)) return false;
+                        seen.add(key);
+                        return true;
+                    });
+                }
+            } catch (e) {
+                console.error("Ошибка загрузки видео:", e);
+            }
+        }
 
         function openVideoModal(category) {
             const modal = document.getElementById('video-modal');
@@ -849,20 +865,100 @@
         }
 
         async function deleteVideo(id) {
-            if(!confirm("Удалить это видео?")) return;
+            if (!confirm("Удалить это видео?")) return;
+
             const token = localStorage.getItem('github_token_gevartplay');
-            const r = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, { headers: { 'Authorization': `token ${token}` } });
-            const data = await r.json();
-            const currentSha = data.sha;
-            const currentList = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-            const newList = currentList.filter(v => v.id !== id);
-            const content = btoa(unescape(encodeURIComponent(JSON.stringify(newList))));
-            await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`, {
-                method: 'PUT', headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: "Delete video", content: content, sha: currentSha })
-            });
-            alert("Видео удалено! Обновите страницу.");
-            location.reload();
+            if (!token) {
+                alert("Токен GitHub не найден. Войдите через ADMIN.");
+                return;
+            }
+
+            const deleteBtn = event?.target;
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.innerText = "УДАЛЕНИЕ...";
+            }
+
+            try {
+                // Всегда получаем самую свежую версию videos.json и актуальный SHA
+                const getRes = await fetch(
+                    `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}?t=${Date.now()}`,
+                    {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github+json',
+                            'Cache-Control': 'no-cache'
+                        },
+                        cache: 'no-store'
+                    }
+                );
+
+                if (!getRes.ok) {
+                    const err = await getRes.text();
+                    console.error("GitHub GET error:", getRes.status, err);
+                    throw new Error(`Не удалось получить videos.json. GitHub: ${getRes.status}`);
+                }
+
+                const data = await getRes.json();
+                const currentSha = data.sha;
+                const currentList = JSON.parse(
+                    decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))))
+                );
+
+                // Удаляем ВСЕ дубликаты выбранного видео
+                const newList = currentList.filter(v => v.id !== id);
+
+                if (newList.length === currentList.length) {
+                    alert("Видео уже удалено.");
+                    await loadVideos();
+                    openVideoModal(
+                        document.querySelector('.clickable-service:hover')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || 'events'
+                    );
+                    return;
+                }
+
+                const content = btoa(
+                    unescape(encodeURIComponent(JSON.stringify(newList)))
+                );
+
+                const putRes = await fetch(
+                    `https://api.github.com/repos/${USERNAME}/${REPO}/contents/${VIDEO_FILE}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Delete video ${id}`,
+                            content: content,
+                            sha: currentSha
+                        })
+                    }
+                );
+
+                if (!putRes.ok) {
+                    const err = await putRes.text();
+                    console.error("GitHub PUT error:", putRes.status, err);
+                    throw new Error(`Ошибка сохранения GitHub: ${putRes.status}`);
+                }
+
+                // Сразу убираем видео и его дубликаты из локального списка
+                allVideos = allVideos.filter(v => v.id !== id);
+
+                alert("Видео и все его дубликаты удалены.");
+                location.reload();
+
+            } catch (e) {
+                console.error("Ошибка удаления видео:", e);
+                alert(e.message || "Ошибка удаления видео.");
+
+                if (deleteBtn) {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerText = "🗑 УДАЛИТЬ";
+                }
+            }
         }
 
         async function loadPortfolio() {
